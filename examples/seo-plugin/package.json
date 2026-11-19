@@ -1,0 +1,26 @@
+{
+  "name": "@tansy/example-seo-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "examples/seo-plugin"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    "./admin": "./admin.tsx",
+    "./client": "./client.tsx",
+    "./render": "./render.tsx",
+    ".": "./index.ts"
+  },
+  "peerDependencies": {
+    "tansy": "*"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

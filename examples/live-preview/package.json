@@ -1,0 +1,23 @@
+{
+  "name": "@tansy/example-live-preview",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "examples/live-preview"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./client": "./client.ts",
+    "./panel": "./panel.tsx"
+  },
+  "peerDependencies": {
+    "tansy": "*",
+    "react": "^19.3.0"
+  }
+}

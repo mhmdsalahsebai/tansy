@@ -1,0 +1,20 @@
+{
+  "name": "@tansy/example-ip-allowlist",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "examples/ip-allowlist"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "peerDependencies": {
+    "tansy": "*"
+  }
+}
