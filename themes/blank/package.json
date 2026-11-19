@@ -1,0 +1,34 @@
+{
+  "name": "@tansy/theme-blank",
+  "version": "0.1.0",
+  "description": "The smallest tansy theme that works: no styling or blocks of its own, made to be copied.",
+  "keywords": [
+    "tansy",
+    "tansy-theme",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "themes/blank"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./render": "./render.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  }
+}

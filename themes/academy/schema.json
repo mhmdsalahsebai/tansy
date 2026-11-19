@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "collections": [
+    {
+      "slug": "site-menu",
+      "name": "Menu",
+      "description": "Links shown at the top of every page.",
+      "type": "singleton",
+      "urlPattern": null,
+      "rules": {
+        "listRule": "",
+        "viewRule": "",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        {
+          "name": "items",
+          "type": "stream",
+          "config": {
+            "allowedBlocks": [
+              "menu_item"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "academy-pricing",
+      "name": "Pricing page",
+      "description": "The page that shows the plans, each with the courses it opens. The plans themselves are under Subscriptions.",
+      "type": "singleton",
+      "urlPattern": "/pricing",
+      "rules": {
+        "listRule": "",
+        "viewRule": "",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "config": {
+            "required": true,
+            "maxLength": 120
+          }
+        },
+        {
+          "name": "intro",
+          "type": "rich_text",
+          "config": {}
+        }
+      ]
+    }
+  ],
+  "blocks": []
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@tansy/theme-dispatch",
+  "version": "0.1.0",
+  "description": "A newsletter look: a masthead with the sign-up form, posts as numbered issues, an issue page made for reading, and the newsletter's own page for confirming and unsubscribing.",
+  "keywords": [
+    "tansy-theme"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "themes/dispatch"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./render": "./render.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "*.css",
+    "schema.json",
+    "fonts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/blog": "^0.1.0",
+    "@tansy/newsletter": "^0.1.0",
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

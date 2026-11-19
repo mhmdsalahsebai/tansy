@@ -1,0 +1,38 @@
+{
+  "name": "@tansy/theme-academy",
+  "version": "0.1.0",
+  "description": "A school's site for the LMS plugin: the course catalogue, course pages, and plans that open courses, from the Payments plugin.",
+  "keywords": [
+    "tansy-theme"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "themes/academy"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./render": "./render.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "*.css",
+    "schema.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/lms": "^0.1.0",
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}
