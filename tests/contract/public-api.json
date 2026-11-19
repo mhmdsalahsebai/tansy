@@ -1,0 +1,1394 @@
+{
+  "bin": [
+    "tansy"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "peerDependencies": {
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "exports": {
+    "./admin": {
+      "AccountPanel": {
+        "component": "import(\"react\").ComponentType<import(\"./admin\").AccountPanelProps>",
+        "id": "string"
+      },
+      "AccountPanelProps": {
+        "user": "{ id: string; email: string; permissions: string[]; }"
+      },
+      "AdminClientParts": {
+        "authWidgets?": "import(\"./admin\").AuthWidgetDefinition[] | undefined",
+        "blockActions?": "import(\"./admin\").BlockActionDefinition[] | undefined",
+        "blockEditors?": "import(\"./admin\").BlockEditorDefinition[] | undefined",
+        "bulkActions?": "import(\"./admin\").BulkActionDefinition[] | undefined",
+        "fieldActions?": "import(\"./admin\").FieldActionDefinition[] | undefined",
+        "fieldAdmin?": "import(\"./admin\").FieldAdminDefinition[] | undefined",
+        "gridColumns?": "import(\"./admin\").GridColumnDefinition[] | undefined",
+        "recordActions?": "import(\"./admin\").RecordActionDefinition[] | undefined",
+        "recordPanels?": "import(\"./admin\").RecordPanelDefinition[] | undefined",
+        "settingsTabs?": "import(\"./admin\").SettingsTabDefinition[] | undefined"
+      },
+      "AdminClientPlugin": {
+        "authWidgets?": "import(\"./admin\").AuthWidgetDefinition[] | undefined",
+        "blockActions?": "import(\"./admin\").BlockActionDefinition[] | undefined",
+        "blockEditors?": "import(\"./admin\").BlockEditorDefinition[] | undefined",
+        "bulkActions?": "import(\"./admin\").BulkActionDefinition[] | undefined",
+        "fieldActions?": "import(\"./admin\").FieldActionDefinition[] | undefined",
+        "fieldAdmin?": "import(\"./admin\").FieldAdminDefinition[] | undefined",
+        "gridColumns?": "import(\"./admin\").GridColumnDefinition[] | undefined",
+        "name": "string",
+        "recordActions?": "import(\"./admin\").RecordActionDefinition[] | undefined",
+        "recordPanels?": "import(\"./admin\").RecordPanelDefinition[] | undefined",
+        "settingsTabs?": "import(\"./admin\").SettingsTabDefinition[] | undefined"
+      },
+      "AdminClientProvider": "({ plugins, enabled, sitePreview, children }: { plugins: import(\"./admin\").AdminClientPlugin[]; enabled: string[]; sitePreview?: () => Promise<{ default: import(\"./admin\").SitePreview; }>; children?: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "AdminConfig": {
+        "plugins": "import(\"./admin\").AdminPlugin[]",
+        "synced": "{ name: string; version: string; }[]"
+      },
+      "AdminIcon": {
+        "fillRule?": "\"nonzero\" | \"evenodd\" | undefined",
+        "paths": "string[]",
+        "viewBox?": "string | undefined"
+      },
+      "AdminNavItem": {
+        "path": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "title": "string"
+      },
+      "AdminPage": {
+        "collection?": "string | undefined",
+        "component": "import(\"react\").ComponentType<import(\"./admin\").AdminPageProps>",
+        "path": "string",
+        "permission?": "import(\"../core/authz/permissions\").Permission | undefined",
+        "title": "string"
+      },
+      "AdminPageProps": {
+        "params": "Record<string, string>",
+        "records": "import(\"./plugin\").RecordsApi",
+        "user": "{ id: string; email: string; permissions: string[]; }"
+      },
+      "adminPath": "(path?: string) => string",
+      "AdminPlugin": {
+        "accountPanels?": "import(\"./admin\").AccountPanel[] | undefined",
+        "name": "string",
+        "navItems?": "import(\"./admin\").AdminNavItem[] | undefined",
+        "pages?": "import(\"./admin\").AdminPage[] | undefined",
+        "section?": "import(\"./admin\").AdminSection | undefined",
+        "shortcut?": "import(\"./admin\").AdminShortcut | undefined",
+        "switcher?": "import(\"./admin\").AdminSwitcher | undefined",
+        "widgets?": "import(\"./admin\").AdminWidget[] | undefined"
+      },
+      "AdminPluginParts": {
+        "accountPanels?": "import(\"./admin\").AccountPanel[] | undefined",
+        "navItems?": "import(\"./admin\").AdminNavItem[] | undefined",
+        "pages?": "import(\"./admin\").AdminPage[] | undefined",
+        "section?": "import(\"./admin\").AdminSection | undefined",
+        "shortcut?": "import(\"./admin\").AdminShortcut | undefined",
+        "switcher?": "import(\"./admin\").AdminSwitcher | undefined",
+        "widgets?": "import(\"./admin\").AdminWidget[] | undefined"
+      },
+      "AdminSection": {
+        "icon?": "string | import(\"./admin\").AdminIcon | undefined",
+        "items": "import(\"./admin\").AdminSectionItem[]",
+        "title": "string"
+      },
+      "AdminSectionItem": "type { page: string; title?: string; } | { collection: string; title?: string; } | { settings: true; title?: string; }",
+      "AdminShortcut": {
+        "icon?": "string | import(\"./admin\").AdminIcon | undefined",
+        "page": "string",
+        "title?": "string | undefined"
+      },
+      "AdminSwitcher": {
+        "label": "string",
+        "options": "string",
+        "permission?": "import(\"../core/authz/permissions\").Permission | undefined",
+        "select": "string"
+      },
+      "AdminWidget": {
+        "component": "import(\"react\").ComponentType<import(\"./admin\").AdminPageProps>",
+        "id": "string",
+        "permission?": "import(\"../core/authz/permissions\").Permission | undefined",
+        "title": "string"
+      },
+      "Alert": "({ kind, children }: { kind?: \"error\" | \"success\" | \"warning\" | \"info\"; children: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "apiPath": "(path?: string) => string",
+      "AuthWidgetDefinition": {
+        "component": "import(\"react\").ComponentType<import(\"./admin\").AuthWidgetProps>",
+        "id": "string"
+      },
+      "AuthWidgetProps": {
+        "attempt": "number",
+        "config": "Record<string, unknown>",
+        "form": "\"signin\" | \"signup\" | \"forgot-password\"",
+        "setHeaders": "(headers: Record<string, string>) => void"
+      },
+      "Badge": "({ tone, tight, href, title, className, children }: { tone?: import(\"./admin\").BadgeTone; tight?: boolean; href?: string; title?: string; className?: string; children: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "BadgeTone": "type \"success\" | \"warning\" | \"info\" | \"neutral\" | \"accent\" | \"danger\"",
+      "BlockActionDefinition": {
+        "blocks?": "string[] | undefined",
+        "id": "string",
+        "label": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "run": "(context: { block: { id: string; type: string; value: Record<string, unknown>; }; setValue(value: Record<string, unknown>): void; }) => void | Promise<void>"
+      },
+      "BlockEditorDefinition": {
+        "blocks": "string[]",
+        "component": "import(\"react\").ComponentType<import(\"./admin\").BlockEditorProps>"
+      },
+      "BlockEditorProps": {
+        "block": "{ id: string; type: string; value: Record<string, unknown>; }",
+        "Field": "import(\"react\").ComponentType<import(\"./admin\").BlockFieldProps>",
+        "selected": "boolean",
+        "setField": "(name: string, value: unknown) => void"
+      },
+      "BlockFieldProps": {
+        "className?": "string | undefined",
+        "name": "string",
+        "placeholder?": "string | undefined"
+      },
+      "BulkActionDefinition": {
+        "collections?": "string[] | undefined",
+        "id": "string",
+        "label": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "run": "(context: { collection: import(\"./admin\").SlotCollection; ids: number[]; refresh(): void; }) => void | Promise<void>"
+      },
+      "Button": "({ variant, loading, className, children, disabled, ...props }: import(\"react\").ButtonHTMLAttributes<HTMLButtonElement> & { variant?: \"danger\" | \"primary\" | \"secondary\" | \"ghost\"; loading?: boolean; }) => import(\"react\").JSX.Element",
+      "ButtonLink": "({ href, variant, native, className, children, ...props }: import(\"react\").AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; variant?: \"danger\" | \"primary\" | \"secondary\" | \"ghost\"; native?: boolean; }) => import(\"react\").JSX.Element",
+      "Card": "({ title, description, actions, toolbar, flush, children }: { title?: string; description?: string; actions?: import(\"react\").ReactNode; toolbar?: import(\"react\").ReactNode; flush?: boolean; children: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "DataColumn": {
+        "hideLabel?": "boolean | undefined",
+        "id": "string",
+        "label": "import(\"react\").ReactNode",
+        "numeric?": "boolean | undefined",
+        "sortable?": "boolean | undefined"
+      },
+      "DataRow": {
+        "actions?": "import(\"react\").ReactNode",
+        "cells": "Record<string, import(\"react\").ReactNode>",
+        "href?": "string | undefined",
+        "id": "string | number"
+      },
+      "DataTable": "({ label, title, actions, columns, rows, toolbar, bulk, empty, footer, sort, selection, skeletonRows, testId }: { label: string; title?: string; actions?: import(\"react\").ReactNode; columns: import(\"./admin\").DataColumn[]; rows: import(\"./admin\").DataRow[] | null; toolbar?: import(\"react\").ReactNode; bulk?: import(\"react\").ReactNode; empty: { title: string; hint?: import(\"react\").ReactNode; icon?: import(\"react\").ReactNode; action?: import(\"react\").ReactNode; }; footer?: import(\"react\").ReactNode; sort?: { value: string; onChange: (value: string) => void; }; selection?: { selected: Array<string | number>; onChange: (ids: Array<string | number>) => void; }; skeletonRows?: number; testId?: string; }) => import(\"react\").JSX.Element",
+      "defineAdminClient": "(parts: import(\"./admin\").AdminClientParts) => import(\"./admin\").AdminClientParts",
+      "defineAdminPlugin": "(parts: import(\"./admin\").AdminPluginParts) => import(\"./admin\").AdminPluginParts",
+      "defineFieldAdmin": "(definition: import(\"./admin\").FieldAdminDefinition) => import(\"./admin\").FieldAdminDefinition",
+      "EmptyState": "({ icon, title, children, action }: { icon?: import(\"react\").ReactNode; title: string; children?: import(\"react\").ReactNode; action?: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "Field": "({ label, hint, children }: { label: string; hint?: string; children: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "FieldActionContext": {
+        "collection": "import(\"./admin\").SlotCollection",
+        "field": "import(\"./admin\").FormField",
+        "recordId?": "string | undefined",
+        "setValue": "(value: unknown) => void",
+        "value": "unknown",
+        "values": "Record<string, unknown>"
+      },
+      "FieldActionDefinition": {
+        "collections?": "string[] | undefined",
+        "component?": "import(\"react\").ComponentType<import(\"./admin\").FieldActionContext> | undefined",
+        "id": "string",
+        "label": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "run?": "((context: import(\"./admin\").FieldActionContext) => void | Promise<void>) | undefined",
+        "types?": "string[] | undefined"
+      },
+      "FieldAdminDefinition": {
+        "Canvas?": "import(\"react\").ComponentType<import(\"./admin\").FieldCanvasProps> | undefined",
+        "Cell?": "import(\"react\").ComponentType<{ value: unknown; }> | undefined",
+        "ConfigInput?": "import(\"react\").ComponentType<import(\"./admin\").FieldConfigInputProps> | undefined",
+        "Input?": "import(\"react\").ComponentType<import(\"./admin\").FieldInputProps> | undefined",
+        "type": "string"
+      },
+      "FieldCanvasProps": {
+        "disabled": "boolean",
+        "error?": "string | undefined",
+        "field": "{ name: string; type: string; config?: Record<string, unknown> | null; }",
+        "id": "string",
+        "onChange": "(value: unknown) => void",
+        "path": "string",
+        "readOnly": "boolean",
+        "selected": "boolean",
+        "value": "unknown"
+      },
+      "FieldConfigInputProps": {
+        "config": "Record<string, unknown>",
+        "idPrefix": "string",
+        "issuePrefix": "string",
+        "issues": "Record<string, string>",
+        "onChange": "(config: Record<string, unknown>) => void",
+        "type": "string"
+      },
+      "FieldInputProps": {
+        "disabled": "boolean",
+        "error?": "string | undefined",
+        "field": "{ name: string; type: string; config?: Record<string, unknown> | null; }",
+        "id": "string",
+        "onChange": "(value: unknown) => void",
+        "path": "string",
+        "readOnly": "boolean",
+        "value": "unknown"
+      },
+      "FormField": {
+        "config": "Record<string, unknown>",
+        "label": "string",
+        "name": "string",
+        "type": "string"
+      },
+      "GridColumnDefinition": {
+        "collections?": "string[] | undefined",
+        "component": "import(\"react\").ComponentType<{ collection: import(\"./admin\").SlotCollection; record: Record<string, unknown>; }>",
+        "id": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "title": "string"
+      },
+      "Input": "({ className, ...props }: import(\"react\").InputHTMLAttributes<HTMLInputElement>) => import(\"react\").JSX.Element",
+      "Modal": "({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "PageHeader": "({ title, description, actions, back, meta }: { title: string; description?: string; actions?: import(\"react\").ReactNode; back?: { href: string; label: string; }; meta?: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "PageSkeleton": "({ kind, columns }: { kind?: \"table\" | \"form\" | \"cards\" | \"detail\"; columns?: number; }) => import(\"react\").JSX.Element",
+      "Pagination": "({ page, perPage, total, onPage }: { page: number; perPage: number; total: number; onPage: (page: number) => void; }) => import(\"react\").JSX.Element",
+      "RecordActionDefinition": {
+        "collections?": "string[] | undefined",
+        "id": "string",
+        "label": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "run": "(context: { collection: import(\"./admin\").SlotCollection; record: Record<string, unknown>; refresh(): void; }) => void | Promise<void>"
+      },
+      "RecordPanelDefinition": {
+        "component": "import(\"react\").ComponentType<import(\"./admin\").RecordPanelProps>",
+        "id": "string"
+      },
+      "RecordPanelProps": {
+        "collection": "{ id: number; slug: string; name: string; }",
+        "fields": "import(\"./admin\").FormField[]",
+        "recordId?": "string | undefined",
+        "setValues": "(values: Record<string, unknown>) => void",
+        "status": "string",
+        "values": "Record<string, unknown>"
+      },
+      "SearchInput": "({ className, ...props }: import(\"react\").InputHTMLAttributes<HTMLInputElement>) => import(\"react\").JSX.Element",
+      "SegmentedControl": "<T extends string>({ label, options, value, onChange }: { label: string; options: Array<{ id: T; label: import(\"react\").ReactNode; }>; value: T; onChange: (id: T) => void; }) => import(\"react\").JSX.Element",
+      "SettingsTabDefinition": {
+        "component": "import(\"react\").ComponentType",
+        "id": "string",
+        "permission": "import(\"../core/authz/permissions\").Permission",
+        "title": "string"
+      },
+      "SitePreview": {
+        "frames?": "string[] | undefined",
+        "renderers": "{ blocks?: import(\"./react\").BlockComponents; fields?: Record<string, import(\"react\").ComponentType<import(\"./react\").FieldRenderProps>>; }",
+        "theme": "{ blocks?: import(\"./react\").BlockComponents; fields?: Record<string, import(\"react\").ComponentType<import(\"./react\").FieldRenderProps>>; fontClassName?: string; } | null",
+        "tokens?": "Partial<Record<\"color\" | \"font\" | \"space\" | \"radius\" | \"size\" | \"shadow\", Record<string, string>>> | undefined"
+      },
+      "Skeleton": "({ width, height, className }: { width?: string; height?: \"line\" | \"title\" | \"control\" | \"block\"; className?: string; }) => import(\"react\").JSX.Element",
+      "SlotCollection": {
+        "id": "number",
+        "name": "string",
+        "slug": "string"
+      },
+      "TabLinks": "({ label, links }: { label: string; links: Array<{ href: string; label: import(\"react\").ReactNode; active?: boolean; badge?: import(\"react\").ReactNode; }>; }) => import(\"react\").JSX.Element",
+      "Timeline": "({ entries }: { entries: import(\"./admin\").TimelineEntry[]; }) => import(\"react\").JSX.Element",
+      "TimelineEntry": {
+        "detail?": "import(\"react\").ReactNode",
+        "icon?": "import(\"react\").ReactNode",
+        "id": "string",
+        "time?": "import(\"react\").ReactNode",
+        "title": "import(\"react\").ReactNode",
+        "tone?": "\"success\" | \"neutral\" | \"accent\" | \"danger\" | undefined"
+      },
+      "Toolbar": "({ children, end }: { children?: import(\"react\").ReactNode; end?: import(\"react\").ReactNode; }) => import(\"react\").JSX.Element",
+      "translate": "(key: string, values?: import(\"./plugin\").MessageValues) => string",
+      "useAdminLocale": "() => { locale: string; direction: \"ltr\" | \"rtl\"; }",
+      "useT": "() => Omit<ReturnType<typeof import(\"../components/i18n\").useT>, \"t\"> & { t: (key: string, values?: import(\"./plugin\").MessageValues) => string; }"
+    },
+    "./config": {
+      "CmsConfig": {
+        "adminTheme?": "import(\"./theme\").AdminTheme | undefined",
+        "backups?": "import(\"./storage\").BackupConfig | undefined",
+        "blockUpgrades?": "import(\"../core/blocks/stream\").BlockUpgrades | undefined",
+        "csp?": "import(\"./plugin\").CspAdditions | undefined",
+        "fields?": "import(\"./fields\").FieldDefinition[] | undefined",
+        "plugins?": "import(\"./plugin\").CmsPlugin[] | undefined",
+        "previewUrl?": "string | undefined",
+        "search?": "import(\"./search\").SearchAdapter | undefined",
+        "storage?": "import(\"./storage\").StorageConfig | undefined",
+        "theme?": "import(\"./theme\").ThemeManifest<unknown> | undefined",
+        "themes?": "import(\"./theme\").ThemeManifest<unknown>[] | undefined"
+      },
+      "defineCms": "(config: import(\"./config\").CmsConfig) => import(\"./config\").CmsConfig",
+      "defineCsp": "(additions: import(\"./plugin\").CspAdditions) => import(\"./plugin\").CspAdditions",
+      "provideCmsConfig": "(config: import(\"./config\").CmsConfig) => void"
+    },
+    "./fields": {
+      "baseConfig": "{ label: import(\"zod\").ZodOptional<import(\"zod\").ZodString>; description: import(\"zod\").ZodOptional<import(\"zod\").ZodString>; placeholder: import(\"zod\").ZodOptional<import(\"zod\").ZodString>; hint: import(\"zod\").ZodOptional<import(\"zod\").ZodString>; labels: import(\"zod\").ZodOptional<import(\"zod\").ZodRecord<import(\"zod\").ZodString, import(\"zod\").ZodString>>; descriptions: import(\"zod\").ZodOptional<import(\"zod\").ZodRecord<import(\"zod\").ZodString, import(\"zod\").ZodString>>; required: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; unique: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; readonly: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; hidden: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; searchable: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; localized: import(\"zod\").ZodOptional<import(\"zod\").ZodBoolean>; showIf: import(\"zod\").ZodOptional<import(\"zod\").ZodObject<{ field: import(\"zod\").ZodString; equals: import(\"zod\").ZodOptional<import(\"zod\").ZodUnknown>; }, import(\"zod/v4/core\").$strip>>; defaultValue: import(\"zod\").ZodOptional<import(\"zod\").ZodUnknown>; }",
+      "checked": "<T>(schema: import(\"zod\").ZodType<T>, check: (value: T) => string | null) => import(\"zod\").ZodType<T, unknown, import(\"zod/v4/core\").$ZodTypeInternals<T, unknown>>",
+      "ColumnType": "type \"boolean\" | \"text\" | \"date\" | \"datetime\" | \"json\" | \"real\" | \"integer\"",
+      "configNumber": "(schema?: import(\"zod\").ZodNumber) => import(\"zod\").ZodOptional<import(\"zod\").ZodPreprocess<import(\"zod\").ZodNumber, unknown>>",
+      "decodeColumn": "(kind: import(\"./fields\").ColumnType, value: unknown) => any",
+      "defineField": "<Shape extends import(\"zod\").ZodRawShape, Value = unknown>(definition: { type: string; admin: import(\"./fields\").FieldAdmin; config: Shape; value: (config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => import(\"zod\").ZodType<Value>; storage: (config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => import(\"./fields\").FieldStorage; version?: number; upgrade?: Record<number, (value: unknown, config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => unknown>; normalize?: (value: unknown, config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => unknown; search?: (value: Value, config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => string[]; refs?: (value: Value, config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => import(\"./fields\").FieldRefs; summary?: (value: Value, config: import(\"zod\").output<import(\"zod\").ZodObject<Shape>>) => string; operators?: readonly import(\"./fields\").FieldOperator[]; localizable?: boolean; }) => import(\"./fields\").FieldDefinition",
+      "EditorInput": "type \"custom\" | import(\"./fields\").FieldInput | \"unavailable\"",
+      "FieldAdmin": {
+        "description?": "string | undefined",
+        "input?": "import(\"./fields\").FieldInput | undefined",
+        "label": "string"
+      },
+      "FieldDefinition": {
+        "admin": "import(\"./fields\").FieldAdmin",
+        "config": "import(\"zod\").ZodType<{ [x: string]: unknown; }, unknown, import(\"zod/v4/core\").$ZodTypeInternals<{ [x: string]: unknown; }, unknown>>",
+        "localizable?": "boolean | undefined",
+        "normalize?": "((value: unknown, config: { [x: string]: unknown; }) => unknown) | undefined",
+        "operators?": "readonly import(\"./fields\").FieldOperator[] | undefined",
+        "refs?": "((value: never, config: { [x: string]: unknown; }) => import(\"./fields\").FieldRefs) | undefined",
+        "search?": "((value: never, config: { [x: string]: unknown; }) => string[]) | undefined",
+        "storage": "(config: { [x: string]: unknown; }) => import(\"./fields\").FieldStorage",
+        "summary?": "((value: never, config: { [x: string]: unknown; }) => string) | undefined",
+        "type": "string",
+        "upgrade?": "Record<number, (value: unknown, config: { [x: string]: unknown; }) => unknown> | undefined",
+        "value": "(config: { [x: string]: unknown; }) => import(\"zod\").ZodType",
+        "version?": "number | undefined"
+      },
+      "FieldInput": "type \"number\" | \"boolean\" | \"file\" | \"stream\" | \"code\" | \"email\" | \"text\" | \"url\" | \"date\" | \"datetime\" | \"image\" | \"gallery\" | \"reference\" | \"json\" | \"select\" | \"multiselect\" | \"richtext\"",
+      "FieldOperator": "type \"=\" | \"!=\" | \">\" | \">=\" | \"<\" | \"<=\" | \"~\" | \"!~\" | \"?=\" | \"?!=\" | \"?>\" | \"?>=\" | \"?<\" | \"?<=\" | \"?~\" | \"?!~\"",
+      "FieldRefs": {
+        "files?": "string[] | undefined",
+        "records?": "{ collection: number | string; id: number; }[] | undefined"
+      },
+      "FieldStorage": {
+        "files?": "boolean | undefined",
+        "references?": "number | undefined",
+        "sql": "import(\"./fields\").ColumnType"
+      },
+      "isStorableJson": "(value: unknown, depth?: number) => boolean",
+      "isStorableText": "(text: string) => boolean",
+      "markdownToRichText": "(markdown: string) => import(\"../core/fields/rich-text\").RichNode",
+      "storedJson": "<T extends import(\"zod\").ZodType>(schema: T) => T",
+      "storedString": "() => import(\"zod\").ZodString",
+      "upgradedValue": "(definition: import(\"./fields\").FieldDefinition, config: { [x: string]: unknown; }, value: unknown, from: number, to: number) => unknown"
+    },
+    "./headless": {
+      "createRevalidateRoute": "({ secret, tag }: RevalidateRouteOptions) => { POST(request: Request): Promise<Response>; }",
+      "RevalidateRouteOptions": {
+        "secret": "string | undefined",
+        "tag?": "string | undefined"
+      },
+      "verifyWebhook": "(secret: string, header: string | null, body: string, { toleranceSeconds, now }?: { toleranceSeconds?: number; now?: number; }) => Promise<boolean>"
+    },
+    "./layout": {
+      "createRootLayout": "(config: CmsConfig) => ({ children }: { children: ReactNode; }) => import(\"react\").JSX.Element",
+      "enabledPlugins": "(config: CmsConfig) => string[]",
+      "metadata": "import(\"next\").Metadata"
+    },
+    "./next": {
+      "CmsRoutes": {
+        "admin?": "string | undefined",
+        "api?": "string | undefined"
+      },
+      "resolveRoutes": "(routes?: CmsRoutes) => Required<CmsRoutes>",
+      "withCms": "(nextConfig?: NextConfig, options?: { routes?: CmsRoutes; cwd?: string; }) => NextConfig"
+    },
+    "./pages": {
+      "assertMapsMatch": "(config: CmsConfig, admin: AdminConfig) => void",
+      "createDashboardLayout": "(config: CmsConfig, admin: AdminConfig) => ({ children }: { children: ReactNode; }) => Promise<import(\"react\").JSX.Element>",
+      "createDashboardPage": "(config: CmsConfig, admin: AdminConfig) => ({ params, searchParams }: PageProps) => Promise<import(\"react\").JSX.Element>",
+      "DashboardLoading": "() => import(\"react\").JSX.Element"
+    },
+    "./plugin": {
+      "AccessControlOptions": {
+        "grant?": "((permissions: ReadonlySet<string>) => Record<string, readonly string[] | undefined>) | undefined",
+        "roles": "\"instance\" | \"scoped\"",
+        "statements?": "Record<string, readonly string[]> | undefined"
+      },
+      "adminPath": "(path?: string) => string",
+      "AfterEvent": "type \"record.afterCreate\" | \"record.afterUpdate\" | \"record.afterDelete\"",
+      "AfterHook": "type (context: import(\"./plugin\").AfterHookContext) => void | Promise<void>",
+      "AfterHookContext": {
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "collection": "import(\"./plugin\").HookCollection",
+        "event": "import(\"./plugin\").AfterEvent",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "previous?": "import(\"./plugin\").RecordValues | undefined",
+        "record": "import(\"./plugin\").RecordValues",
+        "records": "import(\"./plugin\").RecordsApi",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }"
+      },
+      "afterResponse": "(label: string, work: (pass: import(\"./plugin\").JobRunInfo) => Promise<unknown>) => void",
+      "AgentTool": {
+        "access": "import(\"./plugin\").ToolAccess",
+        "audit?": "string | undefined",
+        "description": "string",
+        "handler": "(context: import(\"./plugin\").AgentToolContext<import(\"zod\").output<I>>) => unknown",
+        "input": "I",
+        "name": "string",
+        "write": "boolean"
+      },
+      "AgentToolContext": {
+        "auditTarget": "(type: string, id: string, metadata?: Record<string, unknown>) => void",
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "input": "I",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "principal": "import(\"./plugin\").Principal",
+        "records": "import(\"./plugin\").RecordsApi",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }",
+        "tools": "import(\"./plugin\").ExtensionTools"
+      },
+      "AnonymousPrincipal": {
+        "custom?": "Record<string, unknown> | undefined",
+        "kind": "\"anonymous\"",
+        "permissions": "Set<string>",
+        "scope?": "string | null | undefined",
+        "system?": "string | undefined"
+      },
+      "ApiKeyPrincipal": {
+        "boundScope?": "string | null | undefined",
+        "custom?": "Record<string, unknown> | undefined",
+        "keyId": "string",
+        "kind": "\"apiKey\"",
+        "permissions": "Set<string>",
+        "requested?": "ReadonlySet<string> | undefined",
+        "scope?": "string | null | undefined",
+        "user": "import(\"./plugin\").AuthUser"
+      },
+      "apiPath": "(path?: string) => string",
+      "ApiRequest": {
+        "actorId": "string | null",
+        "at": "Date",
+        "durationMs": "number",
+        "ipAddress": "string | null",
+        "method": "string",
+        "path": "string",
+        "status": "number",
+        "userAgent": "string | null"
+      },
+      "AuthAccess": {
+        "accessControl": "(options: import(\"./plugin\").AccessControlOptions) => { ac: { newRole<const TRoleStatements extends import(\"better-auth/plugins\").Statements>(statements: import(\"better-auth/plugins\").RoleInput<import(\"better-auth/plugins\").Statements, TRoleStatements>): import(\"better-auth/plugins\").Role<import(\"better-auth/plugins\").ExactRoleStatements<TRoleStatements>, import(\"better-auth/plugins\").Statements>; statements: import(\"better-auth/plugins\").Statements; }; roles: Record<string, import(\"better-auth/plugins\").Role<import(\"better-auth/plugins\").ExactRoleStatements<import(\"better-auth/plugins\").Statements>, import(\"better-auth/plugins\").Statements>>; }"
+      },
+      "AuthExtension": {
+        "authWidget?": "{ id: string; props?: (settings: import(\"../core/auth/settings-schema\").AuthSettings) => Record<string, unknown>; } | undefined",
+        "captcha?": "import(\"./plugin\").CaptchaAdapter | undefined",
+        "checkPassword?": "((password: string, settings: import(\"../core/auth/settings-schema\").AuthSettings, words: { locale: string; t: import(\"./plugin\").Translate; }) => string | void | Promise<string | void>) | undefined",
+        "emailContent?": "((email: import(\"../core/auth/extensions\").EmailContent & { kind: import(\"../core/auth/extensions\").EmailKind; appName: string; }, context: import(\"./plugin\").ExtensionContext) => Partial<import(\"../core/auth/extensions\").EmailContent> | void | Promise<Partial<import(\"../core/auth/extensions\").EmailContent> | void>) | undefined",
+        "guardRequest?": "((request: import(\"../core/auth/extensions\").GuardedRequest) => boolean | void | Promise<boolean | void>) | undefined",
+        "mail?": "import(\"../core/mail\").MailAdapter | undefined",
+        "oauthProviders?": "{ id: string; label: string; }[] | undefined",
+        "onAudit?": "((event: import(\"../core/audit\").AuditEvent) => void | Promise<void>) | undefined",
+        "onSignIn?": "((event: import(\"../core/auth/extensions\").SignInEvent) => void | Promise<void>) | undefined",
+        "plugins?": "((settings: import(\"../core/auth/settings-schema\").AuthSettings, context: import(\"./plugin\").ExtensionContext, access: import(\"./plugin\").AuthAccess) => import(\"better-auth\").BetterAuthPlugin[] | Promise<import(\"better-auth\").BetterAuthPlugin[]>) | undefined",
+        "serverOnlyPaths?": "string[] | undefined",
+        "trustedOrigins?": "((context: import(\"./plugin\").ExtensionContext) => string[] | Promise<string[]>) | undefined"
+      },
+      "AuthUser": {
+        "createdAt": "Date",
+        "email": "string",
+        "emailVerified": "boolean",
+        "id": "string",
+        "name": "string",
+        "role": "string | null",
+        "twoFactorEnabled": "boolean",
+        "updatedAt": "Date"
+      },
+      "BeforeEvent": "type \"record.beforeCreate\" | \"record.beforeUpdate\" | \"record.beforeDelete\"",
+      "BeforeHook": "type (context: import(\"./plugin\").BeforeHookContext) => void | import(\"./plugin\").RecordValues | Promise<void | import(\"./plugin\").RecordValues>",
+      "BeforeHookContext": {
+        "can": "(permission: import(\"../core/authz/permissions\").Permission) => boolean",
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "collection": "import(\"./plugin\").HookCollection",
+        "event": "import(\"./plugin\").BeforeEvent",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "record?": "import(\"./plugin\").RecordValues | undefined",
+        "records": "import(\"./plugin\").RecordsApi",
+        "reject": "(message: string, field?: string) => never",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "status?": "\"draft\" | \"published\" | undefined",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }",
+        "userId": "string | null",
+        "values": "import(\"./plugin\").RecordValues"
+      },
+      "CaptchaAdapter": {
+        "authForms?": "((context: import(\"./plugin\").ExtensionContext) => import(\"./plugin\").CaptchaAuthForm[] | Promise<import(\"./plugin\").CaptchaAuthForm[]>) | undefined",
+        "ready?": "((context: import(\"./plugin\").ExtensionContext) => boolean | Promise<boolean>) | undefined",
+        "verify": "(answer: string, request: { ip: string | null; }, context: import(\"./plugin\").ExtensionContext) => Promise<boolean>",
+        "widget": "(context: import(\"./plugin\").ExtensionContext) => import(\"./plugin\").CaptchaWidgetConfig | Promise<import(\"./plugin\").CaptchaWidgetConfig>"
+      },
+      "CaptchaAuthForm": "type \"signin\" | \"signup\" | \"forgot-password\"",
+      "CaptchaWidgetConfig": {
+        "global": "string",
+        "options?": "Record<string, string | number | boolean> | undefined",
+        "provider": "string",
+        "script": "string",
+        "siteKey": "string"
+      },
+      "CmsHooks": {
+        "job": "(job: import(\"./plugin\").JobDefinition) => void",
+        "on": "{ <E extends import(\"./plugin\").BeforeEvent>(event: E, hook: import(\"./plugin\").BeforeHook): void; <E extends import(\"./plugin\").AfterEvent>(event: E, hook: import(\"./plugin\").AfterHook): void; <E extends import(\"./plugin\").LifecycleEvent>(event: E, hook: import(\"./plugin\").LifecycleHook<E>): void; }",
+        "route": "(route: import(\"./plugin\").ExtensionRoute) => void"
+      },
+      "CmsPlugin": {
+        "admin?": "{ server?: string; client?: string; render?: string; } | undefined",
+        "apiVersion": "number",
+        "auth?": "import(\"./plugin\").AuthExtension | undefined",
+        "blocks?": "import(\"./plugin\").PluginBlock[] | undefined",
+        "commands?": "import(\"./plugin\").PluginCommand[] | undefined",
+        "contract?": "Record<string, Record<string, string>> | undefined",
+        "csp?": "import(\"./plugin\").CspAdditions | undefined",
+        "doctor?": "((context: import(\"./plugin\").DoctorContext) => import(\"./plugin\").DoctorCheck[] | Promise<import(\"./plugin\").DoctorCheck[]>) | undefined",
+        "everyPage?": "Record<string, import(\"./plugin\").EveryPageFunction> | undefined",
+        "fields?": "import(\"./fields\").FieldDefinition[] | undefined",
+        "hooks?": "import(\"./plugin\").HookMap | undefined",
+        "jobs?": "import(\"./plugin\").JobDefinition[] | undefined",
+        "messages?": "Record<string, import(\"use-intl/core\").AbstractIntlMessages> | undefined",
+        "migrations?": "import(\"./plugin\").PluginMigration[] | undefined",
+        "name": "string",
+        "onRequest?": "((request: import(\"./plugin\").ApiRequest, context: import(\"./plugin\").ExtensionContext) => void) | undefined",
+        "options?": "{ schema: import(\"zod\").ZodType; value: unknown; } | undefined",
+        "permissions?": "Record<string, readonly string[]> | undefined",
+        "requires?": "{ cms?: string; } | undefined",
+        "routes?": "import(\"./plugin\").ExtensionRoute<import(\"zod\").ZodType<unknown, unknown, import(\"zod/v4/core\").$ZodTypeInternals<unknown, unknown>>, import(\"zod\").ZodType<unknown, unknown, import(\"zod/v4/core\").$ZodTypeInternals<unknown, unknown>>>[] | undefined",
+        "scope?": "import(\"./plugin\").ScopeProvider | undefined",
+        "scopedPermissions?": "string[] | undefined",
+        "settings?": "import(\"./plugin\").PluginSettings | undefined",
+        "systemCollections?": "string[] | undefined",
+        "tools?": "import(\"./plugin\").AgentTool<import(\"zod\").ZodType<unknown, unknown, import(\"zod/v4/core\").$ZodTypeInternals<unknown, unknown>>>[] | undefined",
+        "translator?": "import(\"./plugin\").Translator | undefined",
+        "version": "string"
+      },
+      "CollectionShape": {
+        "fields": "{ name: string; type: string; config: Record<string, unknown>; }[]",
+        "name": "string",
+        "slug": "string",
+        "type": "\"base\" | \"singleton\" | \"view\"",
+        "urlPattern": "string | null"
+      },
+      "CspAdditions": {
+        "connect?": "string[] | undefined",
+        "frame?": "string[] | undefined",
+        "img?": "string[] | undefined"
+      },
+      "defineBlock": "(block: import(\"./plugin\").PluginBlock) => import(\"./plugin\").PluginBlock",
+      "defineCommand": "(command: import(\"./plugin\").PluginCommand) => import(\"./plugin\").PluginCommand",
+      "definePlugin": "(plugin: import(\"./plugin\").CmsPlugin) => import(\"./plugin\").CmsPlugin",
+      "defineRoute": "<B extends import(\"zod\").ZodType, Q extends import(\"zod\").ZodType>(route: import(\"./plugin\").ExtensionRoute<B, Q>) => import(\"./plugin\").ExtensionRoute",
+      "defineTool": "<I extends import(\"zod\").ZodType>(tool: import(\"./plugin\").AgentTool<I>) => import(\"./plugin\").AgentTool",
+      "DoctorCheck": {
+        "fix?": "string | undefined",
+        "label": "string",
+        "ok": "boolean",
+        "warning?": "boolean | undefined"
+      },
+      "DoctorContext": {
+        "cwd": "string",
+        "env": "Record<string, string | undefined>"
+      },
+      "EveryPageContext": {
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "page": "import(\"./plugin\").EveryPageInfo",
+        "records": "import(\"./plugin\").RecordsApi",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }"
+      },
+      "EveryPageFunction": "type (context: import(\"./plugin\").EveryPageContext) => unknown",
+      "EveryPageInfo": {
+        "collection": "string | null",
+        "locale": "string | null",
+        "path": "string",
+        "preview": "boolean",
+        "recordId": "number | null"
+      },
+      "ExtensionAuth": {
+        "call": "<T = unknown>(path: string, input?: { body?: Record<string, unknown>; query?: Record<string, unknown>; }) => Promise<T>",
+        "refreshTrustedOrigins": "() => Promise<void>",
+        "server": "<T = unknown>(endpoint: string, input?: { body?: Record<string, unknown>; query?: Record<string, unknown>; }) => Promise<T>"
+      },
+      "ExtensionCaptcha": {
+        "verify": "(answer: string, request: { ip: string | null; }) => Promise<boolean>",
+        "widget": "() => Promise<import(\"./plugin\").CaptchaWidgetConfig | null>"
+      },
+      "ExtensionContext": {
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "records": "import(\"./plugin\").RecordsApi",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }"
+      },
+      "ExtensionEmail": {
+        "action?": "{ label: string; url: string; } | undefined",
+        "body?": "string | undefined",
+        "locale?": "string | undefined",
+        "replyTo?": "string | undefined",
+        "richText?": "unknown",
+        "subject": "string",
+        "to": "string",
+        "unsubscribe?": "{ url: string; oneClick?: string; label?: string; } | undefined"
+      },
+      "ExtensionMail": {
+        "ready": "() => Promise<boolean>",
+        "send": "(email: import(\"./plugin\").ExtensionEmail) => Promise<void>",
+        "sendBatch": "(emails: import(\"./plugin\").ExtensionEmail[]) => Promise<import(\"./plugin\").ExtensionMailResult[]>"
+      },
+      "ExtensionMailResult": "type { ok: true; } | { ok: false; error: string; }",
+      "ExtensionRoute": "type ({ access: \"public\"; reason: string; } | { access: \"authenticated\"; } | { access: \"permission\"; permission: import(\"../core/authz/permissions\").Permission; }) & { method: import(\"./plugin\").HttpMethod; path: string; body?: B; query?: Q; fresh?: boolean; apiKey?: boolean; audit?: string; rateLimit?: { window: number; max: number; }; root?: boolean; handler(context: import(\"./plugin\").ExtensionRouteContext<import(\"zod\").output<B>, import(\"zod\").output<Q>>): unknown; }",
+      "ExtensionRouteContext": {
+        "auditTarget": "(type: string, id: string, metadata?: Record<string, unknown>) => void",
+        "auth": "import(\"./plugin\").ExtensionAuth",
+        "body": "B",
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "ip": "string | null",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "params": "Record<string, string>",
+        "principal": "import(\"./plugin\").Principal",
+        "query": "Q",
+        "records": "import(\"./plugin\").RecordsApi",
+        "request": "Request",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }",
+        "tools": "import(\"./plugin\").ExtensionTools"
+      },
+      "ExtensionSchema": {
+        "describe": "(slug: string) => Promise<import(\"./plugin\").CollectionShape | null>",
+        "languages": "() => Promise<import(\"./plugin\").SiteLanguages>"
+      },
+      "ExtensionScope": {
+        "bind": "<A extends unknown[], R>(work: (...args: A) => R) => (...args: A) => R",
+        "data": "{ usage(value: string): Promise<import(\"./plugin\").ScopeUsage>; export(value: string): Promise<{ path: string; name: string; cleanup(): Promise<void>; }>; import(value: string, file: string): Promise<{ records: number; files: number; }>; purge(value: string): Promise<{ records: number; files: number; }>; }",
+        "forgetLimits": "(value?: string) => Promise<void>",
+        "siteUrl": "() => Promise<string | null>",
+        "value": "() => string | null"
+      },
+      "ExtensionSettings": {
+        "get": "() => Promise<Record<string, unknown>>"
+      },
+      "ExtensionTools": {
+        "call": "(name: string, input: unknown) => Promise<unknown>",
+        "list": "() => Promise<import(\"./plugin\").ToolInfo[]>",
+        "roles": "() => Promise<Array<{ name: string; label: string; description?: string; scope: \"instance\" | \"scoped\"; }>>",
+        "withRole": "(role: string) => Promise<import(\"./plugin\").ExtensionTools>"
+      },
+      "ExtensionUser": {
+        "email": "string",
+        "id": "string",
+        "locale": "string",
+        "name": "string"
+      },
+      "ExtensionUsers": {
+        "findByEmail": "(email: string) => Promise<import(\"./plugin\").ExtensionUser | null>",
+        "get": "(userId: string) => Promise<import(\"./plugin\").ExtensionUser | null>",
+        "getValues": "(userId: string) => Promise<Record<string, unknown> | null>",
+        "setValues": "(userId: string, values: Record<string, unknown>) => Promise<void>"
+      },
+      "FieldLabels": {
+        "descriptions?": "Record<string, string> | undefined",
+        "labels?": "Record<string, string> | undefined",
+        "options?": "Record<string, Record<string, string>> | undefined"
+      },
+      "Formatters": {
+        "formatDate": "(value: Date | string | number, style?: \"short\" | \"medium\" | \"long\") => string",
+        "formatList": "(items: string[], type?: \"conjunction\" | \"disjunction\") => string",
+        "formatNumber": "(value: number, options?: Intl.NumberFormatOptions) => string",
+        "formatRelative": "(value: Date | string | number, now?: Date) => string",
+        "t": "import(\"./plugin\").Translate"
+      },
+      "HOOK_EVENTS": "readonly import(\"./plugin\").HookEvent[]",
+      "HookCollection": {
+        "id": "number",
+        "name": "string",
+        "slug": "string"
+      },
+      "HookEvent": "type import(\"./plugin\").AfterEvent | import(\"./plugin\").BeforeEvent | keyof import(\"./plugin\").LifecycleData",
+      "HookMap": {
+        "auth.afterSignIn?": "import(\"./plugin\").LifecycleHook<\"auth.afterSignIn\"> | undefined",
+        "auth.afterSignOut?": "import(\"./plugin\").LifecycleHook<\"auth.afterSignOut\"> | undefined",
+        "auth.afterSignUp?": "import(\"./plugin\").LifecycleHook<\"auth.afterSignUp\"> | undefined",
+        "file.afterDelete?": "import(\"./plugin\").LifecycleHook<\"file.afterDelete\"> | undefined",
+        "file.afterReplace?": "import(\"./plugin\").LifecycleHook<\"file.afterReplace\"> | undefined",
+        "file.afterUpload?": "import(\"./plugin\").LifecycleHook<\"file.afterUpload\"> | undefined",
+        "plugin.afterInstall?": "import(\"./plugin\").LifecycleHook<\"plugin.afterInstall\"> | undefined",
+        "plugin.afterUpgrade?": "import(\"./plugin\").LifecycleHook<\"plugin.afterUpgrade\"> | undefined",
+        "record.afterCreate?": "import(\"./plugin\").AfterHook | undefined",
+        "record.afterDelete?": "import(\"./plugin\").AfterHook | undefined",
+        "record.afterUpdate?": "import(\"./plugin\").AfterHook | undefined",
+        "record.beforeCreate?": "import(\"./plugin\").BeforeHook | undefined",
+        "record.beforeDelete?": "import(\"./plugin\").BeforeHook | undefined",
+        "record.beforeUpdate?": "import(\"./plugin\").BeforeHook | undefined",
+        "schema.afterCreate?": "import(\"./plugin\").LifecycleHook<\"schema.afterCreate\"> | undefined",
+        "schema.afterDelete?": "import(\"./plugin\").LifecycleHook<\"schema.afterDelete\"> | undefined",
+        "schema.afterUpdate?": "import(\"./plugin\").LifecycleHook<\"schema.afterUpdate\"> | undefined"
+      },
+      "HttpError": "typeof import(\"./plugin\").HttpError",
+      "HttpMethod": "type \"GET\" | \"POST\" | \"PUT\" | \"PATCH\" | \"DELETE\"",
+      "JobDefinition": {
+        "cron": "string",
+        "handler": "(context: import(\"./plugin\").ExtensionContext, run: import(\"./plugin\").JobRunInfo) => void | Promise<void>",
+        "name": "string",
+        "perScope?": "boolean | undefined"
+      },
+      "JobRunInfo": {
+        "deadline": "number | null",
+        "timeLeft": "() => number"
+      },
+      "LIFECYCLE_EVENTS": "readonly (keyof import(\"./plugin\").LifecycleData)[]",
+      "LifecycleData": {
+        "auth.afterSignIn": "{ user: { id: string; }; }",
+        "auth.afterSignOut": "{ user: { id: string | null; }; }",
+        "auth.afterSignUp": "{ user: { id: string; email: string; }; }",
+        "file.afterDelete": "{ file: { id: string; name: string; type: string; size: number; createdById: string | null; }; }",
+        "file.afterReplace": "{ file: { id: string; name: string; type: string; size: number; createdById: string | null; }; }",
+        "file.afterUpload": "{ file: { id: string; name: string; type: string; size: number; createdById: string | null; }; }",
+        "plugin.afterInstall": "{ plugin: { name: string; version: string; }; }",
+        "plugin.afterUpgrade": "{ plugin: { name: string; version: string; }; previousVersion: string; }",
+        "schema.afterCreate": "{ collection: import(\"./plugin\").HookCollection; }",
+        "schema.afterDelete": "{ collection: Pick<import(\"./plugin\").HookCollection, \"id\" | \"slug\">; }",
+        "schema.afterUpdate": "{ collection: import(\"./plugin\").HookCollection; }"
+      },
+      "LifecycleEvent": "type keyof import(\"./plugin\").LifecycleData",
+      "LifecycleHook": "type (context: import(\"./plugin\").LifecycleHookContext<E>) => void | Promise<void>",
+      "LifecycleHookContext": {
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "data": "import(\"./plugin\").LifecycleData[E]",
+        "event": "E",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "records": "import(\"./plugin\").RecordsApi",
+        "schema": "import(\"./plugin\").ExtensionSchema",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }"
+      },
+      "mergeMessagesByLanguage": "(...sources: Array<Readonly<Record<string, import(\"./plugin\").Messages>> | undefined | null>) => Record<string, import(\"./plugin\").Messages>",
+      "Messages": "type { [id: string]: string | import(\"use-intl/core\").AbstractIntlMessages; }",
+      "MessageValues": "type { [x: string]: string | number | boolean | Date | null | undefined; }",
+      "PLUGIN_API_VERSION": "1",
+      "PluginBlock": {
+        "category?": "string | undefined",
+        "defaults?": "Record<string, unknown> | undefined",
+        "fields": "{ name: string; type: string; config?: Record<string, unknown>; }[]",
+        "icon?": "string | undefined",
+        "label": "string",
+        "labels?": "Record<string, string> | undefined",
+        "name": "string",
+        "previewImage?": "string | undefined",
+        "upgrades?": "Record<number, (value: Record<string, unknown>) => Record<string, unknown>> | undefined"
+      },
+      "PluginCommand": {
+        "describe": "string",
+        "name": "string",
+        "run": "(context: import(\"./plugin\").PluginCommandContext) => void | Promise<void>",
+        "usage": "string"
+      },
+      "PluginCommandApi": {
+        "fetch": "(path: string, init?: { method?: string; body?: BodyInit; headers?: Record<string, string>; }) => Promise<Response>",
+        "request": "<T = unknown>(path: string, init?: { method?: string; body?: unknown; headers?: Record<string, string>; }) => Promise<T>",
+        "url": "string"
+      },
+      "PluginCommandContext": {
+        "api": "import(\"./plugin\").PluginCommandApi",
+        "args": "string[]",
+        "fail": "(message: string) => never",
+        "flags": "Record<string, string | boolean | undefined>",
+        "log": "(line: string) => void"
+      },
+      "PluginMigration": {
+        "id": "string",
+        "up": "(context: import(\"./plugin\").PluginMigrationContext) => void | Promise<void>"
+      },
+      "PluginMigrationContext": {
+        "captcha": "import(\"./plugin\").ExtensionCaptcha",
+        "mail": "import(\"./plugin\").ExtensionMail",
+        "records": "import(\"./plugin\").RecordsApi",
+        "roles": "{ ensure(role: import(\"./plugin\").PluginRole): Promise<boolean>; }",
+        "schema": "import(\"./plugin\").ExtensionSchema & { apply(document: unknown): Promise<void>; addFields(collection: string, fields: Array<{ name: string; type: string; config?: Record<string, unknown>; }>): Promise<boolean>; addOptions(collection: string, field: string, options: Array<{ label: string; value: string; }>): Promise<boolean>; addLabels(collection: string, labels: Record<string, string>): Promise<boolean>; addFieldLabels(collection: string, fields: Record<string, import(\"./plugin\").FieldLabels>): Promise<boolean>; addBlockFieldLabels(block: string, fields: Record<string, import(\"./plugin\").FieldLabels>): Promise<boolean>; }",
+        "scope": "import(\"./plugin\").ExtensionScope",
+        "settings": "import(\"./plugin\").ExtensionSettings",
+        "store": "import(\"./plugin\").PluginStore",
+        "system": "{ records: import(\"./plugin\").RecordsApi; users: import(\"./plugin\").ExtensionUsers; }"
+      },
+      "PluginRecordGrant": "type \"list\" | \"create\" | \"update\" | \"delete\" | \"read\" | \"publish\" | \"list:own\" | \"read:own\" | \"update:own\" | \"delete:own\"",
+      "PluginRole": {
+        "description?": "string | undefined",
+        "label": "string",
+        "name": "string",
+        "permissions?": "import(\"../core/authz/permissions\").Permission[] | undefined",
+        "records?": "Record<string, import(\"./plugin\").PluginRecordGrant[]> | undefined",
+        "scope?": "\"instance\" | \"scoped\" | undefined"
+      },
+      "PluginSettingField": "type SettingBase & ({ type: \"boolean\"; default: boolean; } | { type: \"number\"; default: number; min?: number; max?: number; integer?: boolean; } | { type: \"text\"; default: string; maxLength?: number; multiline?: boolean; suggestions?: import(\"./plugin\").SettingSuggestions; } | { type: \"select\"; default: string; options: Array<{ label: string; value: string; }>; } | { type: \"secret\"; env?: string; default?: undefined; })",
+      "PluginSettings": {
+        "fields": "import(\"./plugin\").PluginSettingField[]",
+        "permission?": "import(\"../core/authz/permissions\").Permission | undefined"
+      },
+      "PluginStore": {
+        "claim": "(key: string, value: unknown) => Promise<boolean>",
+        "delete": "(key: string) => Promise<void>",
+        "deleteMany": "(prefix: string, options?: { before?: string; }) => Promise<number>",
+        "get": "(key: string) => Promise<unknown>",
+        "list": "(prefix?: string, options?: import(\"./plugin\").StoreListOptions) => Promise<Array<{ key: string; value: unknown; }>>",
+        "set": "(key: string, value: unknown) => Promise<void>"
+      },
+      "Principal": "type import(\"./plugin\").AnonymousPrincipal | import(\"./plugin\").UserPrincipal | import(\"./plugin\").ApiKeyPrincipal",
+      "RecordsApi": {
+        "create": "(collection: string, data: import(\"./plugin\").RecordValues, options?: { owner?: string; locale?: string; }) => Promise<import(\"./plugin\").RecordValues>",
+        "delete": "(collection: string, id: number) => Promise<void>",
+        "get": "(collection: string, id: number, query?: Record<string, unknown>) => Promise<import(\"./plugin\").RecordValues>",
+        "list": "(collection: string, query?: Record<string, unknown>) => Promise<{ page: number; perPage: number; totalItems: number; totalPages: number; items: import(\"./plugin\").RecordValues[]; }>",
+        "update": "{ (collection: string, id: number, data: import(\"./plugin\").RecordValues, options?: { locale?: string; }): Promise<import(\"./plugin\").RecordValues>; (collection: string, id: number, data: import(\"./plugin\").RecordValues, options: { if: Record<string, string | number | boolean | null>; locale?: string; }): Promise<import(\"./plugin\").RecordValues | null>; }"
+      },
+      "RecordValues": "type { [x: string]: unknown; }",
+      "ScopeLimits": {
+        "records?": "number | null | undefined",
+        "requestsPerMinute?": "number | null | undefined",
+        "storageBytes?": "number | null | undefined"
+      },
+      "ScopeProvider": {
+        "everyValue?": "import(\"../core/authz/permissions\").Permission | undefined",
+        "exists": "(value: string, context: import(\"./plugin\").ExtensionContext) => boolean | Promise<boolean>",
+        "initial": "(context: import(\"./plugin\").ExtensionContext) => string | Promise<string>",
+        "label": "string",
+        "limits?": "((value: string, context: import(\"./plugin\").ExtensionContext) => import(\"./plugin\").ScopeLimits | null | Promise<import(\"./plugin\").ScopeLimits | null>) | undefined",
+        "resolve": "(request: import(\"./plugin\").ScopeRequest, context: import(\"./plugin\").ExtensionContext) => string | null | Promise<string | null>",
+        "rolesFor": "(principal: import(\"./plugin\").UserPrincipal | import(\"./plugin\").ApiKeyPrincipal, value: string, context: import(\"./plugin\").ExtensionContext) => string[] | Promise<string[]>",
+        "scopeNewCollections?": "boolean | undefined",
+        "siteUrl?": "((value: string, context: import(\"./plugin\").ExtensionContext) => string | null | Promise<string | null>) | undefined",
+        "values": "(context: import(\"./plugin\").ExtensionContext) => string[] | Promise<string[]>"
+      },
+      "ScopeRequest": {
+        "headers": "Headers",
+        "host": "string | null",
+        "path": "string",
+        "principal": "import(\"./plugin\").Principal"
+      },
+      "ScopeUsage": {
+        "files": "number",
+        "records": "number",
+        "storageBytes": "number"
+      },
+      "Segment": {
+        "id": "string",
+        "text": "string"
+      },
+      "SettingSuggestions": {
+        "route": "string",
+        "with?": "string[] | undefined"
+      },
+      "SiteLanguages": {
+        "defaultLocale": "string",
+        "href": "(path: string, locale: string) => string",
+        "items": "{ code: string; label: string; direction: \"ltr\" | \"rtl\"; }[]"
+      },
+      "siteWords": "(words: import(\"./plugin\").SiteWords | null | undefined) => import(\"./plugin\").Formatters",
+      "SiteWords": {
+        "locale": "string",
+        "messages": "import(\"use-intl/core\").AbstractIntlMessages",
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+      },
+      "StoreListOptions": {
+        "before?": "string | undefined",
+        "limit?": "number | undefined",
+        "order?": "\"asc\" | \"desc\" | undefined"
+      },
+      "ToolAccess": "type { access: \"authenticated\"; } | { access: \"permission\"; permission: import(\"../core/authz/permissions\").Permission; }",
+      "ToolInfo": {
+        "description": "string",
+        "inputSchema": "Record<string, unknown>",
+        "name": "string",
+        "write": "boolean"
+      },
+      "Translate": "type (key: string, values?: import(\"./plugin\").MessageValues) => string",
+      "Translator": {
+        "label": "string",
+        "translate": "(segments: import(\"./plugin\").Segment[], options: { from: string; to: string; collection: string; }) => Promise<string[]>"
+      },
+      "UserPrincipal": {
+        "custom?": "Record<string, unknown> | undefined",
+        "kind": "\"user\"",
+        "permissions": "Set<string>",
+        "scope?": "string | null | undefined",
+        "session": "{ id: string; createdAt: Date; impersonatedBy: string | null; }",
+        "user": "import(\"./plugin\").AuthUser"
+      },
+      "wordsIn": "(byLanguage: Readonly<Record<string, import(\"./plugin\").Messages>>, locale: string | null | undefined) => import(\"./plugin\").Formatters"
+    },
+    "./proxy": {
+      "CmsProxyOptions": {
+        "proxy?": "HostProxy | undefined"
+      },
+      "createCmsProxy": "(cspAdditions: CspAdditions, options?: CmsProxyOptions) => (request: NextRequest, event: NextFetchEvent) => Promise<NextResponse<unknown>>",
+      "HostProxy": "type (request: NextRequest, event: NextFetchEvent) => Response | null | undefined | void | Promise<Response | null | undefined | void>",
+      "mergeCsp": "(...parts: CspAdditions[]) => CspAdditions"
+    },
+    "./public-pages": {
+      "createAccountPage": "(config: CmsConfig, admin?: AdminConfig) => ({ searchParams }: { searchParams: Promise<{ denied?: string; enroll?: string; }>; }) => Promise<import(\"react\").JSX.Element>",
+      "createAuthPage": "(config: CmsConfig) => ({ params, searchParams }: AuthPageProps) => Promise<import(\"react\").JSX.Element>",
+      "createLandingPage": "(config: CmsConfig) => () => Promise<void>"
+    },
+    "./react": {
+      "apiPath": "(path?: string) => string",
+      "authPath": "(page: string) => string",
+      "BlockComponents": "type { [x: string]: import(\"react\").ComponentType<import(\"./react\").BlockProps>; }",
+      "BlockProps": {
+        "block": "import(\"../core/blocks/limits\").Block",
+        "components": "import(\"./react\").BlockComponents",
+        "fallback?": "import(\"react\").ComponentType<import(\"./react\").BlockProps> | undefined",
+        "renderers?": "import(\"./react\").Renderers | undefined",
+        "theme?": "import(\"./react\").Renderers | undefined",
+        "value": "Record<string, unknown>",
+        "words?": "import(\"./plugin\").SiteWords | undefined"
+      },
+      "CaptchaWidget": "({ config, onAnswer, attempt }: import(\"./react\").CaptchaWidgetProps) => import(\"react\").JSX.Element",
+      "CaptchaWidgetConfig": {
+        "global": "string",
+        "options?": "Record<string, string | number | boolean> | undefined",
+        "provider": "string",
+        "script": "string",
+        "siteKey": "string"
+      },
+      "CaptchaWidgetProps": {
+        "attempt?": "number | undefined",
+        "config": "import(\"./plugin\").CaptchaWidgetConfig",
+        "onAnswer": "(answer: string | null) => void"
+      },
+      "contentLocale": "(words: import(\"./plugin\").SiteWords | null | undefined) => string | undefined",
+      "defineRenderers": "(renderers: import(\"./react\").Renderers) => import(\"./react\").Renderers",
+      "EveryPageInfo": {
+        "collection": "string | null",
+        "locale": "string | null",
+        "path": "string",
+        "preview": "boolean",
+        "recordId": "number | null"
+      },
+      "EveryPageProps": {
+        "page": "import(\"./plugin\").EveryPageInfo",
+        "props": "P",
+        "words?": "import(\"./plugin\").SiteWords | undefined"
+      },
+      "FieldRenderProps": {
+        "type": "string",
+        "value": "unknown"
+      },
+      "FieldValue": "({ type, value, theme, renderers }: import(\"./react\").FieldRenderProps & { theme?: import(\"./react\").Renderers; renderers?: import(\"./react\").Renderers; }) => import(\"react\").ReactElement<import(\"./react\").FieldRenderProps, string | import(\"react\").JSXElementConstructor<any>> | null",
+      "LoadedPage": "type { type: \"redirect\"; to: string; status: number; } | { type: \"missing\"; } | { type: \"page\"; template: string; source: import(\"./react\").TemplateSource; accent?: string; props: Omit<import(\"./theme\").TemplateProps<Options>, \"stream\">; everyPage?: { page: import(\"./plugin\").EveryPageInfo; props: Record<string, unknown>; }; }",
+      "LoadOptions": {
+        "host?": "string | null | undefined",
+        "page?": "string | number | string[] | null | undefined",
+        "previewToken?": "string | null | undefined",
+        "renderers?": "import(\"./react\").Renderers | undefined"
+      },
+      "loadSitePage": "<Options>(theme: import(\"./react\").SiteTheme<Options>, reader: import(\"./server\").SiteReader, requested: string, { previewToken, renderers, page: requestedPage, host }?: import(\"./react\").LoadOptions) => Promise<import(\"./react\").LoadedPage<Options>>",
+      "Menu": "({ items, className }: { items: unknown; className?: string; }) => import(\"react\").JSX.Element | null",
+      "MenuLink": {
+        "id": "string",
+        "type": "string",
+        "value": "Record<string, unknown>"
+      },
+      "mergeRenderers": "(parts: import(\"./react\").Renderers[]) => import(\"./react\").Renderers",
+      "pageHref": "(path: string, page: number) => string",
+      "pageMetadata": "<Options>(theme: import(\"./react\").SiteTheme<Options>, loaded: Extract<import(\"./react\").LoadedPage<Options>, { type: \"page\"; }>, renderers?: import(\"./react\").Renderers) => { alternates?: { languages: { \"x-default\"?: string | undefined; }; } | undefined; title: string; description: string | undefined; }",
+      "pageNumber": "(value: import(\"./react\").LoadOptions[\"page\"]) => number",
+      "Pager": "({ list, path, previous, next, className, words }: { list: import(\"./theme\").SiteList | undefined; path: string; previous?: string; next?: string; className?: string; words?: import(\"./plugin\").SiteWords; }) => import(\"react\").JSX.Element | null",
+      "pickWords": "(words: import(\"./plugin\").SiteWords, ...names: string[]) => import(\"./plugin\").SiteWords",
+      "pluginRenderers": "(plugin: string, renderers: import(\"./react\").Renderers) => import(\"./react\").Renderers",
+      "PreviewedRecord": {
+        "collection": "string",
+        "path": "string | null",
+        "record": "import(\"./theme\").SiteRecord"
+      },
+      "Renderers": {
+        "blocks?": "import(\"./react\").BlockComponents | undefined",
+        "everyPage?": "Record<string, import(\"react\").ComponentType<import(\"./react\").EveryPageProps<Record<string, unknown>>>> | undefined",
+        "expand?": "Record<string, string> | undefined",
+        "fields?": "Record<string, import(\"react\").ComponentType<import(\"./react\").FieldRenderProps>> | undefined",
+        "messages?": "Record<string, import(\"use-intl/core\").AbstractIntlMessages> | undefined",
+        "queries?": "Record<string, Record<string, import(\"./theme\").ThemeQuery>> | undefined",
+        "templates?": "Record<string, import(\"react\").ComponentType<import(\"./theme\").TemplateProps<unknown>>> | undefined"
+      },
+      "ResolvedAddress": "type { type: \"record\"; collection: string; path: string; record: import(\"./theme\").SiteRecord; locale?: string; alternates?: Record<string, string>; } | { type: \"redirect\"; to: string; status: number; }",
+      "RichText": "({ doc }: { doc: unknown; }) => import(\"react\").JSX.Element | null",
+      "SiteLocalization": {
+        "defaultLocale": "string",
+        "items": "{ code: string; label: string; direction: \"ltr\" | \"rtl\"; }[]",
+        "messages?": "Record<string, Record<string, unknown>> | undefined",
+        "routing": "import(\"../core/i18n/routing\").SiteRouting"
+      },
+      "sitePath": "(words: import(\"./plugin\").SiteWords | null | undefined, path: string) => string",
+      "SiteReader": {
+        "branding": "() => Promise<import(\"./theme\").SiteBranding & { accentColor?: string; }>",
+        "everyPage?": "((page: import(\"./plugin\").EveryPageInfo) => Promise<Record<string, unknown>>) | undefined",
+        "fileUrl": "(id: string, thumb?: \"100x100\" | \"300x300\" | \"800x0\") => string",
+        "get": "(collection: string, id: number, options?: Record<string, unknown>) => Promise<import(\"./theme\").SiteRecord | null>",
+        "list": "(collection: string, options?: Record<string, unknown>) => Promise<import(\"./theme\").SiteList>",
+        "localization?": "(() => Promise<import(\"./react\").SiteLocalization | null>) | undefined",
+        "preview": "(token: string) => Promise<import(\"./react\").PreviewedRecord | null>",
+        "resolve": "(path: string, options?: { locale?: string; }) => Promise<import(\"./react\").ResolvedAddress | null>",
+        "singleton": "(collection: string, options?: { locale?: string; }) => Promise<import(\"./theme\").SiteRecord | null>",
+        "viewer?": "(() => Promise<import(\"./server\").SiteReader | null>) | undefined"
+      },
+      "SiteTheme": {
+        "components": "import(\"./theme\").ThemeComponents<Options>",
+        "manifest": "import(\"./theme\").ThemeManifest<Options>"
+      },
+      "siteWords": "(words: import(\"./plugin\").SiteWords | null | undefined) => import(\"./plugin\").Formatters",
+      "SiteWords": {
+        "locale": "string",
+        "messages": "import(\"use-intl/core\").AbstractIntlMessages",
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+      },
+      "StreamField": "({ blocks, components, theme, renderers, fallback, words }: { blocks: unknown; components?: import(\"./react\").BlockComponents; theme?: import(\"./react\").Renderers; renderers?: import(\"./react\").Renderers; fallback?: import(\"react\").ComponentType<import(\"./react\").BlockProps>; words?: import(\"./plugin\").SiteWords; }) => (import(\"react\").ReactElement<import(\"./react\").BlockProps, string | import(\"react\").JSXElementConstructor<any>> | null)[] | null",
+      "TemplateSource": "type \"theme\" | \"plugin\"",
+      "ThemedPage": "<Options>({ theme, page, renderers, exitPreviewHref }: { theme: import(\"./react\").SiteTheme<Options>; page: Extract<import(\"./react\").LoadedPage<Options>, { type: \"page\"; }>; renderers?: import(\"./react\").Renderers; exitPreviewHref?: string; }) => import(\"react\").JSX.Element"
+    },
+    "./routes": {
+      "createApiHandlers": "(config: CmsConfig) => Record<(typeof METHODS)[number] | \"HEAD\" | \"OPTIONS\", Handler>"
+    },
+    "./sdk": {
+      "Alternates": "type { [x: string]: string; }",
+      "AuthSession": {
+        "session": "{ [field: string]: unknown; id: string; expiresAt: string; }",
+        "user": "{ [field: string]: unknown; id: string; email: string; name: string; emailVerified: boolean; image?: string | null; }"
+      },
+      "BatchRequest": {
+        "body?": "Record<string, unknown> | undefined",
+        "method": "\"POST\" | \"PATCH\" | \"DELETE\"",
+        "url": "string"
+      },
+      "ClientOptions": {
+        "apiKey?": "string | undefined",
+        "apiPath?": "string | undefined",
+        "credentials?": "RequestCredentials | undefined",
+        "fetch?": "{ (input: RequestInfo | URL, init?: RequestInit): Promise<Response>; (input: string | URL | Request, init?: RequestInit): Promise<Response>; } | undefined",
+        "locale?": "string | undefined",
+        "onToken?": "((token: string | null) => void) | undefined",
+        "token?": "string | undefined",
+        "url?": "string | undefined"
+      },
+      "CmsClient": "typeof CmsClient",
+      "CmsError": "typeof CmsError",
+      "createClient": "<C extends object = Record<string, Record<string, unknown>>>(options?: ClientOptions) => CmsClient<C>",
+      "ListOptions": {
+        "expand?": "string | undefined",
+        "fallback?": "\"none\" | \"chain\" | undefined",
+        "fields?": "string | undefined",
+        "filter?": "string | undefined",
+        "locale?": "string | undefined",
+        "page?": "number | undefined",
+        "perPage?": "number | undefined",
+        "search?": "string | undefined",
+        "skipTotal?": "boolean | undefined",
+        "sort?": "string | undefined"
+      },
+      "LocaleOptions": {
+        "fallback?": "\"none\" | \"chain\" | undefined",
+        "locale?": "string | undefined"
+      },
+      "Localized": "type { [x: string]: T; }",
+      "Page": {
+        "items": "T[]",
+        "page": "number",
+        "perPage": "number",
+        "totalItems": "number",
+        "totalPages": "number"
+      },
+      "ReaderOptions": {
+        "revalidate?": "number | false | undefined",
+        "tags?": "string[] | undefined"
+      },
+      "RealtimeEvent": {
+        "action": "\"create\" | \"update\" | \"delete\"",
+        "record": "T"
+      },
+      "ResolveResult": "type { type: \"record\"; collection: string; path: string; record: T; locale?: string; alternates?: Alternates; } | { type: \"redirect\"; to: string; status: number; }",
+      "SignInResult": "type { token: string | null; user: AuthSession[\"user\"]; redirect?: boolean; url?: string; } | { twoFactorRedirect: true; }",
+      "verifyWebhook": "(secret: string, header: string | null, body: string, { toleranceSeconds, now }?: { toleranceSeconds?: number; now?: number; }) => Promise<boolean>",
+      "ViewOptions": {
+        "expand?": "string | undefined",
+        "fallback?": "\"none\" | \"chain\" | undefined",
+        "fields?": "string | undefined",
+        "locale?": "string | undefined"
+      },
+      "WriteValues": {
+        "status?": "\"draft\" | \"published\" | undefined"
+      }
+    },
+    "./search": {
+      "callEngine": "(engine: string, url: string | URL, { allow, ...init }?: import(\"./search\").EngineCall, fetcher?: typeof fetch) => Promise<Record<string, unknown>>",
+      "defineSearchAdapter": "(adapter: import(\"./search\").SearchAdapter) => import(\"./search\").SearchAdapter",
+      "documentId": "(collectionId: number, recordId: number, locale?: string) => string",
+      "EngineCall": {
+        "allow?": "number[] | undefined",
+        "body?": "string | undefined",
+        "headers?": "Record<string, string> | undefined",
+        "method?": "\"GET\" | \"POST\" | \"PUT\" | \"PATCH\" | \"DELETE\" | undefined"
+      },
+      "engineUrl": "(engine: string, value: string | undefined) => string",
+      "quoted": "(value: string) => string",
+      "recordIds": "(hits: unknown, limit: number, pick?: (hit: Record<string, unknown>) => unknown) => number[]",
+      "SearchAdapter": {
+        "index": "(document: import(\"./search\").SearchDocument) => Promise<void>",
+        "name": "string",
+        "remove": "(collectionId: number, recordId: number, locale?: string) => Promise<void>",
+        "removeCollection": "(collectionId: number) => Promise<void>",
+        "search": "(collectionId: number, query: string, limit: number, locale?: string, scope?: string) => Promise<number[]>",
+        "setup?": "(() => Promise<void>) | undefined",
+        "target?": "string | undefined"
+      },
+      "SearchDocument": {
+        "collectionId": "number",
+        "locale?": "string | undefined",
+        "recordId": "number",
+        "scope?": "string | undefined",
+        "text": "string"
+      },
+      "SearchEngineError": "typeof import(\"./search\").SearchEngineError"
+    },
+    "./server": {
+      "CollectionGrid": "({ collection: slug, recordPath, filter, title, description, createAction }: import(\"./server\").CollectionGridProps) => Promise<import(\"react\").JSX.Element>",
+      "CollectionGridProps": {
+        "collection": "string",
+        "createAction?": "import(\"react\").ReactNode",
+        "description?": "string | undefined",
+        "filter?": "string | undefined",
+        "recordPath?": "string | undefined",
+        "title?": "string | undefined"
+      },
+      "createSite": "(config: import(\"./config\").CmsConfig) => import(\"./server\").SiteReader",
+      "getT": "(userId?: string | null) => Promise<{ t: import(\"./plugin\").Translate; formatDate(value: Date | string | number, style?: \"short\" | \"medium\" | \"long\"): string; formatNumber(value: number, options?: Intl.NumberFormatOptions): string; formatList(items: string[], type?: \"conjunction\" | \"disjunction\"): string; formatRelative(value: Date | string | number, now?: Date): string; locale: string; direction: \"ltr\" | \"rtl\"; }>",
+      "SiteReader": {
+        "branding": "() => Promise<import(\"./theme\").SiteBranding & { accentColor?: string; }>",
+        "everyPage?": "((page: import(\"./plugin\").EveryPageInfo) => Promise<Record<string, unknown>>) | undefined",
+        "fileUrl": "(id: string, thumb?: \"100x100\" | \"300x300\" | \"800x0\") => string",
+        "get": "(collection: string, id: number, options?: Record<string, unknown>) => Promise<import(\"./theme\").SiteRecord | null>",
+        "list": "(collection: string, options?: Record<string, unknown>) => Promise<import(\"./theme\").SiteList>",
+        "localization?": "(() => Promise<import(\"./react\").SiteLocalization | null>) | undefined",
+        "preview": "(token: string) => Promise<import(\"./react\").PreviewedRecord | null>",
+        "resolve": "(path: string, options?: { locale?: string; }) => Promise<import(\"./react\").ResolvedAddress | null>",
+        "singleton": "(collection: string, options?: { locale?: string; }) => Promise<import(\"./theme\").SiteRecord | null>",
+        "viewer?": "(() => Promise<import(\"./server\").SiteReader | null>) | undefined"
+      }
+    },
+    "./site": {
+      "createSiteMetadata": "(config: CmsConfig, { components, renderers }: SiteEntry) => ({ params, searchParams }: PageProps) => Promise<Metadata>",
+      "createSitePage": "(config: CmsConfig, { components, renderers }: SiteEntry) => ({ params, searchParams }: PageProps) => Promise<ReactNode>"
+    },
+    "./start": {
+      "startCms": "(config: CmsConfig) => Promise<void>"
+    },
+    "./storage": {
+      "BackupConfig": {
+        "adapter": "import(\"./storage\").StorageAdapter",
+        "encrypt?": "boolean | undefined",
+        "files?": "boolean | undefined",
+        "keep?": "number | undefined",
+        "schedule?": "string | undefined"
+      },
+      "bodyBlob": "(body: import(\"../core/storage/types\").ByteStream, contentType: string) => Promise<Blob>",
+      "callProvider": "(provider: string, action: string, url: string | URL, { allow, ...init }?: import(\"./storage\").ProviderCall, fetcher?: typeof fetch) => Promise<Response>",
+      "localStorage": "({ dir, allowInProduction }: import(\"../core/storage/local\").LocalStorageOptions) => import(\"./storage\").StorageAdapter",
+      "ProviderCall": {
+        "allow?": "number[] | undefined",
+        "body?": "string | Blob | FormData | URLSearchParams | ReadableStream<Uint8Array<ArrayBufferLike>> | undefined",
+        "headers?": "Record<string, string> | undefined",
+        "method?": "\"GET\" | \"POST\" | \"PUT\" | \"DELETE\" | undefined"
+      },
+      "rangeOf": "(response: Response, range: import(\"../core/storage/types\").ByteRange | undefined) => import(\"../core/storage/types\").ByteStream",
+      "s3Storage": "(options: import(\"../core/storage/s3\").S3StorageOptions) => import(\"./storage\").StorageAdapter",
+      "StorageAdapter": {
+        "assertUsable?": "(() => void) | undefined",
+        "delete": "(key: string) => Promise<void>",
+        "get": "(key: string, range?: import(\"../core/storage/types\").ByteRange) => Promise<import(\"../core/storage/types\").ByteStream | null>",
+        "list?": "((prefix: string) => Promise<import(\"./storage\").StoredObject[]>) | undefined",
+        "name": "string",
+        "put": "(key: string, body: import(\"../core/storage/types\").ByteStream, options: import(\"../core/storage/types\").PutOptions) => Promise<void>",
+        "signedUrl?": "((key: string, options: import(\"../core/storage/types\").SignedUrlOptions) => Promise<string>) | undefined",
+        "thumbnailUrl?": "((key: string, options: import(\"./storage\").ThumbnailOptions) => Promise<string>) | undefined",
+        "thumbnailUrlsExpire?": "boolean | undefined"
+      },
+      "StorageConfig": {
+        "adapter": "import(\"./storage\").StorageAdapter",
+        "maxUploadBytes?": "number | undefined",
+        "previous?": "import(\"./storage\").StorageAdapter[] | undefined"
+      },
+      "StorageProviderError": "typeof import(\"./storage\").StorageProviderError",
+      "StoredObject": {
+        "key": "string",
+        "size": "number"
+      },
+      "ThumbnailOptions": {
+        "expiresIn": "number",
+        "fit": "\"cover\" | \"inside\"",
+        "focus?": "{ x: number; y: number; } | undefined",
+        "height?": "number | undefined",
+        "width": "number"
+      }
+    },
+    "./styles/*": "files",
+    "./testing": {
+      "FieldTestCases": {
+        "config?": "Record<string, unknown> | undefined",
+        "invalid?": "unknown[] | undefined",
+        "refs?": "{ value: unknown; expected: import(\"./fields\").FieldRefs; }[] | undefined",
+        "upgrades?": "{ from: number; value: unknown; expected?: unknown; }[] | undefined",
+        "valid": "unknown[]"
+      },
+      "testFieldDefinition": "(definition: import(\"./fields\").FieldDefinition, cases: import(\"./testing\").FieldTestCases) => string[]"
+    },
+    "./theme": {
+      "AdminTheme": {
+        "logo?": "string | undefined",
+        "name": "string",
+        "tokens": "{ light?: import(\"./theme\").AdminTokens; dark?: import(\"./theme\").AdminTokens; }"
+      },
+      "AdminTokens": "type { [x: string]: string; }",
+      "contentLocale": "(words: import(\"./plugin\").SiteWords | null | undefined) => string | undefined",
+      "defineAdminTheme": "(theme: import(\"./theme\").AdminTheme) => import(\"./theme\").AdminTheme",
+      "defineTheme": "<Options = unknown>(theme: import(\"./theme\").ThemeManifest<Options>) => import(\"./theme\").ThemeManifest<Options>",
+      "defineThemeComponents": "<Options = unknown>(components: import(\"./theme\").ThemeComponents<Options>) => import(\"./theme\").ThemeComponents<Options>",
+      "FileText": {
+        "alt": "string",
+        "caption": "string",
+        "credit": "string"
+      },
+      "LayoutProps": {
+        "branding": "import(\"./theme\").SiteBranding",
+        "children": "import(\"react\").ReactNode",
+        "collection": "string | null",
+        "data": "Record<string, import(\"./theme\").SiteList>",
+        "fileFocus": "(id: string) => import(\"../core/theme/define\").FileFocus",
+        "fileText": "(id: string) => import(\"./theme\").FileText",
+        "fileUrl": "(id: string, thumb?: \"100x100\" | \"300x300\" | \"800x0\") => string",
+        "formatDate": "(value: Date | string | number, style?: \"short\" | \"medium\" | \"long\") => string",
+        "formatNumber": "(value: number, options?: Intl.NumberFormatOptions) => string",
+        "globals": "Record<string, import(\"./theme\").SiteRecord | null>",
+        "language": "import(\"./theme\").SiteLanguage | null",
+        "options": "Options",
+        "path": "string",
+        "preview": "boolean",
+        "record": "import(\"./theme\").SiteRecord | null",
+        "stream": "import(\"./theme\").StreamProps",
+        "t": "import(\"./plugin\").Translate",
+        "words?": "import(\"./plugin\").SiteWords | undefined"
+      },
+      "pickWords": "(words: import(\"./plugin\").SiteWords, ...names: string[]) => import(\"./plugin\").SiteWords",
+      "SiteBranding": {
+        "logoUrl": "string",
+        "name": "string"
+      },
+      "SiteLanguage": {
+        "alternates": "Record<string, string>",
+        "defaultLocale": "string",
+        "direction": "\"ltr\" | \"rtl\"",
+        "href": "(path: string, locale?: string) => string",
+        "locale": "string",
+        "locales": "{ code: string; label: string; direction: \"ltr\" | \"rtl\"; }[]"
+      },
+      "SiteList": {
+        "items": "import(\"./theme\").SiteRecord[]",
+        "page": "number",
+        "perPage": "number",
+        "totalItems": "number",
+        "totalPages": "number"
+      },
+      "sitePath": "(words: import(\"./plugin\").SiteWords | null | undefined, path: string) => string",
+      "SiteRecord": {
+        "id": "number"
+      },
+      "siteWords": "(words: import(\"./plugin\").SiteWords | null | undefined) => import(\"./plugin\").Formatters",
+      "SiteWords": {
+        "locale": "string",
+        "messages": "import(\"use-intl/core\").AbstractIntlMessages",
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+      },
+      "StreamProps": {
+        "fallback?": "import(\"react\").ComponentType<import(\"./react\").BlockProps> | undefined",
+        "renderers?": "import(\"./react\").Renderers | undefined",
+        "theme": "import(\"./react\").Renderers",
+        "words?": "import(\"./plugin\").SiteWords | undefined"
+      },
+      "TemplateProps": {
+        "branding": "import(\"./theme\").SiteBranding",
+        "collection": "string | null",
+        "data": "Record<string, import(\"./theme\").SiteList>",
+        "fileFocus": "(id: string) => import(\"../core/theme/define\").FileFocus",
+        "fileText": "(id: string) => import(\"./theme\").FileText",
+        "fileUrl": "(id: string, thumb?: \"100x100\" | \"300x300\" | \"800x0\") => string",
+        "formatDate": "(value: Date | string | number, style?: \"short\" | \"medium\" | \"long\") => string",
+        "formatNumber": "(value: number, options?: Intl.NumberFormatOptions) => string",
+        "globals": "Record<string, import(\"./theme\").SiteRecord | null>",
+        "language": "import(\"./theme\").SiteLanguage | null",
+        "options": "Options",
+        "path": "string",
+        "preview": "boolean",
+        "record": "import(\"./theme\").SiteRecord | null",
+        "stream": "import(\"./theme\").StreamProps",
+        "t": "import(\"./plugin\").Translate",
+        "words?": "import(\"./plugin\").SiteWords | undefined"
+      },
+      "THEME_API_VERSION": "1",
+      "ThemeComponents": {
+        "blocks?": "Record<string, import(\"react\").ComponentType<import(\"./react\").BlockProps>> | undefined",
+        "defaultLocale?": "string | undefined",
+        "fields?": "Record<string, import(\"react\").ComponentType<import(\"./react\").FieldRenderProps>> | undefined",
+        "fontClassName?": "string | undefined",
+        "layouts?": "({ default?: import(\"react\").ComponentType<import(\"./theme\").LayoutProps<Options>>; } & Record<string, import(\"react\").ComponentType<import(\"./theme\").LayoutProps<Options>>>) | undefined",
+        "messages?": "Record<string, import(\"use-intl/core\").AbstractIntlMessages> | undefined",
+        "metadata?": "((props: import(\"./theme\").TemplateProps<Options>) => import(\"./theme\").ThemeMetadata) | undefined",
+        "templates": "Record<string, import(\"react\").ComponentType<import(\"./theme\").TemplateProps<Options>>>"
+      },
+      "ThemeManifest": {
+        "apiVersion": "number",
+        "expand?": "Record<string, string> | undefined",
+        "name": "string",
+        "options?": "{ schema: import(\"zod\").ZodType; value: Options; } | undefined",
+        "queries?": "Record<string, Record<string, import(\"./theme\").ThemeQuery>> | undefined",
+        "render": "string",
+        "requires?": "{ cms?: string; plugins?: string[]; } | undefined",
+        "schema?": "unknown",
+        "singletons?": "string[] | undefined",
+        "tokens?": "Partial<Record<\"color\" | \"font\" | \"space\" | \"radius\" | \"size\" | \"shadow\", Record<string, string>>> | undefined",
+        "version": "string"
+      },
+      "ThemeMetadata": {
+        "description?": "string | undefined",
+        "title?": "string | undefined"
+      },
+      "ThemeQuery": {
+        "collection": "string",
+        "expand?": "string | undefined",
+        "fields?": "string | undefined",
+        "filter?": "string | undefined",
+        "paged?": "boolean | undefined",
+        "perPage?": "number | undefined",
+        "sort?": "string | undefined",
+        "urls?": "\"1\" | undefined",
+        "viewer?": "boolean | undefined"
+      },
+      "ThemeTokens": {
+        "color?": "Record<string, string> | undefined",
+        "font?": "Record<string, string> | undefined",
+        "radius?": "Record<string, string> | undefined",
+        "shadow?": "Record<string, string> | undefined",
+        "size?": "Record<string, string> | undefined",
+        "space?": "Record<string, string> | undefined"
+      }
+    }
+  }
+}

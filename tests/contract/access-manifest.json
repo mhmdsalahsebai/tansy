@@ -1,0 +1,999 @@
+{
+  "DELETE /api/account/api-keys/[id]": {
+    "access": "permission",
+    "permission": "api-key:revoke",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "api_key.revoke"
+  },
+  "DELETE /api/block-layouts/[id]": {
+    "access": "permission",
+    "permission": "collection:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "block_layout.delete"
+  },
+  "DELETE /api/block-types/[id]": {
+    "access": "permission",
+    "permission": "collection:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "block_type.delete"
+  },
+  "DELETE /api/collections": {
+    "access": "permission",
+    "permission": "collection:delete",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "collection.bulk_delete"
+  },
+  "DELETE /api/collections/[id]": {
+    "access": "permission",
+    "permission": "collection:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.delete"
+  },
+  "DELETE /api/collections/[id]/content/[contentId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.delete"
+  },
+  "DELETE /api/collections/[id]/content/[contentId]/draft": {
+    "access": "permission",
+    "permission": "record:update",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.draft_discard"
+  },
+  "DELETE /api/collections/[id]/content/[contentId]/review": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.review_withdraw"
+  },
+  "DELETE /api/collections/[id]/content/[contentId]/translations/[locale]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.translation.delete"
+  },
+  "DELETE /api/collections/[id]/records/[recordId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.delete"
+  },
+  "DELETE /api/collections/[id]/trash/[trashId]": {
+    "access": "permission",
+    "permission": "record:delete",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "record.purge"
+  },
+  "DELETE /api/ext/[...path]": {
+    "access": "public",
+    "reason": "dispatches to extension routes, each guarded by its own declared policy",
+    "fresh": false,
+    "apiKey": true
+  },
+  "DELETE /api/field-presets/[id]": {
+    "access": "permission",
+    "permission": "collection:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "field_preset.delete"
+  },
+  "DELETE /api/files/[id]": {
+    "access": "permission",
+    "permission": "file:delete",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.delete"
+  },
+  "DELETE /api/redirects/[id]": {
+    "access": "permission",
+    "permission": "redirect:manage",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "redirect.delete"
+  },
+  "DELETE /api/roles/[name]": {
+    "access": "permission",
+    "permission": "role:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "role.delete"
+  },
+  "DELETE /api/settings/locales/[code]": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "locale.delete"
+  },
+  "DELETE /api/users/[id]": {
+    "access": "permission",
+    "permission": "user:delete",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.delete"
+  },
+  "DELETE /api/users/[id]/ban": {
+    "access": "permission",
+    "permission": "user:ban",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "user.unban"
+  },
+  "DELETE /api/users/[id]/sessions": {
+    "access": "permission",
+    "permission": "session:revoke",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "user.revoke_sessions"
+  },
+  "DELETE /api/webhooks/[id]": {
+    "access": "permission",
+    "permission": "webhook:manage",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "webhook.delete"
+  },
+  "GET /api/account/api-keys": {
+    "access": "permission",
+    "permission": "api-key:list",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/audit": {
+    "access": "permission",
+    "permission": "audit:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/auth-config": {
+    "access": "public",
+    "reason": "Sign-in screens need the enabled methods before authentication",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/auth/[...all]": {
+    "access": "public",
+    "reason": "better-auth endpoints authenticate themselves",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/background": {
+    "access": "public",
+    "reason": "Runs background work for a cron service; authorized by Authorization: Bearer CRON_SECRET, checked in constant time",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/block-layouts": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/block-types": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/block-types/[id]": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/collections": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/draft": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/review": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/revisions": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/revisions/[revisionId]": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/revisions/[revisionId]/diff": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/content/[contentId]/schedule": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/import": {
+    "access": "permission",
+    "permission": "record:create",
+    "scope": "collection",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/collections/[id]/localization": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/collections/[id]/records": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/records/[recordId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/collections/[id]/translations/xliff": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "translation.export"
+  },
+  "GET /api/ext/[...path]": {
+    "access": "public",
+    "reason": "dispatches to extension routes, each guarded by its own declared policy",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/extensions/[name]/settings": {
+    "access": "permission",
+    "permission": "dashboard:access",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/field-presets": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/field-types": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/files": {
+    "access": "permission",
+    "permission": "file:list",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/files/[id]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/files/[id]/info": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/files/[id]/text": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/health": {
+    "access": "public",
+    "reason": "Liveness for a load balancer or orchestrator, which can't hold credentials. It reads nothing and says only that the server is up and for how long.",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/locales": {
+    "access": "public",
+    "reason": "Sites list their languages to visitors.",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/me": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/metrics": {
+    "access": "permission",
+    "permission": "setting:read",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/preview": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/preview/enter": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/preview/exit": {
+    "access": "public",
+    "reason": "Only clears the visitor's own preview cookie. It reads nothing and can only take access away.",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/ready": {
+    "access": "public",
+    "reason": "Readiness for a load balancer or orchestrator, which can't hold credentials. It answers with one boolean per check and no detail.",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/realtime": {
+    "access": "public",
+    "reason": "Opens an empty event stream. Nothing is sent until a subscription passes the record rules.",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/redirects": {
+    "access": "permission",
+    "permission": "redirect:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/resolve": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/reviews": {
+    "access": "permission",
+    "permission": "dashboard:access",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/roles": {
+    "access": "permission",
+    "permission": "role:list",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/schema/export": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/schema/openapi": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/schema/types": {
+    "access": "permission",
+    "permission": "collection:read",
+    "fresh": false,
+    "apiKey": true
+  },
+  "GET /api/settings/auth": {
+    "access": "permission",
+    "permission": "setting:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/settings/locales": {
+    "access": "permission",
+    "permission": "setting:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/settings/site": {
+    "access": "permission",
+    "permission": "setting:site",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/translators": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/trash": {
+    "access": "permission",
+    "permission": "dashboard:access",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/user-fields": {
+    "access": "permission",
+    "permission": "user:get",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/users": {
+    "access": "permission",
+    "permission": "user:list",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/users/[id]": {
+    "access": "permission",
+    "permission": "user:get",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/users/[id]/fields": {
+    "access": "permission",
+    "permission": "user:get",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/users/[id]/sessions": {
+    "access": "permission",
+    "permission": "session:list",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/webhooks": {
+    "access": "permission",
+    "permission": "webhook:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "GET /api/webhooks/[id]/deliveries": {
+    "access": "permission",
+    "permission": "webhook:read",
+    "fresh": false,
+    "apiKey": false
+  },
+  "PATCH /api/account/fields": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "account.update_fields"
+  },
+  "PATCH /api/collections/[id]": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "collection.update"
+  },
+  "PATCH /api/collections/[id]/content/[contentId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.update"
+  },
+  "PATCH /api/collections/[id]/records/[recordId]": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.update"
+  },
+  "PATCH /api/ext/[...path]": {
+    "access": "public",
+    "reason": "dispatches to extension routes, each guarded by its own declared policy",
+    "fresh": false,
+    "apiKey": true
+  },
+  "PATCH /api/files/[id]/focus": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.focus"
+  },
+  "PATCH /api/files/[id]/text": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.describe"
+  },
+  "PATCH /api/redirects/[id]": {
+    "access": "permission",
+    "permission": "redirect:manage",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "redirect.update"
+  },
+  "PATCH /api/settings/locales/[code]": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "locale.update"
+  },
+  "PATCH /api/users/[id]": {
+    "access": "permission",
+    "permission": "user:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.update"
+  },
+  "PATCH /api/webhooks/[id]": {
+    "access": "permission",
+    "permission": "webhook:manage",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "webhook.update"
+  },
+  "POST /api/account/api-keys": {
+    "access": "permission",
+    "permission": "api-key:create",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "api_key.create"
+  },
+  "POST /api/auth/[...all]": {
+    "access": "public",
+    "reason": "better-auth endpoints authenticate themselves",
+    "fresh": false,
+    "apiKey": false
+  },
+  "POST /api/batch": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.batch"
+  },
+  "POST /api/block-layouts": {
+    "access": "permission",
+    "permission": "collection:create",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "block_layout.create"
+  },
+  "POST /api/block-types": {
+    "access": "permission",
+    "permission": "collection:create",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "block_type.create"
+  },
+  "POST /api/collections": {
+    "access": "permission",
+    "permission": "collection:create",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "collection.create"
+  },
+  "POST /api/collections/[id]/content": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.create"
+  },
+  "POST /api/collections/[id]/content/[contentId]/draft/publish": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.draft_publish"
+  },
+  "POST /api/collections/[id]/content/[contentId]/preview-token": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "record.preview"
+  },
+  "POST /api/collections/[id]/content/[contentId]/review": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.review_submit"
+  },
+  "POST /api/collections/[id]/content/[contentId]/review/approve": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update",
+      "record:publish"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.review_approve"
+  },
+  "POST /api/collections/[id]/content/[contentId]/review/changes": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:publish"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.review_changes"
+  },
+  "POST /api/collections/[id]/content/[contentId]/revisions/[revisionId]/restore": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.restore"
+  },
+  "POST /api/collections/[id]/content/[contentId]/translate": {
+    "access": "permission",
+    "permission": "record:read",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "record.translate"
+  },
+  "POST /api/collections/[id]/import": {
+    "access": "permission",
+    "permission": "record:create",
+    "scope": "collection",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.import"
+  },
+  "POST /api/collections/[id]/records": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.create"
+  },
+  "POST /api/collections/[id]/translations/xliff": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "translation.import"
+  },
+  "POST /api/collections/[id]/trash/[trashId]/restore": {
+    "access": "permission",
+    "permission": "record:delete",
+    "scope": "record",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "record.restore"
+  },
+  "POST /api/collections/views": {
+    "access": "permission",
+    "permission": "collection:manage-views",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.create_view"
+  },
+  "POST /api/ext/[...path]": {
+    "access": "public",
+    "reason": "dispatches to extension routes, each guarded by its own declared policy",
+    "fresh": false,
+    "apiKey": true
+  },
+  "POST /api/extensions/hook-deliveries/[id]/retry": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "hook.retry"
+  },
+  "POST /api/field-presets": {
+    "access": "permission",
+    "permission": "collection:create",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "field_preset.create"
+  },
+  "POST /api/files/[id]/token": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.token"
+  },
+  "POST /api/files/upload": {
+    "access": "permission",
+    "permission": "file:create",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.upload"
+  },
+  "POST /api/mcp": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "mcp.call"
+  },
+  "POST /api/realtime": {
+    "access": "rules",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "realtime.subscribe"
+  },
+  "POST /api/redirects": {
+    "access": "permission",
+    "permission": "redirect:manage",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "redirect.create"
+  },
+  "POST /api/roles": {
+    "access": "permission",
+    "permission": "role:create",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "role.create"
+  },
+  "POST /api/schema/import": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "schema.import"
+  },
+  "POST /api/settings/auth/test-email": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "settings.test_email"
+  },
+  "POST /api/settings/locales": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "locale.create"
+  },
+  "POST /api/setup": {
+    "access": "public",
+    "reason": "First-run superadmin creation; authorized by the one-time token from the server log",
+    "fresh": false,
+    "apiKey": false
+  },
+  "POST /api/users": {
+    "access": "permission",
+    "permission": "user:create",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "user.create"
+  },
+  "POST /api/users/[id]/ban": {
+    "access": "permission",
+    "permission": "user:ban",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "user.ban"
+  },
+  "POST /api/users/[id]/impersonate": {
+    "access": "permission",
+    "permission": "user:impersonate",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.impersonate"
+  },
+  "POST /api/webhooks": {
+    "access": "permission",
+    "permission": "webhook:manage",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "webhook.create"
+  },
+  "PUT /api/account/locale": {
+    "access": "authenticated",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "account.update_locale"
+  },
+  "PUT /api/block-types/[id]": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "block_type.update"
+  },
+  "PUT /api/collections/[id]/content/[contentId]/draft": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.draft_save"
+  },
+  "PUT /api/collections/[id]/content/[contentId]/schedule": {
+    "access": "permission",
+    "permission": [
+      "record:read",
+      "record:update"
+    ],
+    "scope": "record",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "record.schedule"
+  },
+  "PUT /api/collections/[id]/fields": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.update_fields"
+  },
+  "PUT /api/collections/[id]/localization": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.update_localization"
+  },
+  "PUT /api/collections/[id]/rules": {
+    "access": "permission",
+    "permission": "collection:manage-rules",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.update_rules"
+  },
+  "PUT /api/collections/[id]/scope": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.update_scope"
+  },
+  "PUT /api/collections/[id]/view": {
+    "access": "permission",
+    "permission": "collection:manage-views",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "collection.update_view"
+  },
+  "PUT /api/ext/[...path]": {
+    "access": "public",
+    "reason": "dispatches to extension routes, each guarded by its own declared policy",
+    "fresh": false,
+    "apiKey": true
+  },
+  "PUT /api/extensions/[name]/settings": {
+    "access": "permission",
+    "permission": "dashboard:access",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "plugin.settings_update"
+  },
+  "PUT /api/field-presets/[id]": {
+    "access": "permission",
+    "permission": "collection:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "field_preset.update"
+  },
+  "PUT /api/files/[id]/bytes": {
+    "access": "permission",
+    "permission": "file:update",
+    "fresh": false,
+    "apiKey": true,
+    "audit": "file.replace"
+  },
+  "PUT /api/roles/[name]": {
+    "access": "permission",
+    "permission": "role:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "role.update"
+  },
+  "PUT /api/settings/auth": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "settings.update"
+  },
+  "PUT /api/settings/localization": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "localization.update"
+  },
+  "PUT /api/settings/site": {
+    "access": "permission",
+    "permission": "setting:site",
+    "fresh": false,
+    "apiKey": false,
+    "audit": "setting.site_update"
+  },
+  "PUT /api/user-fields": {
+    "access": "permission",
+    "permission": "setting:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user_fields.update"
+  },
+  "PUT /api/users/[id]/fields": {
+    "access": "permission",
+    "permission": "user:update",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.update_fields"
+  },
+  "PUT /api/users/[id]/password": {
+    "access": "permission",
+    "permission": "user:set-password",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.set_password"
+  },
+  "PUT /api/users/[id]/role": {
+    "access": "permission",
+    "permission": "user:set-role",
+    "fresh": true,
+    "apiKey": false,
+    "audit": "user.set_role"
+  }
+}
