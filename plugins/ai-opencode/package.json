@@ -1,0 +1,36 @@
+{
+  "name": "@tansy/ai-opencode",
+  "version": "0.1.0",
+  "description": "OpenCode for @tansy/ai: Claude, GPT, Gemini and open models with one OpenCode key.",
+  "keywords": [
+    "tansy",
+    "tansy-ai-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/ai-opencode"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/ai": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.105",
+    "@ai-sdk/google": "^4.0.121",
+    "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/openai-compatible": "^3.0.92"
+  }
+}

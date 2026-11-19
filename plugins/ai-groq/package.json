@@ -1,0 +1,33 @@
+{
+  "name": "@tansy/ai-groq",
+  "version": "0.1.0",
+  "description": "Groq for @tansy/ai.",
+  "keywords": [
+    "tansy",
+    "tansy-ai-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/ai-groq"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/ai": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@ai-sdk/groq": "^4.0.84"
+  }
+}

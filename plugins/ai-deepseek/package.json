@@ -1,0 +1,33 @@
+{
+  "name": "@tansy/ai-deepseek",
+  "version": "0.1.0",
+  "description": "DeepSeek for @tansy/ai.",
+  "keywords": [
+    "tansy",
+    "tansy-ai-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/ai-deepseek"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/ai": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@ai-sdk/deepseek": "^3.0.87"
+  }
+}

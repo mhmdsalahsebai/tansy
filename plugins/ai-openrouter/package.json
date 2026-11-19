@@ -1,0 +1,33 @@
+{
+  "name": "@tansy/ai-openrouter",
+  "version": "0.1.0",
+  "description": "OpenRouter for @tansy/ai: hundreds of models, free ones included, with one key.",
+  "keywords": [
+    "tansy",
+    "tansy-ai-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/ai-openrouter"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/ai": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.92"
+  }
+}
