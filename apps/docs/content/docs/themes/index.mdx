@@ -1,0 +1,37 @@
+---
+title: Themes
+description: A theme is a package that renders your site's pages from the CMS's content, with no code in your app beyond one route.
+---
+
+A theme turns content into a site. It is a package you name in `tansy.config.ts`, and it renders the
+pages for the collections' URL patterns: lists, single records, search, and whatever else it
+declares. Your app keeps one route for the site, and the theme does the rest.
+
+```ts title="tansy.config.ts"
+import { defineCms } from "tansy/config";
+import { magazine } from "@tansy/theme-magazine";
+
+export default defineCms({ theme: magazine() });
+```
+
+The same theme package renders a headless front end over the API, so a site on its own domain or
+its own deployment needs no second implementation.
+
+## The themes that ship
+
+<Cards>
+  <Card title="Magazine" href="/docs/themes/magazine" description="A magazine look for the Blog plugin: image cards, a sidebar, search, long-form posts." />
+  <Card title="Storefront" href="/docs/themes/storefront" description="The Shop plugin's pages redesigned, styled with Tailwind compiled inside the theme." />
+  <Card title="Dispatch" href="/docs/themes/dispatch" description="A newsletter's site: the sign-up form up front and posts as numbered issues." />
+  <Card title="Academy" href="/docs/themes/academy" description="A school's site for the LMS: the catalogue, course pages and the plans that open them." />
+</Cards>
+
+`@tansy/theme-blank` is a starting point with no opinions, and `@tansy/theme-blog` a small
+worked example. Both are in the repository under `themes/`.
+
+## Writing your own
+
+<Cards>
+  <Card title="Write and publish a theme" href="/docs/guides/themes" description="From `tansy theme new` to a package on npm." />
+  <Card title="Theme API" href="/docs/extending#themes" description="Pages, queries, slots, messages and styling." />
+</Cards>

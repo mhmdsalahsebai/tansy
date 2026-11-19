@@ -1,0 +1,70 @@
+---
+title: Community plugins
+description: Plugins and themes published by other people, how the dashboard finds them, and how to get yours listed.
+---
+
+Community plugins are ordinary npm packages. They use the same extension API as the first-party
+ones, so nothing about them is second class: a community plugin can add collections, field types,
+blocks, permissions, dashboard pages, routes and jobs exactly as `@tansy/blog` does.
+
+## Finding them
+
+Every listed package carries an npm keyword:
+
+| Keyword | What it marks |
+|---|---|
+| `tansy-plugin` | A plugin |
+| `tansy-theme` | A theme |
+
+Searching npm for either keyword finds all of them. Inside the CMS, **Dashboard → Extensions**
+links to the same list, read from npm and shown read-only beside the plugins you have installed.
+
+<Callout type="warn">
+Being listed is not an endorsement, and the dashboard says so on the page. A plugin runs as trusted
+server code with full access to the database: read what you install, and prefer packages whose
+source you can see.
+</Callout>
+
+## Getting yours listed
+
+Publish it with the keyword, and the list picks it up on its own. There is no registry to apply to
+and no pull request to open here.
+
+```json title="package.json"
+{
+  "name": "@your-scope/cms-acme",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": ["tansy-plugin"],
+  "peerDependencies": { "tansy": "^1.0.0" }
+}
+```
+
+`tansy plugin new` and `tansy theme new` scaffold a package that already has the right keyword, entry
+points and peer dependency. The whole path from scaffold to published package is in
+[Write and publish a plugin](/docs/guides/plugins) and
+[Write and publish a theme](/docs/guides/themes).
+
+## What makes a good one
+
+Nothing below is enforced, but it is what keeps a plugin usable in other people's sites:
+
+- **Name it for what it does.** `cms-` or `tansy-` in the package name, and a one-line
+  description that says which feature it adds.
+- **Declare `tansy` as a peer dependency**, with the range you actually support, so npm warns
+  instead of installing two copies of the CMS.
+- **Own your prefix.** Collection names, permission names, settings keys, routes and CSS class
+  names all share one namespace with every other plugin. Prefix them with your plugin's name.
+- **Ship your migrations.** A plugin that needs tables or fields declares them, so `tansy migrate`
+  sets the site up and upgrades it later.
+- **Translate your words.** Anything the dashboard shows goes through the plugin's `messages`, so
+  a site in another language doesn't suddenly read in English.
+- **Say what access it needs.** Routes declare their policy, and record reads go through the
+  CMS's own checks. A plugin that works around them is a security hole in someone else's site.
+- **Pick a licence**, and say which versions of tansy you have tested against.
+
+## Asking for help
+
+The repository's issues and discussions are the place for questions about the extension API, and
+for reporting a gap you had to work around — a plugin that needs a private API is a missing piece
+of the public one.

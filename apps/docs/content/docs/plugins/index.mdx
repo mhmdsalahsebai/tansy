@@ -1,0 +1,77 @@
+---
+title: Plugins
+description: Every feature beyond the content core is a plugin on the same public extension API you would use yourself, plus one small adapter package per outside provider.
+---
+
+A plugin is a package you add to `plugins: []` in `tansy.config.ts`. It can add collections, field
+types, blocks, permissions, dashboard pages, API routes, jobs, record hooks and components on the
+site's pages. The plugins below are first-party, but they use nothing private: anything they do,
+your own plugin can do. See [Extending Tansy](/docs/extending) for the API and
+[Write and publish a plugin](/docs/guides/plugins) for the walkthrough.
+
+```ts title="tansy.config.ts"
+import { defineCms } from "tansy/config";
+import { blog } from "@tansy/blog";
+import { forms } from "@tansy/forms";
+
+export default defineCms({
+  plugins: [
+    blog({ siteUrl: "https://example.com", comments: "moderated" }),
+    forms({ notify: "owner@example.com" }),
+  ],
+});
+```
+
+Removing a line removes the feature. Plugins declare their own schema migrations, so adding one
+and running `tansy migrate` is all a feature needs.
+
+## Features
+
+<Cards>
+  <Card title="Blog" href="/docs/plugins/blog" description="Posts, categories, tags, authors, comments with moderation, RSS and Atom feeds." />
+  <Card title="LMS" href="/docs/plugins/lms" description="Courses, lessons, enrollments, progress, quizzes and verifiable certificates." />
+  <Card title="Shop" href="/docs/plugins/shop" description="Products, variants, stock, cart, shipping, orders and fulfilment." />
+  <Card title="Payments" href="/docs/plugins/payments" description="Plans, subscriptions and purchases as CMS data. Money stays with the provider." />
+  <Card title="Subscriptions" href="/docs/plugins/subscriptions" description="One dashboard section for plans, members and gating content behind them." />
+  <Card title="Forms" href="/docs/plugins/forms" description="Contact forms built from field blocks, with spam protection and email to the owner." />
+  <Card title="Newsletter" href="/docs/plugins/newsletter" description="Subscribers with double opt-in, one-click unsubscribe, and campaigns in batches." />
+  <Card title="Email" href="/docs/plugins/email" description="Send the site's mail through an email API instead of SMTP." />
+  <Card title="CAPTCHA" href="/docs/plugins/captcha" description="Turnstile, hCaptcha or reCAPTCHA on sign-in and on any plugin's forms." />
+  <Card title="AI" href="/docs/plugins/ai" description="An assistant that writes, fills forms and creates content as the signed-in person." />
+  <Card title="Analytics" href="/docs/plugins/analytics" description="Cookieless page views on the dashboard, or sent on to an analytics service." />
+  <Card title="Request logs" href="/docs/plugins/request-logs" description="Every API request, on the dashboard and shipped to storage or a log service." />
+</Cards>
+
+## Provider adapters
+
+Several plugins keep the provider out of the core package: you add the feature plugin and one small
+adapter for the service you use. Swapping services is swapping one package.
+
+| Plugin | Adapters |
+|---|---|
+| [AI](/docs/plugins/ai) | `ai-openai`, `ai-anthropic`, `ai-google`, `ai-mistral`, `ai-groq`, `ai-deepseek`, `ai-xai`, `ai-openrouter`, `ai-gateway`, `ai-opencode`, `ai-commandcode`, `ai-openai-compatible` |
+| [Email](/docs/plugins/email) | `email-resend`, `email-sendgrid`, `email-postmark`, `email-mailgun`, `email-brevo`, `email-ses` |
+| [Payments](/docs/plugins/payments) | `payments-stripe`, `payments-polar`, `payments-creem`, `payments-dodo`, `payments-commet` |
+| [CAPTCHA](/docs/plugins/captcha) | `captcha-turnstile`, `captcha-hcaptcha`, `captcha-recaptcha` |
+| [Analytics](/docs/plugins/analytics) | `analytics-plausible`, `analytics-umami`, `analytics-google`, `analytics-fathom`, `analytics-matomo` |
+| [File storage](/docs/guides/storage) | `storage-vercel-blob`, `storage-cloudinary`, `storage-uploadthing`, `storage-bunny` |
+| [Search](/docs/guides/search) | `search-meilisearch`, `search-typesense`, `search-algolia` |
+
+Every name above is scoped `@tansy/`.
+
+## Smaller plugins
+
+<Cards>
+  <Card title="SEO" href="/docs/plugins/seo" description="Title and description fields for search results, and a sitemap from your URL patterns." />
+  <Card title="Social sign-in" href="/docs/plugins/social-sign-in" description="Sign in with Google, GitHub and four more, each given its keys on the dashboard." />
+  <Card title="Pwned passwords" href="/docs/plugins/pwned-passwords" description="Refuses passwords found in known breaches. Only a hash prefix leaves the server." />
+  <Card title="Multi-tenancy" href="/docs/plugins/multi-tenant" description="Many sites or customers in one install, each seeing only its own records, files and domains." />
+</Cards>
+
+## Writing your own
+
+<Cards>
+  <Card title="Write and publish a plugin" href="/docs/guides/plugins" description="From `tansy plugin new` to a package on npm." />
+  <Card title="Extension API" href="/docs/extending" description="Field types, blocks, permissions, admin pages, routes, jobs and hooks." />
+  <Card title="Community plugins" href="/docs/plugins/community" description="Plugins by other people, and how to get yours listed." />
+</Cards>

@@ -1,0 +1,52 @@
+---
+title: Add it to an existing app
+description: Install the package into a Next.js app you already have; `tansy init` writes the entry files and never overwrites one of yours.
+---
+
+Tansy installs into any Next.js App Router project.
+
+<Callout type="warn">
+`tansy` is not on npm yet. Build the tarball from a clone of the repository with
+`npm run package -w tansy`, which writes `.release/tansy-<version>.tgz`, and install that
+file in place of the package name below.
+</Callout>
+
+```bash
+npx create-next-app@latest my-site   # or your own app
+cd my-site
+npm install tansy
+npx tansy init              # writes the entry files and a .env with new secrets
+npx tansy migrate
+npm run dev
+```
+
+`tansy init` never overwrites a file. Your root layout and home page move to `app/(site)/`, because
+the admin has its own root layout, and anything it can't change safely is printed as a step to do
+by hand. `npx tansy doctor` checks the result.
+
+The admin lands at `/dashboard` and the API at `/api`, and your own routes, such as `/api/hello`,
+keep working beside them. Choose other paths with:
+
+```bash
+npx tansy init --admin /admin --api /cms-api
+```
+
+## Adding a site
+
+`npx tansy init --site` adds a page that renders a theme, and the theme comes from `tansy.config.ts`:
+
+```ts
+import { defineCms } from "tansy/config";
+import { blog } from "@tansy/theme-blog";
+
+export default defineCms({ theme: blog({ tagline: "Field notes" }) });
+```
+
+See [Themes](/docs/guides/themes) for writing your own, and [Themes](/docs/themes/magazine) for the
+ones that ship.
+
+## The database
+
+SQLite is the default, and any Postgres works through `DATABASE_URL`. `tansy migrate` applies the
+migrations for whichever one you point it at. Changing databases later means exporting and
+importing your content, not switching a flag.

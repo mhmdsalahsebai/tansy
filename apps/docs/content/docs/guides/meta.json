@@ -1,0 +1,18 @@
+{
+  "title": "Guides",
+  "pages": [
+    "content",
+    "fields",
+    "localization",
+    "plugins",
+    "themes",
+    "search",
+    "storage",
+    "backups",
+    "background-work",
+    "production",
+    "operations",
+    "upgrading",
+    "limits"
+  ]
+}

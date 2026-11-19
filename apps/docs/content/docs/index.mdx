@@ -1,0 +1,63 @@
+---
+title: Introduction
+description: A self-hosted content backend that lives inside your own Next.js app, with collections, fields and access rules defined at runtime from its dashboard.
+---
+
+<Callout type="warn" title="Beta">
+Tansy is pre-1.0 and under active development. Any release can change anything — package names,
+commands, configuration keys, environment variables, database columns — in a patch release and
+without a deprecation period. Pin exact versions, read the changelog before every upgrade, and take
+a [backup](/docs/guides/backups) first. The promises in [upgrading](/docs/guides/upgrading) start at
+1.0.
+</Callout>
+
+Tansy is a content management system you install into a Next.js app as a package. It brings its
+own dashboard, REST API, authentication and authorization, and it keeps your content in your own
+database. Nothing is hosted for you, and nothing calls home.
+
+What makes it different from a headless CMS you run beside your app:
+
+- **One app.** The admin is at `/dashboard` and the API at `/api`, in the same Next.js app as your
+  pages. Your own routes keep working beside them. A separate front end over the API is still
+  supported if you want one.
+- **Runtime schema.** Collections, fields, blocks, URL patterns and access rules are defined on the
+  dashboard and take effect immediately. No migration, no redeploy, no code generation.
+- **Authorization as data.** Roles carry permissions, and per-collection rules decide which rows a
+  caller may read or write. The same rules apply to the API, the dashboard, realtime, files and the
+  site's own pages.
+- **Everything else is a plugin.** Blog, LMS, shop, payments, forms, newsletter, analytics, AI and
+  search engines are packages on the same public extension API you would use yourself.
+
+## Start here
+
+<Cards>
+  <Card title="Start a new project" href="/docs/getting-started/new-project" description="One command for the CMS and a site in one app." />
+  <Card title="Add it to an existing app" href="/docs/getting-started/existing-app" description="Install the package into a Next.js app you already have." />
+  <Card title="Run it with Docker" href="/docs/getting-started/docker" description="A container with SQLite or Postgres, no configuration." />
+  <Card title="Extending it" href="/docs/extending" description="Hook files, plugins, custom fields, themes and the SDK." />
+</Cards>
+
+## How content is modelled
+
+A **collection** is a kind of record: posts, products, courses, pages. Each collection has
+**fields** — text, rich text, numbers, dates, files, references, and any field type a plugin adds.
+A collection can be localized per language, versioned with drafts and scheduled publishing, and
+given a **URL pattern** so its records render as pages of your site.
+
+Access is decided in two layers. A **role** says what someone may do at all (`records:read`,
+`collections:write`, and so on), and a collection's **rules** say which rows that applies to —
+`status = "published"`, `author = @request.auth.id`, and the like. Rules are the only gate, so a
+record that nobody may read is invisible to the API, the dashboard, the site and search alike.
+
+## What ships with it
+
+| Area | What you get |
+|---|---|
+| Content | Collections, blocks, drafts, versions, scheduled publishing, review, localization, files |
+| Access | Users, roles, permissions, per-collection rules, two-factor, social sign-in |
+| Interfaces | Dashboard, REST API, realtime, webhooks, OpenAPI, MCP, a typed SDK |
+| Operations | Backups to any storage, jobs and queues, request logs, health endpoints, Docker images |
+| Extension | Hook files, plugins, custom field types, blocks, admin pages, themes |
+
+Read [Extending Tansy](/docs/extending) for the full extension reference, or the
+[guides](/docs/guides/content) for task-by-task walkthroughs.

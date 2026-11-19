@@ -1,0 +1,23 @@
+{
+  "title": "Plugins",
+  "pages": [
+    "index",
+    "blog",
+    "lms",
+    "shop",
+    "payments",
+    "subscriptions",
+    "forms",
+    "newsletter",
+    "email",
+    "captcha",
+    "ai",
+    "analytics",
+    "request-logs",
+    "seo",
+    "social-sign-in",
+    "pwned-passwords",
+    "multi-tenant",
+    "community"
+  ]
+}
