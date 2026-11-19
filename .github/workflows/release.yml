@@ -1,0 +1,79 @@
+name: Release
+
+# A tag publishes; workflow_dispatch does everything except the publish itself, so a release
+# can be rehearsed. Every package moves together: scripts/set-version.mjs sets the version,
+# and the tag has to agree with it.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The npm dist-tag to publish under.
+        default: latest
+        type: string
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: write
+      # The OIDC token npm needs to attach provenance to each tarball.
+      id-token: write
+    env:
+      TEST_DATABASE_URL: file:./.data/cms_release_test.db
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+
+      - name: The tag and the workspace agree on the version
+        if: github.event_name == 'push'
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./packages/cms/package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "The tag says $tag and the workspace is at $version. Run node scripts/set-version.mjs $tag." >&2
+            exit 1
+          fi
+
+      - run: npm run check
+      - name: Published metadata is up to date
+        run: node scripts/package-metadata.mjs --check
+      - name: Build every tarball
+        run: node scripts/build-packages.mjs
+      - name: Install one of them into a fresh app and run the security suite against it
+        run: npm run test:package
+
+      - name: Publish, as a rehearsal
+        if: github.event_name == 'workflow_dispatch'
+        run: node scripts/publish-packages.mjs --dry-run --tag "${{ inputs.tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        if: github.event_name == 'push'
+        run: node scripts/publish-packages.mjs --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Keep the tarballs with the run
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarballs
+          path: .release/*.tgz
+          retention-days: 14
+
+      - name: GitHub release, with the changelog's own words
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/release-notes.mjs "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+          gh release create "$GITHUB_REF_NAME" .release/*.tgz --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
