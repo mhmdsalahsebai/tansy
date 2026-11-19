@@ -1,0 +1,72 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			// run `npm run debug` and then launch this debug config
+			"name": "Next: Node",
+			"type": "node",
+			"request": "attach",
+			"skipFiles": ["<node_internals>/**"],
+			"cwd": "${workspaceFolder}",
+			"port": 9229
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Next: Chrome",
+			"url": "http://localhost:8100",
+			"webRoot": "${workspaceFolder}",
+			"sourceMaps": true,
+			"sourceMapPathOverrides": {
+				"webpack://_N_E/*": "${webRoot}/*"
+			}
+		},
+		//the next config is set to be used with "Next: Full Stack" only
+		{
+			"name": "Next Fullstack: Chrome",
+			"request": "launch",
+			"type": "pwa-chrome",
+			"url": "http://localhost:3000",
+			"webRoot": "${workspaceFolder}",
+			"runtimeArgs": [
+				"--disable-web-security",
+				"--disable-site-isolation-trials"
+			]
+		},
+		{
+			"name": "Next.js: debug full stack",
+			"type": "node-terminal",
+			"request": "launch",
+			"command": "npm run dev",
+			"serverReadyAction": {
+				"pattern": "started server on .+, url: (https?://.+)",
+				"uriFormat": "%s",
+				"action": "debugWithChrome"
+			}
+		},
+		{
+			"name": "Next Fullstack: Node",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run", "debug"],
+			"port": 9229,
+			"console": "integratedTerminal"
+		},
+		{
+			"name": "Prebuild",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run", "prebuild"],
+			"port": 9229,
+			"console": "integratedTerminal"
+		}
+	],
+	"compounds": [
+		{
+			"name": "Next: Full Stack",
+			"configurations": ["Next Fullstack: Node", "Next Fullstack: Chrome"]
+		}
+	]
+}

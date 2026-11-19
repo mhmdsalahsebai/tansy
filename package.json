@@ -1,0 +1,54 @@
+{
+  "name": "tansy-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "workspaces": [
+    "packages/*",
+    "apps/starter",
+    "apps/docs",
+    "plugins/*",
+    "themes/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "postinstall": "npm run prisma:generate -w tansy",
+    "dev": "npm run dev -w apps/starter",
+    "build": "npm run build -w apps/starter",
+    "start": "npm run start -w apps/starter",
+    "lint": "eslint .",
+    "db:migrate": "npm run db:migrate -w tansy --",
+    "tansy": "npm run tansy -w apps/starter --",
+    "test": "vitest run",
+    "test:integration": "node tests/integration/build.mjs && vitest run -c vitest.integration.config.ts",
+    "test:e2e": "NEXT_PUBLIC_TANSY_PREVIEW_URL=http://localhost:3459 npm run build && playwright test",
+    "test:package": "node tests/package/run.mjs",
+    "package": "node scripts/build-packages.mjs",
+    "package:metadata": "node scripts/package-metadata.mjs",
+    "publish:dry": "node scripts/publish-packages.mjs --dry-run",
+    "docs:sync": "npm run sync -w tansy-docs",
+    "docs:dev": "npm run dev -w tansy-docs",
+    "docs:build": "npm run build -w tansy-docs",
+    "check": "npm run --silent tansy -- sync && tsc --noEmit && eslint . && vitest run"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.6.6",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^10.14.0",
+    "eslint-config-next": "^16.4.5",
+    "typescript": "6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

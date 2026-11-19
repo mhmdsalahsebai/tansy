@@ -1,0 +1,66 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/sdk": [
+        "./packages/cms/sdk"
+      ],
+      "@/components/*": [
+        "./packages/cms/components/*"
+      ],
+      "@/core/*": [
+        "./packages/cms/core/*"
+      ],
+      "@/lib/*": [
+        "./packages/cms/lib/*"
+      ],
+      "@/sdk/*": [
+        "./packages/cms/sdk/*"
+      ],
+      "@/styles/*": [
+        "./packages/cms/styles/*"
+      ],
+      "@/types/*": [
+        "./packages/cms/types/*"
+      ],
+      "@/*": [
+        "./apps/starter/*"
+      ]
+    }
+  },
+  "include": [
+    "apps/starter/next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "apps/starter/.next/types/**/*.ts",
+    "apps/starter/.next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "apps/docs",
+    "**/.next/build",
+    "**/.next/server",
+    "**/.next/static"
+  ]
+}
