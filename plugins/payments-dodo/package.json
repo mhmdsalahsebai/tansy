@@ -1,0 +1,34 @@
+{
+  "name": "@tansy/payments-dodo",
+  "version": "0.1.0",
+  "description": "Dodo Payments for @tansy/payments, through better-auth's Dodo Payments plugin.",
+  "keywords": [
+    "tansy",
+    "tansy-payments-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/payments-dodo"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/payments": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@dodopayments/better-auth": "^1.6.7",
+    "dodopayments": "^2.62.0"
+  }
+}

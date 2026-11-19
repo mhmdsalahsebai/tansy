@@ -1,0 +1,34 @@
+{
+  "name": "@tansy/payments-creem",
+  "version": "0.1.0",
+  "description": "Creem for @tansy/payments, through better-auth's Creem plugin.",
+  "keywords": [
+    "tansy",
+    "tansy-payments-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/payments-creem"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/payments": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@creem_io/better-auth": "^2.0.5",
+    "creem": "^1.14.0"
+  }
+}

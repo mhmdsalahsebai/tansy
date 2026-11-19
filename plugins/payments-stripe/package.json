@@ -1,0 +1,34 @@
+{
+  "name": "@tansy/payments-stripe",
+  "version": "0.1.0",
+  "description": "Stripe for @tansy/payments, through better-auth's Stripe plugin.",
+  "keywords": [
+    "tansy",
+    "tansy-payments-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/payments-stripe"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/payments": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@better-auth/stripe": "^1.7.18",
+    "stripe": "^23.1.0"
+  }
+}

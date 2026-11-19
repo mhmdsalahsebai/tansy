@@ -1,0 +1,42 @@
+{
+  "name": "@tansy/shop",
+  "version": "0.1.0",
+  "description": "Turns tansy into an online shop: products, variants, stock, categories, a cart, shipping zones, orders and fulfilment. Takes payment through @tansy/payments.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/shop"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./admin": "./admin.tsx",
+    "./client": "./client.tsx",
+    "./render": "./render.tsx",
+    "./react": "./parts.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "*.css",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

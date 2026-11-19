@@ -1,0 +1,38 @@
+{
+  "name": "@tansy/subscriptions",
+  "version": "0.1.0",
+  "description": "Runs subscriptions from one section of the dashboard: plans, what they open, gating collections, and who's on which plan. Built on @tansy/payments.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/subscriptions"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./admin": "./admin.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

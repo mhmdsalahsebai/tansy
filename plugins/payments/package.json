@@ -1,0 +1,42 @@
+{
+  "name": "@tansy/payments",
+  "version": "0.1.0",
+  "description": "Sell anything on tansy: subscriptions and one-time purchases, through better-auth's payment plugins. Add a provider package, such as @tansy/payments-stripe.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/payments"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./react": "./react.tsx",
+    "./render": "./render.tsx",
+    "./provider": "./provider.ts"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "*.css",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "better-auth": "^1.7.18",
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

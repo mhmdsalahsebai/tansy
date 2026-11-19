@@ -1,0 +1,34 @@
+{
+  "name": "@tansy/payments-commet",
+  "version": "0.1.0",
+  "description": "Commet for @tansy/payments, through better-auth's Commet plugin.",
+  "keywords": [
+    "tansy",
+    "tansy-payments-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/payments-commet"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/payments": "^0.1.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "@commet/better-auth": "^8.1.0",
+    "@commet/node": "^9.10.0"
+  }
+}
