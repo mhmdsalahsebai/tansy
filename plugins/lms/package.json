@@ -1,0 +1,41 @@
+{
+  "name": "@tansy/lms",
+  "version": "0.1.0",
+  "description": "Turns tansy into a learning platform: courses, lessons, enrollments, progress, quizzes and certificates.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/lms"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./admin": "./admin.tsx",
+    "./client": "./client.tsx",
+    "./render": "./render.tsx"
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "*.css",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

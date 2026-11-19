@@ -1,0 +1,92 @@
+/* The LMS plugin's pages. Colours, fonts and widths come from the active theme's --site-* tokens, with plain fallbacks. */
+.lms-main {
+  max-width: var(--site-size-measure, 46rem);
+  margin: 0 auto;
+  padding: var(--site-space-section, 3rem) 1rem;
+  color: var(--site-color-text, inherit);
+  font-family: var(--site-font-body, inherit);
+  line-height: 1.6;
+  min-width: 0;
+}
+.lms-main h1 { font-size: 2.25rem; line-height: 1.2; margin: 0 0 0.5rem; }
+.lms-main h2 { margin: var(--site-space-section, 2.5rem) 0 1rem; }
+.lms-main a, .lms-sidebar a { color: var(--site-color-accent, inherit); }
+.lms-muted { color: var(--site-color-muted, #666); }
+.lms-kicker { font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 0.5rem; color: var(--site-color-muted, #666); }
+.lms-lead { font-size: 1.125rem; margin: 0 0 1rem; }
+.lms-hero { margin-bottom: 1.5rem; display: grid; gap: 0.75rem; }
+.lms-hero > * { margin: 0; }
+.lms-cover { width: 100%; height: auto; border-radius: var(--site-radius-card, 0.5rem); margin: 0 0 1.5rem; }
+.lms-avatar { width: 6rem; height: 6rem; object-fit: cover; border-radius: 999px; }
+.lms-body > * + * { margin-top: var(--site-space-gap, 1.25rem); }
+
+.lms-button {
+  display: inline-block; font: inherit; padding: 0.625rem 1.125rem; border-radius: 0.375rem; border: 0; text-decoration: none; cursor: pointer;
+  background: var(--site-color-accent, #222); color: var(--site-color-on-accent, #fff) !important;
+}
+.lms-button:disabled { opacity: 0.6; cursor: default; }
+.lms-cta { display: grid; gap: 0.5rem; justify-items: start; margin: 1.5rem 0; }
+.lms-error { color: #c53030; margin: 0; }
+.lms-success { color: #2f855a; margin: 0; }
+.lms-plans { display: grid; gap: 0.5rem; }
+.lms-plans > p { margin: 0; }
+.lms-plans ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+.lms-plans li { padding: 0.75rem 1rem; border: 1px solid var(--site-color-border, #ddd); border-radius: var(--site-radius-card, 0.5rem); }
+.lms-plans .lms-cta { margin: 0.5rem 0 0; }
+.lms-badge { margin-left: 0.5rem; padding: 0 0.5rem; border: 1px solid var(--site-color-border, #ddd); border-radius: 999px; font-size: 0.75rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.lms-progress { display: grid; gap: 0.25rem; font-size: 0.875rem; }
+.lms-bar { height: 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--site-color-text, #222) 10%, transparent); overflow: hidden; }
+.lms-bar > span { display: block; height: 100%; background: var(--site-color-accent, #2f855a); }
+
+.lms-outline h3 { font-size: 1rem; margin: 1.25rem 0 0.5rem; }
+.lms-outline ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.375rem; }
+.lms-outline li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.375rem; }
+.lms-outline li[aria-current="page"] > a, .lms-outline li[aria-current="page"] > span:not(.lms-tick) { font-weight: 600; }
+.lms-tick { width: 1.25rem; flex: none; text-align: center; color: var(--site-color-muted, #666); }
+.lms-done .lms-tick { color: #2f855a; }
+
+.lms-classroom { display: grid; grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr); gap: 2rem; max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+.lms-sidebar { padding: var(--site-space-section, 3rem) 0; font-size: 0.9375rem; display: grid; gap: 1rem; align-content: start; }
+.lms-lesson { margin: 0; padding-left: 0; padding-right: 0; }
+@media (max-width: 760px) {
+  .lms-classroom { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .lms-sidebar { order: 2; padding-top: 0; border-top: 1px solid var(--site-color-border, #e5e5e5); }
+}
+.lms-pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--site-color-border, #e5e5e5); }
+
+.lms-figure { margin: 0; }
+.lms-video { width: 100%; border-radius: var(--site-radius-card, 0.5rem); }
+.lms-embed { position: relative; aspect-ratio: 16 / 9; }
+.lms-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: var(--site-radius-card, 0.5rem); }
+
+.lms-quiz { padding: 1.25rem; border: 1px solid var(--site-color-border, #ddd); border-radius: var(--site-radius-card, 0.5rem); display: grid; gap: 0.75rem; }
+.lms-quiz h2 { margin: 0; font-size: 1.25rem; }
+.lms-quiz p { margin: 0; }
+.lms-questions { padding-left: 1.25rem; display: grid; gap: 1rem; margin: 0 0 1rem; }
+.lms-questions fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 0.375rem; }
+.lms-questions legend { font-weight: 600; margin-bottom: 0.25rem; }
+.lms-choice { display: flex; gap: 0.5rem; align-items: baseline; }
+.lms-questions input:not([type]), .lms-form input { font: inherit; padding: 0.5rem; border: 1px solid var(--site-color-border, #ccc); border-radius: 0.375rem; background: transparent; color: inherit; max-width: 100%; }
+
+.lms-cards { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: 1rem; }
+.lms-card { padding: 1.25rem; border: 1px solid var(--site-color-border, #e5e5e5); border-radius: var(--site-radius-card, 0.5rem); display: grid; gap: 0.5rem; }
+.lms-card > * { margin: 0; }
+.lms-card h2, .lms-card h3 { margin: 0; font-size: 1.25rem; }
+.lms-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; }
+.lms-form label { width: 100%; }
+.lms-download a::before { content: "↓ "; }
+
+/* The editor's canvas: the parts of a block shown only while it's edited. */
+.lms-editor-placeholder { display: grid; gap: 0.5rem; padding: 1rem; border: 1px dashed var(--site-color-border, #ccc); border-radius: var(--site-radius-card, 0.5rem); }
+.lms-editor-placeholder p { margin: 0; }
+.lms-editor-note { display: grid; gap: 0.25rem; margin-top: 0.5rem; font-size: 0.875rem; color: var(--site-color-muted, #666); }
+.lms-download-edit { display: flex; gap: 0.35em; align-items: baseline; }
+.lms-question-edit { display: grid; gap: 0.75rem; }
+.lms-question-prompt { font-weight: 600; }
+.lms-choices-edit { display: grid; gap: 0.375rem; margin: 0; padding: 0; list-style: none; }
+.lms-choices-edit li { display: flex; gap: 0.5rem; align-items: center; }
+.lms-editor-input { flex: 1; min-width: 0; padding: 0.375rem 0.5rem; border: 1px solid var(--site-color-border, #ccc); border-radius: 0.375rem; background: transparent; color: inherit; font: inherit; }
+.lms-editor-remove, .lms-editor-add { padding: 0.25rem 0.5rem; border: 0; border-radius: 0.375rem; background: transparent; color: var(--site-color-muted, #666); font: inherit; cursor: pointer; }
+.lms-editor-remove:hover, .lms-editor-add:hover { color: inherit; background: color-mix(in srgb, currentColor 8%, transparent); }

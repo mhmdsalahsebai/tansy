@@ -1,0 +1,21 @@
+/* The course builder in the dashboard. Uses the dashboard's tokens, so it follows its theme. */
+.lms-admin-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cms-space-2); margin-top: var(--cms-space-1); font-size: var(--cms-text-sm); color: var(--cms-color-text-soft); }
+.lms-admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cms-space-2); }
+.lms-admin-grid { display: grid; gap: var(--cms-space-6); align-items: start; }
+@media (min-width: 72rem) { .lms-admin-grid { grid-template-columns: minmax(0, 1fr) 22rem; } }
+.lms-admin-panel { padding: var(--cms-space-5); }
+.lms-admin-section + .lms-admin-section { margin-top: var(--cms-space-5); padding-top: var(--cms-space-5); border-top: 1px solid var(--cms-color-border); }
+.lms-admin-section-head { display: flex; align-items: center; gap: var(--cms-space-2); margin-bottom: var(--cms-space-3); }
+.lms-admin-section-head .lms-admin-title-input { font-weight: 600; }
+.lms-admin-lessons { display: grid; gap: var(--cms-space-2); margin: 0 0 var(--cms-space-3); padding: 0; list-style: none; }
+.lms-admin-lesson { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cms-space-3); padding: var(--cms-space-2) var(--cms-space-3); border: 1px solid var(--cms-color-border); border-radius: var(--cms-radius-md); background: var(--cms-color-surface); }
+.lms-admin-lesson-main { flex: 1 1 14rem; min-width: 0; }
+.lms-admin-mover { display: inline-flex; flex-direction: column; }
+.lms-admin-mover .cms-icon-btn { width: 1.5rem; height: 1.25rem; font-size: var(--cms-text-xs); }
+.lms-admin-title-input { flex: 1 1 auto; width: 100%; min-width: 0; padding: var(--cms-space-1) var(--cms-space-2); border: 1px solid transparent; border-radius: var(--cms-radius-sm); background: transparent; font: inherit; color: var(--cms-color-text-strong); }
+.lms-admin-title-input:hover { border-color: var(--cms-color-border); }
+.lms-admin-title-input:focus { border-color: var(--cms-focus-ring); outline: none; background: var(--cms-color-surface); }
+.lms-admin-select { width: auto; }
+.lms-admin-add { display: flex; gap: var(--cms-space-2); max-width: 32rem; }
+.lms-admin-add + .lms-admin-add { margin-top: var(--cms-space-2); }
+.lms-admin .cms-link:disabled { opacity: 0.5; }
