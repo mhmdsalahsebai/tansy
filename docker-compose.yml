@@ -1,0 +1,35 @@
+# Production-shaped setup with Postgres. Set POSTGRES_PASSWORD, and BETTER_AUTH_URL to your public address.
+# The first-run link is printed in the logs: docker compose logs tansy
+services:
+  tansy:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      DATABASE_URL: postgres://cms:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/cms
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:8090}
+    volumes:
+      - tansy-data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cms
+      POSTGRES_DB: cms
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cms -d cms"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  tansy-data:
+  db-data:

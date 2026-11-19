@@ -1,0 +1,5 @@
+import { createDashboardLayout } from "tansy/pages";
+import admin from "@/.tansy/admin";
+import config from "@/tansy.config";
+
+export default createDashboardLayout(config, admin);

@@ -1,0 +1,23 @@
+{
+  "name": "create-tansy",
+  "version": "0.1.0",
+  "description": "Create a Next.js app with tansy.",
+  "keywords": ["tansy", "cms", "nextjs", "create-next-app", "scaffold"],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "packages/create-tansy"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "type": "module",
+  "bin": {
+    "create-tansy": "index.mjs"
+  },
+  "files": ["index.mjs", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=22.18"
+  }
+}
