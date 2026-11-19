@@ -1,0 +1,15 @@
+/*
+  The dashboard's styles. The order below decides which layer wins, whatever the
+  selectors. Anything unlayered would beat all of them, so every file wraps its
+  rules in its own layer. Themes and plugins add to cms.overrides.
+*/
+@layer cms.reset, cms.tokens, cms.base, cms.components, cms.utilities, cms.overrides;
+
+@import "./reset.css";
+@import "./tokens.css";
+@import "./tokens-dark.css";
+@import "./base.css";
+@import "./components.css";
+@import "./rich-text.css";
+@import "./editor.css";
+@import "./utilities.css";

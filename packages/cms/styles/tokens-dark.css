@@ -1,0 +1,65 @@
+/* The dark theme is only a change of semantic tokens. If it ever needs component CSS, a token is missing. */
+@layer cms.tokens {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+
+      --cms-color-page: oklch(12% 0 0);
+      --cms-color-surface: oklch(15.5% 0 0);
+      --cms-color-surface-muted: oklch(19% 0 0);
+      --cms-color-surface-sunken: oklch(22% 0 0);
+      --cms-color-sidebar: oklch(13.5% 0 0);
+      --cms-color-skeleton: oklch(25% 0 0);
+      --cms-color-border: oklch(25% 0 0);
+      --cms-color-border-soft: oklch(20.5% 0 0);
+      --cms-color-border-strong: oklch(33% 0 0);
+      --cms-color-text-strong: oklch(98% 0 0);
+      --cms-color-text: oklch(88% 0 0);
+      --cms-color-text-soft: oklch(78% 0 0);
+      --cms-color-text-muted: oklch(66% 0 0);
+      --cms-color-text-faint: oklch(52% 0 0);
+      --cms-color-backdrop: rgb(0 0 0 / 0.6);
+      --cms-color-switch-thumb: oklch(88% 0 0);
+
+      --cms-color-accent: oklch(62.3% 0.214 259.815);
+      --cms-color-accent-hover: oklch(70.7% 0.165 254.624);
+      --cms-color-accent-strong: oklch(80.9% 0.105 251.813);
+      --cms-color-accent-surface: oklch(24% 0.06 262);
+      --cms-color-accent-tint: oklch(29% 0.09 262);
+      --cms-color-accent-border: oklch(70.7% 0.165 254.624);
+      --cms-color-accent-border-soft: oklch(42% 0.14 262);
+      --cms-color-on-accent: white;
+
+      --cms-color-danger: oklch(70.4% 0.191 22.216);
+      --cms-color-danger-hover: oklch(80.8% 0.114 19.571);
+      --cms-color-danger-text: oklch(80.8% 0.114 19.571);
+      --cms-color-danger-surface: oklch(26% 0.06 25);
+      --cms-color-danger-tint: oklch(31% 0.09 25);
+      --cms-color-danger-border: oklch(39.6% 0.141 25.723);
+      --cms-color-danger-on-tint: oklch(88.5% 0.062 18.334);
+      --cms-color-success-text: oklch(79.2% 0.16 151.711);
+      --cms-color-success-surface: oklch(26% 0.05 152);
+      --cms-color-success-tint: oklch(31% 0.07 152);
+      --cms-color-success-border: oklch(39.3% 0.095 152.535);
+      --cms-color-success-on-tint: oklch(87.1% 0.15 154.449);
+      --cms-color-warning-text: oklch(87% 0.14 91);
+      --cms-color-warning-surface: oklch(27% 0.05 75);
+      --cms-color-warning-tint: oklch(32% 0.07 75);
+      --cms-color-warning-border: oklch(42.1% 0.095 57.708);
+      --cms-color-warning-on-tint: oklch(90.5% 0.15 98);
+      --cms-color-caution: oklch(82.8% 0.16 84.429);
+      --cms-color-banner: oklch(66.6% 0.179 58.318);
+      --cms-color-info-text: oklch(80.9% 0.105 251.813);
+      --cms-color-info-surface: oklch(24% 0.05 262);
+      --cms-color-info-tint: oklch(29% 0.08 262);
+      --cms-color-info-border: oklch(39% 0.12 262);
+      --cms-color-info-on-tint: oklch(88.2% 0.059 254.128);
+
+      --cms-shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.3);
+      --cms-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+      --cms-shadow-md: 0 2px 8px -2px rgb(0 0 0 / 0.5);
+      --cms-shadow-lg: 0 8px 24px -6px rgb(0 0 0 / 0.6), 0 0 0 1px oklch(25% 0 0);
+      --cms-shadow-xl: 0 20px 40px -12px rgb(0 0 0 / 0.7), 0 0 0 1px oklch(25% 0 0);
+    }
+  }
+}

@@ -1,0 +1,34 @@
+@layer cms.reset {
+  :where(.cms-root, .cms-root *), :where(.cms-root, .cms-root *)::before, :where(.cms-root, .cms-root *)::after, :where(.cms-root *)::backdrop, :where(.cms-root *)::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid var(--cms-color-border);
+  }
+  :where(.cms-root) :where(h1, h2, h3, h4, h5, h6) { font-size: inherit; font-weight: inherit; }
+  :where(.cms-root) :where(a) { color: inherit; text-decoration: inherit; }
+  :where(.cms-root) :where(b, strong) { font-weight: bolder; }
+  :where(.cms-root) :where(code, kbd, samp, pre) { font-family: var(--cms-font-mono); font-size: 1em; }
+  :where(.cms-root) :where(table) { border-collapse: collapse; border-color: inherit; text-indent: 0; }
+  :where(.cms-root) :where(ol, ul, menu) { list-style: none; }
+  :where(.cms-root) :where(img, svg, video, canvas, audio, iframe, embed, object) { display: block; vertical-align: middle; }
+  :where(.cms-root) :where(img, video) { max-width: 100%; height: auto; }
+  :where(.cms-root) :where(button, input, select, optgroup, textarea), :where(.cms-root *)::file-selector-button {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(.cms-root) :where(textarea) { resize: vertical; }
+  :where(.cms-root *)::placeholder { color: var(--cms-color-text-faint); opacity: 1; }
+  :where(.cms-root *)::-webkit-date-and-time-value { min-height: 1lh; text-align: inherit; }
+  :where(.cms-root *)::-webkit-datetime-edit { display: inline-flex; }
+  :where(.cms-root *)::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+  :where(.cms-root *)::-webkit-datetime-edit-year-field, :where(.cms-root *)::-webkit-datetime-edit-month-field, :where(.cms-root *)::-webkit-datetime-edit-day-field, :where(.cms-root *)::-webkit-datetime-edit-hour-field, :where(.cms-root *)::-webkit-datetime-edit-minute-field, :where(.cms-root *)::-webkit-datetime-edit-second-field, :where(.cms-root *)::-webkit-datetime-edit-millisecond-field, :where(.cms-root *)::-webkit-datetime-edit-meridiem-field { padding-block: 0; }
+  :where(.cms-root *)::-webkit-calendar-picker-indicator { line-height: 1; }
+  :where(.cms-root *)::-webkit-search-decoration { -webkit-appearance: none; }
+  :where(.cms-root) :where(button, input:where([type="button"], [type="reset"], [type="submit"])), :where(.cms-root *)::file-selector-button { appearance: button; }
+  :where(.cms-root) :where([hidden]:not([hidden="until-found"])) { display: none !important; }
+}

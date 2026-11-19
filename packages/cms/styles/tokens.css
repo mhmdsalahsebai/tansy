@@ -1,0 +1,141 @@
+/*
+  Primitive values first, then the semantic tokens built from them. Components
+  use only semantic tokens, so a theme changes the look by reassigning those.
+*/
+@layer cms.tokens {
+  :root {
+    color-scheme: light;
+
+    --cms-red-50: oklch(97.1% 0.013 17.38);
+    --cms-red-100: oklch(93.6% 0.032 17.717);
+    --cms-red-200: oklch(88.5% 0.062 18.334);
+    --cms-red-600: oklch(57.7% 0.245 27.325);
+    --cms-red-700: oklch(50.5% 0.213 27.518);
+    --cms-red-800: oklch(44.4% 0.177 26.899);
+    --cms-green-50: oklch(98.2% 0.018 155.826);
+    --cms-green-100: oklch(96.2% 0.044 156.743);
+    --cms-green-200: oklch(92.5% 0.084 155.995);
+    --cms-green-700: oklch(52.7% 0.154 150.069);
+    --cms-green-800: oklch(44.8% 0.119 151.328);
+    --cms-yellow-50: oklch(98.7% 0.026 102.212);
+    --cms-yellow-100: oklch(97.3% 0.071 103.193);
+    --cms-yellow-200: oklch(94.5% 0.129 101.54);
+    --cms-yellow-800: oklch(47.6% 0.114 61.907);
+    --cms-amber-500: oklch(76.9% 0.188 70.08);
+    --cms-amber-700: oklch(55.5% 0.163 48.998);
+    --cms-blue-50: oklch(97% 0.014 254.604);
+    --cms-blue-100: oklch(93.2% 0.032 255.585);
+    --cms-blue-200: oklch(88.2% 0.059 254.128);
+    --cms-blue-600: oklch(54.6% 0.245 262.881);
+    --cms-blue-700: oklch(48.8% 0.243 264.376);
+    --cms-blue-800: oklch(42.4% 0.199 265.638);
+
+    --cms-neutral-0: oklch(100% 0 0);
+    --cms-neutral-25: oklch(98.8% 0 0);
+    --cms-neutral-50: oklch(97.5% 0 0);
+    --cms-neutral-100: oklch(95.5% 0 0);
+    --cms-neutral-150: oklch(93.5% 0 0);
+    --cms-neutral-200: oklch(91.5% 0 0);
+    --cms-neutral-300: oklch(86% 0 0);
+    --cms-neutral-400: oklch(70.8% 0 0);
+    --cms-neutral-500: oklch(55.6% 0 0);
+    --cms-neutral-600: oklch(43.9% 0 0);
+    --cms-neutral-700: oklch(37.1% 0 0);
+    --cms-neutral-800: oklch(26.9% 0 0);
+    --cms-neutral-900: oklch(20.5% 0 0);
+    --cms-neutral-950: oklch(14.5% 0 0);
+
+    --cms-color-page: oklch(97.6% 0.003 264);
+    --cms-color-surface: var(--cms-neutral-0);
+    --cms-color-surface-muted: var(--cms-neutral-50);
+    --cms-color-surface-sunken: var(--cms-neutral-100);
+    --cms-color-sidebar: var(--cms-neutral-0);
+    --cms-color-skeleton: var(--cms-neutral-150);
+    --cms-color-border: oklch(92.4% 0.004 264);
+    --cms-color-border-soft: oklch(95.4% 0.003 264);
+    --cms-color-border-strong: var(--cms-neutral-300);
+    --cms-color-text-strong: var(--cms-neutral-950);
+    --cms-color-text: var(--cms-neutral-800);
+    --cms-color-text-soft: var(--cms-neutral-600);
+    --cms-color-text-muted: var(--cms-neutral-500);
+    --cms-color-text-faint: var(--cms-neutral-400);
+    --cms-color-backdrop: rgb(0 0 0 / 0.25);
+    --cms-color-switch-thumb: white;
+    --cms-color-media: black;
+    /* A QR code stays dark on light in either theme, so phones can read it. */
+    --cms-color-qr: white;
+
+    --cms-color-accent: var(--cms-blue-600);
+    --cms-color-accent-hover: var(--cms-blue-700);
+    --cms-color-accent-strong: var(--cms-blue-700);
+    --cms-color-accent-surface: var(--cms-blue-50);
+    --cms-color-accent-tint: var(--cms-blue-100);
+    --cms-color-accent-border: var(--cms-blue-600);
+    --cms-color-accent-border-soft: var(--cms-blue-200);
+    --cms-color-on-accent: white;
+
+    --cms-color-danger: var(--cms-red-600);
+    --cms-color-danger-hover: var(--cms-red-700);
+    --cms-color-danger-text: var(--cms-red-700);
+    --cms-color-danger-surface: var(--cms-red-50);
+    --cms-color-danger-tint: var(--cms-red-100);
+    --cms-color-danger-border: var(--cms-red-200);
+    --cms-color-danger-on-tint: var(--cms-red-800);
+    --cms-color-success-text: var(--cms-green-700);
+    --cms-color-success-surface: var(--cms-green-50);
+    --cms-color-success-tint: var(--cms-green-100);
+    --cms-color-success-border: var(--cms-green-200);
+    --cms-color-success-on-tint: var(--cms-green-800);
+    --cms-color-warning-text: var(--cms-yellow-800);
+    --cms-color-warning-surface: var(--cms-yellow-50);
+    --cms-color-warning-tint: var(--cms-yellow-100);
+    --cms-color-warning-border: var(--cms-yellow-200);
+    --cms-color-warning-on-tint: var(--cms-yellow-800);
+    --cms-color-caution: var(--cms-amber-700);
+    --cms-color-banner: var(--cms-amber-500);
+    --cms-color-info-text: var(--cms-blue-700);
+    --cms-color-info-surface: var(--cms-blue-50);
+    --cms-color-info-tint: var(--cms-blue-100);
+    --cms-color-info-border: var(--cms-blue-200);
+    --cms-color-info-on-tint: var(--cms-blue-800);
+
+    --cms-space-1: 0.25rem;
+    --cms-space-2: 0.5rem;
+    --cms-space-3: 0.75rem;
+    --cms-space-4: 1rem;
+    --cms-space-5: 1.25rem;
+    --cms-space-6: 1.5rem;
+    --cms-space-8: 2rem;
+    --cms-space-12: 3rem;
+
+    --cms-font-sans: var(--font-geist-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --cms-font-mono: var(--font-geist-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --cms-text-xs: 0.6875rem;
+    --cms-leading-xs: 1rem;
+    --cms-text-sm: 0.8125rem;
+    --cms-leading-sm: 1.25rem;
+    --cms-text-base: 0.875rem;
+    --cms-leading-base: 1.375rem;
+    --cms-text-lg: 1rem;
+    --cms-text-xl: 1.0625rem;
+    --cms-leading-lg: 1.5rem;
+    --cms-text-2xl: 1.25rem;
+    --cms-leading-2xl: 1.75rem;
+    --cms-text-3xl: 1.5rem;
+    --cms-leading-3xl: 2rem;
+
+    --cms-radius-sm: 0.25rem;
+    --cms-radius-md: 0.4375rem;
+    --cms-radius-lg: 0.625rem;
+    --cms-radius-xl: 0.875rem;
+    --cms-shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.03);
+    --cms-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px -1px rgb(0 0 0 / 0.04);
+    --cms-shadow-md: 0 2px 8px -2px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+    --cms-shadow-lg: 0 8px 24px -6px rgb(0 0 0 / 0.12), 0 2px 4px rgb(0 0 0 / 0.04);
+    --cms-shadow-xl: 0 20px 40px -12px rgb(0 0 0 / 0.2), 0 2px 6px rgb(0 0 0 / 0.05);
+    --cms-focus-ring: var(--cms-color-accent-border);
+    --cms-transition: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+    --cms-sidebar-width: 14rem;
+    --cms-topbar-height: 3rem;
+  }
+}

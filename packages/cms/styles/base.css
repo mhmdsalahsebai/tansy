@@ -1,0 +1,13 @@
+@layer cms.base {
+  .cms-root {
+    font-family: var(--cms-font-sans);
+    font-size: var(--cms-text-sm);
+    line-height: var(--cms-leading-sm);
+    color: var(--cms-color-text-strong);
+    background: var(--cms-color-surface);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .cms-root :where(input, textarea, select) { color: var(--cms-color-text-strong); }
+  .cms-root ::selection { background: var(--cms-color-text-strong); color: var(--cms-color-surface); }
+}
