@@ -35,6 +35,7 @@ import { polar } from "@tansy/payments-polar";
 import { stripe } from "@tansy/payments-stripe";
 import { ai } from "@tansy/ai";
 import { consoleDestination, httpDestination, requestLogs, storageDestination } from "@tansy/request-logs";
+import { logsOtlp, otlpDestination } from "@tansy/logs-otlp";
 import { analytics } from "@tansy/analytics";
 import { fathom } from "@tansy/analytics-fathom";
 import { googleAnalytics } from "@tansy/analytics-google";
@@ -152,7 +153,8 @@ export default defineCms({
     })] : []),
     // A log of every API request, kept in the database and shown on the dashboard. REQUEST_LOGS_S3_BUCKET also
     // writes them to a bucket as JSON lines (with the S3_* credentials unless REQUEST_LOGS_S3_* are set),
-    // REQUEST_LOGS_HTTP_URL posts them to a log service, and REQUEST_LOGS_CONSOLE=true prints them for the host to collect.
+    // REQUEST_LOGS_HTTP_URL posts them to a log service, REQUEST_LOGS_CONSOLE=true prints them for the host to collect,
+    // and REQUEST_LOGS_OTLP=true sends them over OpenTelemetry to the OTEL_EXPORTER_OTLP_* address.
     ...(showing("TANSY_PLUGIN_REQUEST_LOGS") ? [requestLogs({
       destinations: [
         ...(env.REQUEST_LOGS_S3_BUCKET ? [storageDestination(s3Storage({
@@ -165,8 +167,12 @@ export default defineCms({
         }), { prefix: env.REQUEST_LOGS_S3_PREFIX || "request-logs", label: `S3 (${env.REQUEST_LOGS_S3_BUCKET})` })] : []),
         ...(env.REQUEST_LOGS_HTTP_URL ? [httpDestination({ url: env.REQUEST_LOGS_HTTP_URL, headers: env.REQUEST_LOGS_HTTP_TOKEN ? { authorization: `Bearer ${env.REQUEST_LOGS_HTTP_TOKEN}` } : undefined })] : []),
         ...(env.REQUEST_LOGS_CONSOLE === "true" ? [consoleDestination()] : []),
+        ...(env.REQUEST_LOGS_OTLP === "true" ? [otlpDestination()] : []),
       ],
     })] : []),
+    // A copy of the audit log over OpenTelemetry, to the OTEL_EXPORTER_OTLP_* address. Not under TANSY_SYNC,
+    // as it needs that address and adds nothing to sync.
+    ...(env.TANSY_PLUGIN_LOGS_OTLP === "true" ? [logsOtlp()] : []),
     // Many sites or customers in one instance, each a tenant with its own records and members. Only one plugin
     // can split records like this, so it can't run beside the workspaces example below.
     ...(showing("TANSY_PLUGIN_MULTI_TENANT") ? [multiTenant({ siteUrl: env.TANSY_SITE_URL || env.BETTER_AUTH_URL || "http://localhost:3000", scopeNewCollections: env.TANSY_MULTI_TENANT_SCOPE_NEW !== "false", dnsServers: env.TANSY_MULTI_TENANT_DNS_SERVERS ? env.TANSY_MULTI_TENANT_DNS_SERVERS.split(",") : undefined })] : []),

@@ -117,4 +117,19 @@ describe("request logs", () => {
       delete (globalThis as { cmsRequestLogs?: unknown }).cmsRequestLogs;
     }
   });
+
+  it("keeps IP addresses and browsers under separate switches", async () => {
+    vi.useFakeTimers();
+    try {
+      const store = memoryStore();
+      const plugin = requestLogs();
+      const context = { store, settings: { get: async () => ({ storeIp: true, storeUserAgent: false }) } } as unknown as ExtensionContext;
+      plugin.onRequest!({ at: new Date("2026-11-16T10:00:00.000Z"), method: "POST", path: "/api/things", status: 201, durationMs: 1, actorId: null, ipAddress: "9.9.9.9", userAgent: "ua" }, context);
+      await vi.advanceTimersByTimeAsync(2500);
+      expect([...store.data.values()].flat()).toEqual([expect.objectContaining({ ipAddress: "9.9.9.9", userAgent: null })]);
+    } finally {
+      vi.useRealTimers();
+      delete (globalThis as { cmsRequestLogs?: unknown }).cmsRequestLogs;
+    }
+  });
 });

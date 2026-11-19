@@ -744,7 +744,7 @@ Core is the engine and open protocols. Anything that names a vendor or is an opt
 | `emailContent` | Changes an email's subject or body. Links and codes are added afterwards, so it can't lose them | `examples/email-templates` |
 | `guardRequest` | Return `false` to refuse a request that passed every other check. It can only take access away, and a guard that throws refuses | `examples/ip-allowlist` |
 | `mail` | Delivers all of the site's email instead of SMTP. `send(message, authSettings, context)` gets the plugin's own context, to read its settings and keys. An optional `ready(context)` says whether it can send yet: until it does, mail goes through SMTP, so installing the plugin before entering keys breaks nothing. The first ready adapter wins. An optional `sendBatch(messages, authSettings, context)` sends many at once, through the provider's batch API, with a result for each | `plugins/email` |
-| `onAudit` | Forwards audit events | |
+| `onAudit` | Forwards audit events, in the background, with metadata sanitized | `plugins/logs-otlp` |
 
 **Calling a better-auth plugin from a route.** A route's `context.auth.call(path, { body, query })` calls an endpoint of the better-auth plugins its own plugin added, by path, as the caller: better-auth sees their session cookie and nothing else, so the endpoint acts for them alone, and an error it throws becomes the route's error response. Endpoints of other plugins and of core can't be called. With `auth.serverOnlyPaths`, a plugin can close an endpoint to HTTP and offer it only through a route that checks first, as Payments does for Creem's portal:
 
@@ -781,7 +781,7 @@ The examples are off unless their variable is set:
 
 `TANSY_PLUGIN_NEWSLETTER=true` turns on `plugins/newsletter`: subscribers with double opt-in and campaigns sent in batches, with links in email starting at `TANSY_SITE_URL` (or `BETTER_AUTH_URL`) and `TANSY_NEWSLETTER_PER_MINUTE` emails a minute. See [the Newsletter plugin](/docs/plugins/newsletter).
 
-`TANSY_PLUGIN_REQUEST_LOGS=true` turns on `plugins/request-logs`: every API request logged, shown on the dashboard, and optionally sent to S3 or other storage, a log service, or the server's output. See [the Request logs plugin](/docs/plugins/request-logs).
+`TANSY_PLUGIN_REQUEST_LOGS=true` turns on `plugins/request-logs`: every API request logged, shown on the dashboard, and optionally sent to S3 or other storage, a log service, or the server's output. See [the Request logs plugin](/docs/plugins/request-logs). `TANSY_PLUGIN_LOGS_OTLP=true` turns on `plugins/logs-otlp`, which sends a copy of the audit log over OpenTelemetry to the `OTEL_EXPORTER_OTLP_*` address, and `REQUEST_LOGS_OTLP=true` sends the request log there too. See [the OpenTelemetry logs plugin](/docs/plugins/logs-otlp).
 
 `TANSY_PLUGIN_ANALYTICS=true` turns on `plugins/analytics`: page views counted with no cookies, shown on the dashboard, and optionally sent to Plausible, Umami, Google Analytics, Fathom or Matomo, chosen under **Analytics → Settings**. `PLAUSIBLE_HOST`, `UMAMI_HOST` and `MATOMO_URL` point it at self-hosted ones. See [the Analytics plugin](/docs/plugins/analytics).
 

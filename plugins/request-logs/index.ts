@@ -37,7 +37,7 @@ const optionsSchema = z.strictObject({
   retentionDays: z.number().int().min(1).max(365),
 });
 
-interface Settings { enabled: boolean; which: Which; database: boolean; destinations: boolean; storeIp: boolean; skip: string[]; retentionDays: number }
+interface Settings { enabled: boolean; which: Which; database: boolean; destinations: boolean; storeIp: boolean; storeUserAgent: boolean; skip: string[]; retentionDays: number }
 
 interface State {
   waiting: RequestLogEntry[];
@@ -67,7 +67,8 @@ export function requestLogs(options: RequestLogsOptions = {}) {
     { name: "which", type: "select", default: value.which, label: "Which requests", description: "Reads that worked are most of them, and the least useful.", options: [{ value: "all", label: "All of them" }, { value: "writes", label: "Changes and errors" }, { value: "errors", label: "Errors only" }] },
     { name: "database", type: "boolean", default: value.database, label: "Keep them in the database", description: "Shown on this page. Turn it off to send them only to the places below." },
     ...(destinations.length ? [{ name: "destinations", type: "boolean" as const, default: true, label: "Also send them outside", description: `To ${destinations.map((destination) => destination.label).join(", ")}.` }] : []),
-    { name: "storeIp", type: "boolean", default: true, label: "Keep IP addresses and browsers", description: "Off keeps neither, for privacy." },
+    { name: "storeIp", type: "boolean", default: true, label: "Keep IP addresses", description: "Off leaves them out, for privacy." },
+    { name: "storeUserAgent", type: "boolean", default: true, label: "Keep browsers", description: "The user agent each request sent. Off leaves it out." },
     { name: "skip", type: "text", default: DEFAULT_SKIP, multiline: true, maxLength: 2000, label: "Addresses not to log", description: "One per line, such as /api/realtime. Each covers everything under it." },
     { name: "retentionDays", type: "number", default: value.retentionDays, min: 1, max: 365, integer: true, label: "Keep entries here for (days)", description: "Older entries are deleted each night." },
   ];
@@ -81,6 +82,8 @@ export function requestLogs(options: RequestLogsOptions = {}) {
       database: saved.database === undefined ? value.database : saved.database === true,
       destinations: destinations.length > 0 && saved.destinations !== false,
       storeIp: saved.storeIp !== false,
+      // Before this had its own switch, "Keep IP addresses" covered browsers too, so a site that turned that off keeps neither.
+      storeUserAgent: saved.storeUserAgent === undefined ? saved.storeIp !== false : saved.storeUserAgent !== false,
       skip: skipList(saved.skip ?? DEFAULT_SKIP),
       retentionDays: Math.min(365, Math.max(1, Number(saved.retentionDays) || value.retentionDays)),
     };
@@ -113,7 +116,7 @@ export function requestLogs(options: RequestLogsOptions = {}) {
           if (!settings.enabled) continue;
           const entries = taken
             .filter((entry) => kept(settings.which, entry) && !settings.skip.some((prefix) => entry.path === prefix || entry.path.startsWith(`${prefix.replace(/\/+$/, "")}/`)))
-            .map((entry) => (settings.storeIp ? entry : { ...entry, ipAddress: null, userAgent: null }));
+            .map((entry) => ({ ...entry, ipAddress: settings.storeIp ? entry.ipAddress : null, userAgent: settings.storeUserAgent ? entry.userAgent : null }));
           if (!entries.length) continue;
           if (settings.database) {
             for (const batch of toBatches(entries)) {

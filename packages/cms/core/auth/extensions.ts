@@ -83,7 +83,12 @@ export interface AuthExtension {
   mail?: MailAdapter;
   /** A CAPTCHA for the sign-in forms it names and for every plugin's own forms, through `context.captcha`. The first ready one wins. */
   captcha?: CaptchaAdapter;
-  /** Forward audit events to a SIEM. Must not throw for control flow. */
+  /**
+   * Forwards audit events, such as to a SIEM or `@tansy/logs-otlp`, or reacts to them. Runs in the
+   * background once the event is recorded, each plugin on its own, and isn't retried: a plugin that
+   * sends the event somewhere keeps and retries it itself. Metadata arrives sanitized, and the
+   * event names its scope value. Must not throw for control flow.
+   */
   onAudit?: (event: AuditEvent) => void | Promise<void>;
 }
 

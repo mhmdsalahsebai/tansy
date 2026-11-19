@@ -11,7 +11,7 @@ export default withCms({
   output: "standalone",
   outputFileTracingRoot: root,
   turbopack: { root },
-  transpilePackages: ["@tansy/email-resend", "@tansy/email-postmark", "@tansy/email-sendgrid", "@tansy/email-mailgun", "@tansy/email-ses", "@tansy/email-brevo", "@tansy/payments-stripe", "@tansy/payments-polar", "@tansy/payments-dodo", "@tansy/payments-creem", "@tansy/payments-commet", "@tansy/pwned-passwords", "@tansy/seo", "@tansy/social-sign-in", "@tansy/example-captcha", "@tansy/example-email-templates", "@tansy/example-ip-allowlist", "@tansy/example-live-preview", "@tansy/example-password-denylist", "@tansy/example-seo-plugin", "@tansy/example-sign-in-alerts"],
+  transpilePackages: ["@tansy/email-resend", "@tansy/email-postmark", "@tansy/email-sendgrid", "@tansy/email-mailgun", "@tansy/email-ses", "@tansy/email-brevo", "@tansy/payments-stripe", "@tansy/payments-polar", "@tansy/payments-dodo", "@tansy/payments-creem", "@tansy/payments-commet", "@tansy/pwned-passwords", "@tansy/logs-otlp", "@tansy/seo", "@tansy/social-sign-in", "@tansy/example-captcha", "@tansy/example-email-templates", "@tansy/example-ip-allowlist", "@tansy/example-live-preview", "@tansy/example-password-denylist", "@tansy/example-seo-plugin", "@tansy/example-sign-in-alerts"],
   async redirects() {
     return [
       ...MOVED.map((page) => ({ source: `/${page}`, destination: `/dashboard/auth/${page}`, permanent: false })),

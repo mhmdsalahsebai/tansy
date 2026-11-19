@@ -90,7 +90,8 @@ instance's, so a request for one tenant is refused rather than shown another ten
 - There are no request counters or latency histograms. Those belong to whatever sits in front of
   the server, and per-request detail is the `request-logs` plugin's
   ([the Request logs plugin](/docs/plugins/request-logs)).
-- Audit events are forwarded by a plugin's `onAudit`, not scraped from here.
+- Audit events are forwarded by a plugin's `onAudit`, not scraped from here: over OpenTelemetry,
+  that's [`@tansy/logs-otlp`](/docs/plugins/logs-otlp).
 - `/api/ready` reports on the database and the storage adapter only, as above.
 
 Every boundary of this kind, across the whole CMS, is listed in [Limits and boundaries](/docs/guides/limits).
@@ -120,6 +121,8 @@ disagree with another for up to that long.
 Two different things, kept apart:
 
 - **The audit log** (`/dashboard/audit`): one row per write, auth event and refused request. In core,
-  kept for a year by default. A plugin forwards each entry somewhere else with `onAudit`.
+  kept for a year by default. A plugin forwards each entry somewhere else with `onAudit`, such as
+  [`@tansy/logs-otlp`](/docs/plugins/logs-otlp) over OpenTelemetry. Repeated refusals from one
+  caller at one address within a minute are folded into one entry that counts them.
 - **The request log**: one row per API request, which is the `request-logs` plugin, with its own
   destinations.

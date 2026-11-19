@@ -1,4 +1,5 @@
 export * from "../core/extend/define";
+export type { AuditEvent } from "../core/audit";
 export type { AuthExtension } from "../core/auth/extensions";
 export type { AccessControlOptions, AuthAccess } from "../core/auth/access";
 export type { CaptchaAdapter, CaptchaAuthForm, CaptchaWidgetConfig, ExtensionCaptcha } from "../core/captcha/types";

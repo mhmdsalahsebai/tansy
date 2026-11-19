@@ -60,6 +60,7 @@
     "@tansy/example-workspaces": "*",
     "@tansy/forms": "*",
     "@tansy/lms": "*",
+    "@tansy/logs-otlp": "*",
     "@tansy/multi-tenant": "*",
     "@tansy/newsletter": "*",
     "@tansy/payments": "*",

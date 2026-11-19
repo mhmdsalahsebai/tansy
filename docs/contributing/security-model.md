@@ -297,6 +297,8 @@ Failures follow PocketBase: a failed list rule filters results, a failed create 
 
 - Reads are limited per signed-in user or IP, in memory. Dashboard staff are exempt, and an anonymous caller with no client IP isn't limited.
 - Request logs are the `request-logs` plugin ([plugins/request-logs.md](../plugins/request-logs.md)), fed by core's `onRequest` after each response. Entries hold the path only, never the query string, body or headers other than the user agent, which can carry tokens. Reading them needs `ext.request-logs:read`. The audit log stays in core and can't be switched off, only kept for fewer days.
+- Repeated `authz.denied` entries are folded, since anyone can cause them and they'd otherwise be the one part of the audit log an outsider can grow: the first from one caller (address and account), refused the same way at the same path in the same scope value, is written, the rest within a minute are counted, and the next one written carries the count as `foldedBefore`. Memory for this is bounded: past 10,000 sources at once the oldest are forgotten, and their next denial is written whole. Every other action is written every time.
+- Plugins' `onAudit` runs after the entry is stored, in the background and each plugin on its own, so a plugin can't slow or break the request or another plugin. It gets the event with its metadata already sanitized and its scope value named, so forwarding the audit log, as `@tansy/logs-otlp` does, can't be where a secret leaks. It also runs when the database write failed.
 - `tansy superadmin` needs shell access and the database URL. It clears the account's two-factor and ban, ends its sessions, and writes `auth.cli_recovery` to the audit log.
 - **Backups** ([guides/backups.md](../guides/backups.md)) hold every password hash, live session token and sealed secret, so they are encrypted by default with `TANSY_BACKUP_KEY`, and the server refuses to start with backups configured and no usable key. `encrypt: false` is an explicit choice. The key is separate from `TANSY_ENCRYPTION_KEY`, so a leaked backup key opens backups and nothing on the server. There is no HTTP route to make, list or download one: `tansy backup` and `tansy restore` need shell access and the database URL, like `tansy superadmin`, and the scheduled job runs in the server. Each one is audited as `backup.create` or `backup.restore`, with sizes and counts, never contents.
 - An archive is untrusted input to `tansy restore`. Its manifest is validated before anything is read from it, every entry is checked against its SHA-256, an encrypted archive fails as a whole if any chunk was changed, moved or cut off, and a file can only be written back under a key core gives uploads (`files/xx/<id>`), so a crafted archive can't write elsewhere in storage.
@@ -365,7 +367,7 @@ extensions: [{
   permissions: { "ext.seo": ["read", "publish"] },   // shown in the role editor
   plugins: (settings, context) => [/* any better-auth plugin */],
   mail: myEmailApiAdapter,                            // replaces SMTP
-  onAudit: (event) => forwardToSiem(event),
+  onAudit: (event) => forwardToSiem(event),          // in the background, metadata sanitized
 }]
 ```
 

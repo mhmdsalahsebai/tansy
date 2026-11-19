@@ -1,0 +1,31 @@
+{
+  "name": "@tansy/logs-otlp",
+  "version": "0.1.0",
+  "description": "Sends the audit log and request log over OpenTelemetry (OTLP/HTTP), to Grafana, Honeycomb, Datadog, Axiom or any collector.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/logs-otlp"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "tansy": "^0.1.0"
+  }
+}

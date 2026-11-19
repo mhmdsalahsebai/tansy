@@ -470,6 +470,19 @@
         "status": "number",
         "userAgent": "string | null"
       },
+      "AuditEvent": {
+        "action": "string",
+        "actorEmail?": "string | null | undefined",
+        "actorId?": "string | null | undefined",
+        "actorKind?": "\"user\" | \"system\" | \"anonymous\" | \"apiKey\" | undefined",
+        "ipAddress?": "string | null | undefined",
+        "metadata?": "Record<string, unknown> | undefined",
+        "outcome": "\"success\" | \"failure\" | \"denied\"",
+        "scope?": "string | null | undefined",
+        "targetId?": "string | undefined",
+        "targetType?": "string | undefined",
+        "userAgent?": "string | null | undefined"
+      },
       "AuthAccess": {
         "accessControl": "(options: import(\"./plugin\").AccessControlOptions) => { ac: { newRole<const TRoleStatements extends import(\"better-auth/plugins\").Statements>(statements: import(\"better-auth/plugins\").RoleInput<import(\"better-auth/plugins\").Statements, TRoleStatements>): import(\"better-auth/plugins\").Role<import(\"better-auth/plugins\").ExactRoleStatements<TRoleStatements>, import(\"better-auth/plugins\").Statements>; statements: import(\"better-auth/plugins\").Statements; }; roles: Record<string, import(\"better-auth/plugins\").Role<import(\"better-auth/plugins\").ExactRoleStatements<import(\"better-auth/plugins\").Statements>, import(\"better-auth/plugins\").Statements>>; }"
       },
@@ -481,7 +494,7 @@
         "guardRequest?": "((request: import(\"../core/auth/extensions\").GuardedRequest) => boolean | void | Promise<boolean | void>) | undefined",
         "mail?": "import(\"../core/mail\").MailAdapter | undefined",
         "oauthProviders?": "{ id: string; label: string; }[] | undefined",
-        "onAudit?": "((event: import(\"../core/audit\").AuditEvent) => void | Promise<void>) | undefined",
+        "onAudit?": "((event: import(\"./plugin\").AuditEvent) => void | Promise<void>) | undefined",
         "onSignIn?": "((event: import(\"../core/auth/extensions\").SignInEvent) => void | Promise<void>) | undefined",
         "plugins?": "((settings: import(\"../core/auth/settings-schema\").AuthSettings, context: import(\"./plugin\").ExtensionContext, access: import(\"./plugin\").AuthAccess) => import(\"better-auth\").BetterAuthPlugin[] | Promise<import(\"better-auth\").BetterAuthPlugin[]>) | undefined",
         "serverOnlyPaths?": "string[] | undefined",

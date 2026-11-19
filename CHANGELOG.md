@@ -80,7 +80,7 @@ rather than what changed.
   admin pages, with compatibility checks, namespaces, validated options, upgrade steps and a
   key-value store. `cms_hooks/` files need no build.
 - First-party: blog, LMS, shop, payments, subscriptions, forms, newsletter, email, CAPTCHA, AI,
-  analytics, request logs, multi-tenancy, SEO, social sign-in and pwned passwords, plus one small
+  analytics, request logs, OpenTelemetry logs, multi-tenancy, SEO, social sign-in and pwned passwords, plus one small
   adapter package per outside provider for AI, email, payments, CAPTCHA, analytics, file storage and
   search.
 
@@ -91,6 +91,9 @@ rather than what changed.
   `tansy restore`, `list` and `verify`, on a schedule or by hand.
 - Read rate limits per caller, request logs, audit entries on every write, and housekeeping for
   trash, uploads and queues.
+- The audit log and request log over OpenTelemetry with `@tansy/logs-otlp`, besides the request
+  log's storage, HTTP and console destinations. Repeated refusals from one caller are folded into
+  one audit entry, so nobody outside can grow the log without bound.
 - A Docker image and `docker-compose.yml` that need no configuration on first boot.
 
 ### Installing it

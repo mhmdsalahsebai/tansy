@@ -2952,6 +2952,16 @@ describe("audit log", () => {
     const dump = JSON.stringify(all.rows);
     for (const secret of [PASSWORD, "plaintext-oauth-secret"]) expect(dump).not.toContain(secret);
   });
+
+  it("folds repeated denials from one caller at one address into one entry", async () => {
+    const path = "/api/users/fold-check";
+    for (let i = 0; i < 5; i++) expect((await call(path, { as: member })).status).toBe(403);
+    // The audit write runs as the response goes out, so give the last one a moment.
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const denied = await db.query(`SELECT metadata FROM "AuditLog" WHERE action='authz.denied' AND "actorId"=$1`, [member.id]);
+    const here = denied.rows.filter((row) => JSON.stringify(row.metadata).includes("fold-check"));
+    expect(here).toHaveLength(1);
+  });
 });
 
 describe("browser protections", () => {

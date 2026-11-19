@@ -37,7 +37,7 @@ const SECTIONS = [
     // `index` and `community` are written by hand and sit around the generated pages.
     before: ["index"],
     after: ["community"],
-    order: ["blog", "lms", "shop", "payments", "subscriptions", "forms", "newsletter", "email", "captcha", "ai", "analytics", "request-logs", "seo", "social-sign-in", "pwned-passwords", "multi-tenant"],
+    order: ["blog", "lms", "shop", "payments", "subscriptions", "forms", "newsletter", "email", "captcha", "ai", "analytics", "request-logs", "logs-otlp", "seo", "social-sign-in", "pwned-passwords", "multi-tenant"],
   },
   {
     dir: "themes",
