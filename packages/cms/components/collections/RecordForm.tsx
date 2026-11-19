@@ -23,6 +23,7 @@ import { adminPath, apiPath } from "../../lib/paths";
 import { relativeTime } from "../../lib/time";
 import { cn } from "../../lib/utils";
 import { buildRecordPath } from "../../core/urls/pattern";
+import { withBasePath } from "../../core/urls/base-path";
 import { alignStream, isSyncedStream } from "../../core/i18n/synced";
 import { canEditLocale, FieldLanguageNote, LanguagePanel, LanguageSwitcher, type EditorLocalization } from "./LanguagePanel";
 import { ReviewPanel } from "./ReviewPanel";
@@ -32,6 +33,12 @@ interface Props {
   catalog: EditorCatalog;
   /** Set when editing an existing record. */
   recordId?: string;
+  /**
+   * The path prefix the site serves this record's scope value under, such as one tenant's
+   * "/acme", or "" for a site served at the root. The dashboard itself is never prefixed, so
+   * only the site addresses shown here carry it.
+   */
+  siteBasePath?: string;
 }
 
 /** How long typing has to pause before the editor saves on its own. */
@@ -131,7 +138,7 @@ function FieldActionBar({ actions, collection, recordId, field, value, values, o
 }
 
 /** The create and edit form, generated from the collection's fields. Collections with blocks or rich text get a writing canvas. */
-export default function RecordForm({ collection, catalog, recordId: initialId }: Props) {
+export default function RecordForm({ collection, catalog, recordId: initialId, siteBasePath = "" }: Props) {
   const { recordPanels } = useAdminClient();
   const { locale: uiLocale } = useAdminLocale();
   const { t } = useT();
@@ -539,7 +546,9 @@ export default function RecordForm({ collection, catalog, recordId: initialId }:
   const title = titleField && typeof namedValues[titleField.name] === "string" && String(namedValues[titleField.name]).trim();
   const issueList = Object.entries(issues);
   const streams = collection.fields.filter((field) => inputOf(field) === "stream").map((field) => ({ name: field.name, label: labelOf(field), blocks: Array.isArray(values[field.id]) ? (values[field.id] as Block[]) : [] }));
-  const address = published && collection.urlPattern ? buildRecordPath(collection.urlPattern, liveValues) : null;
+  // The address the site serves, so a scope value served under a path prefix shows its own.
+  const built = published && collection.urlPattern ? buildRecordPath(collection.urlPattern, liveValues) : null;
+  const address = built === null ? null : withBasePath(siteBasePath, built);
 
   const saveState = saving ? t("editor.saving") : autosaveFailed ? t("editor.saveFailed") : dirty ? (canAutosave || recordId ? t("editor.unsaved") : t("editor.saveToAutosave")) : draftSavedAt ? t("editor.draftSavedAgo", { when: relativeTime(draftSavedAt, undefined, uiLocale) }) : loaded.updatedAt ? t("editor.savedAgo", { when: relativeTime(loaded.updatedAt, undefined, uiLocale) }) : canAutosave ? t("editor.savesAsYouType") : t("editor.notSavedYet");
 
@@ -604,7 +613,7 @@ export default function RecordForm({ collection, catalog, recordId: initialId }:
           {notice && <Alert kind="success">{notice}</Alert>}
           {moved && (
             <Alert kind="warning">
-              {t("editor.moved", { from: moved.from, to: moved.to })}{" "}
+              {t("editor.moved", { from: withBasePath(siteBasePath, moved.from), to: withBasePath(siteBasePath, moved.to) })}{" "}
               <button type="button" className="cms-medium cms-underline" onClick={() => void createRedirect()}>{t("editor.redirectOld")}</button>
               {t("editor.or")}
               <button type="button" className="cms-medium cms-underline" onClick={() => setMoved(null)}>{t("editor.leaveIt")}</button>

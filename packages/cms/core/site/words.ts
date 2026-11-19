@@ -4,6 +4,7 @@
  */
 import { formatters, mergeMessages, messagesFor, type Formatters, type Messages } from "../i18n/messages";
 import { hrefFor, localizePath, type SiteRouting } from "../i18n/routing";
+import { withBasePath } from "../urls/base-path";
 
 /**
  * A page's language and the words in it: plugins' site words, under each plugin's name,
@@ -14,8 +15,11 @@ import { hrefFor, localizePath, type SiteRouting } from "../i18n/routing";
 export interface SiteWords {
   locale: string;
   messages: Messages;
-  /** On a site with more than one language: the page's, and how addresses carry it. See `sitePath()` and `contentLocale()`. */
-  site?: { locale: string; defaultLocale: string; routing: SiteRouting };
+  /**
+   * On a site with more than one language, or one served under a path prefix: the page's
+   * language, how addresses carry it, and the prefix. See `sitePath()` and `contentLocale()`.
+   */
+  site?: { locale: string; defaultLocale: string; routing: SiteRouting; basePath?: string };
 }
 
 /** The language plugins write their site words in first, which every other falls back to. */
@@ -82,11 +86,14 @@ export function pageWords(locale: string, chain: readonly string[], sources: { p
 
 /**
  * A site address in the page's language: "/cart" is "/ar/cart" on an Arabic page. For a
- * client component, which can't take `language.href()` as a prop. On a site with one language, the address as given.
+ * client component, which can't take `language.href()` as a prop. On a site with one language,
+ * the address as given, unless the site is served under a path prefix, such as one tenant's
+ * "/acme", which every address carries.
  */
 export function sitePath(words: SiteWords | null | undefined, path: string): string {
   const site = words?.site;
-  return site ? hrefFor(localizePath(path, site.locale, site.routing, site.defaultLocale)) : path;
+  if (!site) return path;
+  return withBasePath(site.basePath, hrefFor(localizePath(path, site.locale, site.routing, site.defaultLocale)));
 }
 
 /** The language to read records in, as the records API's `locale`, or undefined on a site with one language. */

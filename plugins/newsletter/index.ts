@@ -54,7 +54,11 @@ async function findSubscriber(context: ExtensionContext, address: string) {
   return items[0] ?? null;
 }
 
-/** The site's address: a tenant's own domain when it has one (core/scope), otherwise the one the plugin was given. */
+/**
+ * Where the site's pages start: a tenant's own domain when it has one, its path prefix on the
+ * instance's address until then (core/scope), otherwise the address the plugin was given. It
+ * can hold a path, so `absolute()` writes a path after it rather than joining with new URL().
+ */
 const siteOf = async (context: ExtensionContext, siteUrl: string) => (await context.scope.siteUrl()) ?? siteUrl;
 
 /** Where a page of the site is, from its path: the address, in a language, on a site with more than one. */
@@ -65,8 +69,8 @@ async function siteLinks(context: ExtensionContext, given: string) {
     defaultLocale: languages.defaultLocale,
     /** The newsletter page, with a token after `#`, which browsers never send to a server or pass on to another site. */
     page: (locale: string, hash = "") => `${absolute(siteUrl, languages.items.length > 1 ? languages.href(path, locale) : path)}${hash}`,
-    /** RFC 8058's one-click address, which mail clients POST to. */
-    oneClick: (token: string) => absolute(siteUrl, apiPath(`/ext/newsletter/unsubscribe/${token}`)),
+    /** RFC 8058's one-click address, which mail clients POST to. The API is never under a tenant's path prefix, so this starts at the origin. */
+    oneClick: (token: string) => absolute(new URL(siteUrl).origin, apiPath(`/ext/newsletter/unsubscribe/${token}`)),
   };
 }
 

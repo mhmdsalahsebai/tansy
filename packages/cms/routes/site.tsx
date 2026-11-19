@@ -15,7 +15,8 @@ import { previewTokenFromCookie } from "../core/site/preview";
 import { createSite } from "../core/site/reader";
 import { siteAdminBar } from "../core/site/admin-bar";
 import { withScope } from "../core/scope/context";
-import { siteScope } from "../core/scope/site";
+import { siteScope, type SiteScope } from "../core/scope/site";
+import { stripBasePath, withBasePath } from "../core/urls/base-path";
 import type { ThemeComponents } from "../core/theme/define";
 import { installedThemes, themeNamed } from "../core/theme/installed";
 import { chosenThemeHere } from "../core/site/identity";
@@ -64,21 +65,26 @@ function createLoader(config: CmsConfig, { components, renderers }: SiteEntry) {
   const reader = createSite(config);
   // The components where this build serves a site at all. Which theme it serves is a per-request answer.
   const installed = components !== null && installedThemes(config).length > 0 ? components : null;
+  // Row scopes: the page reads in the scope value its host or path is for, such as one tenant's
+  // site. Once per request, as the page, its metadata and the landing redirect all need it.
+  const scopeOf = cache((path: string): Promise<SiteScope | null> => headers().then((requestHeaders) => siteScope(requestHeaders, path)));
   // Once per request, as metadata and the page both need the theme and the page.
   const load = cache(async (path: string, page: number): Promise<{ theme: SiteTheme | null; page: LoadedPage | null }> => {
     if (installed === null) return { theme: null, page: null };
     const requestHeaders = await headers();
-    // Row scopes: the page reads in the scope value its host or path is for, such as one tenant's site.
-    const scope = await siteScope(requestHeaders, path);
+    const scope = await scopeOf(path);
     if (!scope) return { theme: null, page: { type: "missing" } };
     const previewToken = await previewTokenFromCookie();
+    // A value served under a path prefix, such as one tenant's /acme, matches the address
+    // without it, and puts it back on every address the page builds.
+    const inside = stripBasePath(path, scope.basePath);
     return withScope(scope.value, async () => {
       const theme = await themeHere(config, installed);
       if (!theme) return { theme: null, page: null };
-      return { theme, page: await loadSitePage(theme, reader, path, { previewToken, renderers, page, host: requestHeaders.get("host") }) };
-    });
+      return { theme, page: await loadSitePage(theme, reader, inside, { previewToken, renderers, page, host: requestHeaders.get("host"), basePath: scope.basePath }) };
+    }, scope.basePath);
   });
-  return { load };
+  return { load, scopeOf };
 }
 
 /**
@@ -88,21 +94,26 @@ function createLoader(config: CmsConfig, { components, renderers }: SiteEntry) {
  * person may view or with queries marked `viewer`, reads as them under API rules alone.
  */
 export function createSitePage(config: CmsConfig, { components, renderers }: SiteEntry) {
-  const { load } = createLoader(config, { components, renderers });
+  const { load, scopeOf } = createLoader(config, { components, renderers });
   return async function SiteCatchAll({ params, searchParams }: PageProps): Promise<ReactNode> {
-    const path = requestedPath((await params).path);
-    if (path === "/") {
-      const to = await languageLanding();
-      if (to) redirect(to);
+    const requested = requestedPath((await params).path);
+    const scope = await scopeOf(requested);
+    // The address inside the scope value's own site, which is what its pages are written against.
+    const path = stripBasePath(requested, scope?.basePath);
+    if (path === "/" && scope) {
+      // In the scope, since each value has its own languages, and prefixed, since it is this value's home.
+      const to = await withScope(scope.value, () => languageLanding(), scope.basePath);
+      if (to) redirect(withBasePath(scope.basePath, to));
     }
-    const { theme, page } = await load(path, pageNumber((await searchParams)?.page));
+    const { theme, page } = await load(requested, pageNumber((await searchParams)?.page));
     if (page?.type === "redirect") {
       if (page.status === 301 || page.status === 308) permanentRedirect(page.to);
       redirect(page.to);
     }
     if (!theme || !page || page.type === "missing") {
       // A site with no page at its root behaves like the CMS on its own: sign-in, or the dashboard.
-      if (path === "/") redirect(await resolveLanding());
+      // Not under a scope value's prefix, which is one site among many and not the instance's root.
+      if (path === "/" && !scope?.basePath) redirect(await resolveLanding());
       notFound();
     }
     const record = page.props.record as { id?: unknown } | null;
@@ -110,7 +121,7 @@ export function createSitePage(config: CmsConfig, { components, renderers }: Sit
     return (
       <>
         {bar && <AdminBar bar={bar} />}
-        <ThemedPage theme={theme} page={page} renderers={renderers} exitPreviewHref={apiPath("/preview/exit")} />
+        <ThemedPage theme={theme} page={page} renderers={renderers} exitPreviewHref={apiPath(`/preview/exit${scope?.basePath ? `?to=${encodeURIComponent(scope.basePath)}` : ""}`)} />
       </>
     );
   };

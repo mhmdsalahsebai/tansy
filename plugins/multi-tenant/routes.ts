@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
+import { forgetSlugs, usableSlug } from "./paths";
 import { claimsOn, DEFAULT_RECORD, dnsHasProof, DOMAINS, domainsOf, findDomain, forgetHosts, normalizeHost, newToken, proof, RECORD_NAME, type Domain } from "./domains";
 
 type Principal = ExtensionRouteContext["principal"];
@@ -150,6 +151,8 @@ export function tenantRoutes(options: { siteUrl: string; dnsServers?: string[] }
       body: z.object({ name: z.string().trim().min(1).max(120), slug: z.string().regex(TENANT_SLUG) }),
       handler: async (context) => {
         const user = userOf(context.principal);
+        // Its short name is also the path its site is served under, so it can't be one the CMS answers on.
+        if (!usableSlug(context.body.slug)) throw new HttpError(400, "VALIDATION_FAILED", "That short name belongs to the CMS itself. Choose another.");
         // As the server: better-auth makes the creator the tenant's first member, with the creator role.
         const created = await context.auth.server<{ id: string }>("/organization/create", {
           body: { name: context.body.name, slug: context.body.slug, userId: user.id, keepCurrentActiveOrganization: true, status: "active" },
@@ -157,6 +160,8 @@ export function tenantRoutes(options: { siteUrl: string; dnsServers?: string[] }
         const tenant = await findTenant(context, created.id);
         if (!tenant) throw new Error("The new tenant wasn't saved.");
         context.auditTarget("tenant", tenant.id, { name: tenant.name, slug: tenant.slug });
+        // Its site answers under its short name at once on this server.
+        forgetSlugs();
         return publicTenant(tenant);
       },
     }),

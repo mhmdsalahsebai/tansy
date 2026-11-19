@@ -5,6 +5,7 @@ import { HttpError } from "../http/errors";
 import type { ApiKeyPrincipal, Principal, UserPrincipal } from "../authz/principal";
 import { isOwnRecordPermission, scopeablePluginPermissions, scopedCollectionId, type Permission } from "../authz/permissions";
 import { isScopeValue } from "./context";
+import { isBasePath } from "../urls/base-path";
 import { scopedCollectionIds } from "./registry";
 import type { ScopeLimits } from "./limits";
 
@@ -42,9 +43,17 @@ export interface ScopeProvider {
   values(context: ExtensionContext): string[] | Promise<string[]>;
   /**
    * The origin a value's site is served from, such as "https://acme.example", for links in
-   * emails and feeds. Null, or left out, when the value has none of its own.
+   * emails and feeds. Null, or left out, when the value has none of its own: links then start
+   * at the instance's own address, with the value's `basePath` when it has one.
    */
   siteUrl?(value: string, context: ExtensionContext): string | null | Promise<string | null>;
+  /**
+   * The path prefix this value's site is served under on the instance's own address, such as
+   * "/acme", or null (or left out) when it has none. The site layer strips it from the address
+   * before matching a record and puts it back on every address it builds. One segment only.
+   * Whether a request is under it is the site layer's business, not the provider's.
+   */
+  basePath?(value: string, context: ExtensionContext): string | null | Promise<string | null>;
   /**
    * What one value may use, such as a tenant's plan: records, bytes of files, API requests a
    * minute. Core enforces them. Null or left out for no limit. Read again every few seconds.
@@ -94,15 +103,10 @@ export async function initialScopeValue(): Promise<string> {
   return value;
 }
 
-/**
- * The origin of the current scope value's own site, from the provider, or null outside a value
- * or when it has none. Only http(s) origins are passed on.
- */
-export async function scopeSiteUrl(): Promise<string | null> {
-  const { currentScopeValue } = await import("./context");
-  const value = currentScopeValue();
+/** The origin of one value's own site, from the provider, or null when it has none. Only http(s) origins are passed on. */
+async function scopeSiteOrigin(value: string): Promise<string | null> {
   const active = scopeProvider();
-  if (value === null || !active?.provider.siteUrl) return null;
+  if (!active?.provider.siteUrl) return null;
   const given = await active.provider.siteUrl(value, await contextFor(active.plugin));
   if (typeof given !== "string") return null;
   try {
@@ -111,6 +115,46 @@ export async function scopeSiteUrl(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Where the current scope value's site begins, for absolute links in emails and feeds: the
+ * origin of its own site when the provider names one, such as "https://acme.example", and
+ * otherwise the instance's own address with the value's path prefix on the end, such as
+ * "https://cms.example/acme" (MULTI_TENANT_PLAN.md, "A tenant's path prefix"). Null outside a
+ * value, or when the value has neither.
+ *
+ * It can hold a path, so a path is joined onto it by writing one after the other:
+ * `new URL(path, base)` drops a path on the base and would send the link to the wrong site.
+ */
+export async function scopeSiteUrl(): Promise<string | null> {
+  const { currentScopeValue } = await import("./context");
+  const value = currentScopeValue();
+  if (value === null) return null;
+  const own = await scopeSiteOrigin(value);
+  if (own) return own;
+  const base = await scopeBasePathOf(value);
+  if (!base) return null;
+  const { baseUrl } = await import("../http/request");
+  // The instance's own address, never the Host header: these end up in email.
+  const instance = baseUrl().replace(/\/+$/, "");
+  return /^https?:\/\//.test(instance) ? `${instance}${base}` : null;
+}
+
+/**
+ * The path prefix one value's site is served under, from the provider, or "" when it has none
+ * or there is no provider. A prefix that isn't one path segment is left out.
+ */
+export async function scopeBasePathOf(value: string | null): Promise<string> {
+  const active = scopeProvider();
+  if (value === null || !active?.provider.basePath) return "";
+  const given = await active.provider.basePath(value, await contextFor(active.plugin));
+  if (given === null || given === undefined) return "";
+  if (!isBasePath(given)) {
+    console.warn(`[scope] ${active.plugin} gave ${JSON.stringify(given)} as ${value}'s base path, which isn't one path segment. It was left out.`);
+    return "";
+  }
+  return given;
 }
 
 /** Every active value, for jobs that run once per value. Empty without a provider. Values that aren't one are left out. */

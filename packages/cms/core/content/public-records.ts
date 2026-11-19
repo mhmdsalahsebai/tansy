@@ -14,6 +14,8 @@ import { filterPaths, linkedIds, readableColumns, relationCatalog, resolveRelati
 import { parseExpand, parseFields, parseSort, pickFields, type RecordListQuery, type RecordViewQuery, type Tree } from "./query";
 import { flattenRecord, readableFields, type RecordRow } from "./records";
 import { buildRecordPath } from "../urls/pattern";
+import { menuWithBasePath } from "../urls/base-path";
+import { currentBasePath } from "../scope/context";
 import { isLocalizedCollection, localizedFields } from "../i18n/context";
 import { inLocale } from "../i18n/request";
 import { chainFor, localeCatalog } from "../i18n/locales";
@@ -65,9 +67,19 @@ export function callerFilterProblem(collection: CollectionWithFields, principal:
   return validateFilter(filter, readableColumns(collection, principal), limits, relations);
 }
 
-/** A flat record: system columns, then each field the caller may read. */
+/**
+ * A flat record: system columns, then each field the caller may read.
+ *
+ * On a site served under a path prefix, such as one tenant's /acme, the site paths hand-typed
+ * into a menu carry it (MULTI_TENANT_PLAN.md, "A tenant's path prefix"). The prefix is set by
+ * the site layer alone, so what the HTTP API and the dashboard read is the stored value.
+ */
 function present(collection: CollectionWithFields, row: RecordRow, principal: Principal, expand?: Expanded): Presented {
-  const values = Object.fromEntries(readableFields(collection, principal, row).map((field) => [field.name, row[field.name] ?? null]));
+  const base = currentBasePath();
+  const values = Object.fromEntries(readableFields(collection, principal, row).map((field) => {
+    const value = row[field.name] ?? null;
+    return [field.name, base && field.type === "stream" ? menuWithBasePath(value, base) : value];
+  }));
   return {
     id: row.id,
     status: row.status,
@@ -87,11 +99,13 @@ type Translations = Map<number, { locales: string[]; values: Record<string, Reco
 /**
  * `?locale=*`: each localized field as `{ en: …, fr: … }`. Every language's translation
  * passes the view rule on its own, so a draft the caller can't see is left out, and
- * hidden languages only reach staff.
+ * hidden languages only reach staff. A menu's site paths carry the request's path prefix, as
+ * they do in one language, so every language of a read is the same shape.
  */
 async function allTranslations(collection: CollectionWithFields, rows: RecordRow[], principal: Principal, request: RuleRequest): Promise<Translations> {
   const result: Translations = new Map();
   if (!rows.length || !isLocalizedCollection(collection)) return result;
+  const prefix = currentBasePath();
   const catalog = await localeCatalog();
   const staff = holdsRecordPermissionForSome(principal.permissions, "record:read", collection.id);
   const readable = new Set(readableFields(collection, principal).map((field) => field.name));
@@ -109,7 +123,11 @@ async function allTranslations(collection: CollectionWithFields, rows: RecordRow
     const entry = result.get(base.id) ?? { locales: [], values: {}, statuses: {} };
     entry.locales.push(code);
     entry.statuses[code] = candidate.status;
-    for (const field of fields) if (readable.has(field.name)) (entry.values[field.name] ??= {})[code] = candidate[field.name] ?? null;
+    for (const field of fields) {
+      if (!readable.has(field.name)) continue;
+      const value = candidate[field.name] ?? null;
+      (entry.values[field.name] ??= {})[code] = prefix && field.type === "stream" ? menuWithBasePath(value, prefix) : value;
+    }
     result.set(base.id, entry);
   }
   return result;

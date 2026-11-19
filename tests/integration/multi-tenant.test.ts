@@ -461,6 +461,91 @@ describe.runIf(TENANTS)("multi-tenant plugin", () => {
       expect(claimed.primary).toBe(false);
     });
   });
+  /**
+   * A tenant with no domain of its own is served under its short name on the instance's own
+   * address: /acme/prefix/home. A verified domain still decides for everyone, so a path can
+   * never move a visitor off a tenant's domain onto another tenant. The block above leaves
+   * acme without a domain and globex with two, which is exactly the pair this needs.
+   */
+  describe("sites under a tenant's path prefix", () => {
+    const instance = new URL(baseUrl).hostname;
+    let prefixedId: number;
+
+    beforeAll(async () => {
+      root = await signIn("root@example.test");
+      const made = await call("/api/collections", { method: "POST", as: root, body: { name: "Prefixed pages", slug: "prefixed-pages", scoped: true, urlPattern: "/prefix/:slug", fields: [{ name: "slug", type: "text", config: { required: true, unique: true } }, { name: "title", type: "text" }] } });
+      expect(made.status, made.text).toBe(200);
+      prefixedId = made.json.id;
+      const field = (name: string) => made.json.fields.find((item: { name: string }) => item.name === name).id;
+      expect((await call(`/api/collections/${prefixedId}/rules`, { method: "PUT", as: root, body: { listRule: "", viewRule: "", createRule: null, updateRule: null, deleteRule: null } })).status).toBe(200);
+      for (const [tenant, slug, text] of [[acme, "acme-only", "acme-prefixed-page"], [globex, "globex-only", "globex-prefixed-page"]] as const) {
+        const page = await call(`/api/collections/${prefixedId}/content`, { method: "POST", as: root, tenant, body: { status: "published", values: [{ fieldId: field("slug"), value: slug }, { fieldId: field("title"), value: text }] } });
+        expect(page.status, page.text).toBe(200);
+      }
+    });
+
+    it("serves each tenant's own pages under its short name, and only its own", async () => {
+      const acmePage = await onHost(instance, "/acme/prefix/acme-only");
+      expect(acmePage.status, acmePage.text.slice(0, 300)).toBe(200);
+      expect(acmePage.text).toContain("acme-prefixed-page");
+      expect(acmePage.text).not.toContain("globex-prefixed-page");
+      // A tenant keeps its prefix once it has a domain too, so links shared before it don't break.
+      const globexPage = await onHost(instance, "/globex/prefix/globex-only");
+      expect(globexPage.status).toBe(200);
+      expect(globexPage.text).toContain("globex-prefixed-page");
+      // An address under the wrong tenant's prefix is as missing as one that never existed.
+      expect((await onHost(instance, "/globex/prefix/acme-only")).status).toBe(404);
+      expect((await onHost(instance, "/acme/prefix/globex-only")).status).toBe(404);
+      // Without a prefix the instance's own address has no tenant, so no scoped page is there.
+      expect((await onHost(instance, "/prefix/acme-only")).status).toBe(404);
+      // Nor can a prefix name a tenant that doesn't exist.
+      expect((await onHost(instance, "/nobody/prefix/acme-only")).status).toBe(404);
+    });
+
+    it("never lets a prefix move a visitor off a tenant's verified domain", async () => {
+      // globex.example.test is globex's, so the path is read as one of globex's own addresses.
+      expect((await onHost("globex.example.test", "/acme/prefix/acme-only")).status).toBe(404);
+      const own = await onHost("globex.example.test", "/prefix/globex-only");
+      expect(own.status).toBe(200);
+      expect(own.text).toContain("globex-prefixed-page");
+      // Its own prefix on its own domain is still its own site, never another tenant's.
+      const twice = await onHost("globex.example.test", "/globex/prefix/globex-only");
+      expect(twice.status).toBe(200);
+      expect(twice.text).toContain("globex-prefixed-page");
+      expect(twice.text).not.toContain("acme-prefixed-page");
+    });
+
+    it("puts the prefix on the addresses the site hands back: redirects and previews", async () => {
+      const made = await call("/api/redirects", { method: "POST", as: root, tenant: acme, body: { from: "/prefix/was-here", to: "/prefix/acme-only", status: 301 } });
+      expect(made.status, made.text).toBe(200);
+      const moved = await onHost(instance, "/acme/prefix/was-here");
+      expect([301, 308]).toContain(moved.status);
+      expect(moved.location).toBe("/acme/prefix/acme-only");
+      // The same address without the prefix belongs to no tenant.
+      expect((await onHost(instance, "/prefix/was-here")).status).toBe(404);
+
+      // A preview opens where the record lives, which for acme is under its prefix.
+      const page = (await call(`/api/collections/${prefixedId}/content`, { as: root, tenant: acme })).json.items[0];
+      const token = await call(`/api/collections/${prefixedId}/content/${page.id}/preview-token`, { method: "POST", as: root, tenant: acme, body: {} });
+      expect(token.status, token.text).toBe(200);
+      const entered = await onHost(instance, `/api/preview/enter?token=${encodeURIComponent(token.json.token)}`, { headers: { cookie: root.cookie!, "x-cms-tenant": acme } });
+      expect(entered.status).toBe(307);
+      expect(entered.location).toBe("/acme/prefix/acme-only");
+    });
+
+    it("leaves the API unprefixed, for a headless site that routes for itself", async () => {
+      const resolved = await call("/api/resolve?path=/prefix/acme-only", { as: root, tenant: acme });
+      expect(resolved.status, resolved.text).toBe(200);
+      expect(resolved.json).toMatchObject({ type: "record", path: "/prefix/acme-only" });
+      expect(resolved.json.record.title).toBe("acme-prefixed-page");
+      // The prefix is the site layer's: through the API it is just an address nothing is at.
+      expect((await call("/api/resolve?path=/acme/prefix/acme-only", { as: root, tenant: acme })).status).toBe(404);
+      // A redirect the API answers with is the stored address, with no prefix on it.
+      const moved = await call("/api/resolve?path=/prefix/was-here", { as: root, tenant: acme });
+      expect(moved.json).toMatchObject({ type: "redirect", to: "/prefix/acme-only" });
+    });
+  });
+
   describe("a tenant's life: limits, suspending, export, import and purge", () => {
     let initech: string;
     let fileId: string;

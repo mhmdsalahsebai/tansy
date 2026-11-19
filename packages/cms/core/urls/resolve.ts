@@ -16,6 +16,7 @@ import { readLocale, withLocale } from "../i18n/storage";
 import type { ResolvedAddress } from "../site/page";
 import type { SiteRecord } from "../theme/define";
 import { normalizePath } from "./path";
+import { siteHref } from "./site-href";
 import { buildRecordPath, comparePatterns, insideCms, matchPattern, type PathMatch } from "./pattern";
 import { findRedirect } from "./redirects";
 import { currentScope } from "../scope/context";
@@ -80,6 +81,7 @@ export async function resolveAddress(requested: string, view: RecordViewQuery, p
   let path = fullPath;
   if (options.locale) code = addressLocale(catalog, options.locale);
   else if (multilingual) ({ locale: code, path } = splitLocalePath(fullPath, settings.routing, publicCodes, catalog.defaultLocale, options.host));
+  // Addresses are matched and compared without the scope value's path prefix, and carry it on the way out.
   const addressIn = (target: string, locale: string) => hrefFor(localizePath(target, locale, settings.routing, catalog.defaultLocale));
 
   const candidates = await urlCandidates(path);
@@ -99,12 +101,13 @@ export async function resolveAddress(requested: string, view: RecordViewQuery, p
 
   if (multilingual) {
     const moved = await translatedAddress(candidates, code, publicCodes, req, base, canView, reading, addressIn);
-    if (moved && moved !== fullPath) return { type: "redirect", to: moved, status: 302 };
+    if (moved && moved !== fullPath) return { type: "redirect", to: siteHref(moved), status: 302 };
   }
 
   // Redirects compare whole addresses, language prefix included.
   const redirect = await findRedirect(fullPath);
-  return redirect ? { type: "redirect", to: redirect.to, status: redirect.status } : null;
+  // Redirects are stored as plain site addresses, so the prefix goes back on the way out.
+  return redirect ? { type: "redirect", to: siteHref(redirect.to), status: redirect.status } : null;
 }
 
 /** The record's address in each public language it can be viewed in. A shared collection has the same values in every one. */
@@ -119,7 +122,7 @@ async function alternatesOf(collection: CollectionWithFields, row: RecordRow, co
     }
     if (!translation || !canView(source, flattenRecord(translation), { ...base, locale: code })) continue;
     const path = buildRecordPath(collection.urlPattern!, translation);
-    if (path) alternates[code] = addressIn(path, code);
+    if (path) alternates[code] = siteHref(addressIn(path, code));
   }
   return alternates;
 }

@@ -9,6 +9,7 @@ import { tenantTools } from "./tools";
 import { messages } from "./messages";
 import { DEFAULT_RECORD, DOMAINS, domainsSchema, originFor, primaryHost, RECORD_NAME, tenantForHost, verifiedHosts } from "./domains";
 import { DEFAULT_PURGE_DAYS, expireInvitations, PLANS, plansSchema, recheckDomains, runDuePurges, scopeLimitsOf } from "./lifecycle";
+import { basePathOf, tenantForPath } from "./paths";
 import { activeTenant, ensureDefaultTenant, findMember, findTenant, listTenants, membershipsOf, PLUGIN, SYSTEM_COLLECTIONS, TENANT_HEADER, TENANT_ID } from "./tenants";
 
 export { DEFAULT_TENANT, TENANT_HEADER } from "./tenants";
@@ -101,11 +102,17 @@ export function multiTenant(options: MultiTenantOptions) {
       label: "Tenant",
       everyValue: EVERY_TENANT,
       scopeNewCollections: parsed.scopeNewCollections,
-      resolve: async ({ host, headers, principal }, context) => {
+      resolve: async ({ host, headers, path, principal }, context) => {
         // A verified domain decides for everyone: a tenant's site is that tenant's, whoever asks.
         const byHost = await tenantForHost(context, host);
         if (byHost) return byHost;
-        // Visitors get a tenant from its domain only. A header is never enough for them.
+        // No tenant has verified this host, so it is the instance's own address, where a first
+        // segment naming a tenant serves that tenant's site: /acme/blog/hello. Read below the
+        // host, and never on a tenant's domain, so a path can't move a visitor between tenants.
+        // The CMS's own addresses are left out, so a tenant can't be reached under /api or /dashboard.
+        const byPath = await tenantForPath(context, path);
+        if (byPath) return byPath;
+        // Visitors get a tenant from its domain or its prefix only. A header is never enough for them.
         if (principal.kind === "anonymous") return null;
         const named = headers.get(TENANT_HEADER)?.trim();
         if (named) return named;
@@ -122,6 +129,8 @@ export function multiTenant(options: MultiTenantOptions) {
       rolesFor: async (principal, value, context) => (await findMember(context, value, principal.user.id))?.roles ?? [],
       initial: (context: ExtensionContext) => ensureDefaultTenant(context),
       values: async (context) => (await listTenants(context)).filter((tenant) => tenant.status === "active").map((tenant) => tenant.id),
+      // Without a domain of its own, a tenant's site is served under its short name on the instance's address.
+      basePath: (value, context) => basePathOf(context, value),
       // Links in a tenant's emails and feeds go to its own domain, once it has a verified one.
       siteUrl: async (value, context) => {
         const host = await primaryHost(context, value);

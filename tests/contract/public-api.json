@@ -861,6 +861,7 @@
         "storageBytes?": "number | null | undefined"
       },
       "ScopeProvider": {
+        "basePath?": "((value: string, context: import(\"./plugin\").ExtensionContext) => string | null | Promise<string | null>) | undefined",
         "everyValue?": "import(\"../core/authz/permissions\").Permission | undefined",
         "exists": "(value: string, context: import(\"./plugin\").ExtensionContext) => boolean | Promise<boolean>",
         "initial": "(context: import(\"./plugin\").ExtensionContext) => string | Promise<string>",
@@ -900,7 +901,7 @@
       "SiteWords": {
         "locale": "string",
         "messages": "import(\"use-intl/core\").AbstractIntlMessages",
-        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; basePath?: string; } | undefined"
       },
       "StoreListOptions": {
         "before?": "string | undefined",
@@ -989,12 +990,13 @@
       "FieldValue": "({ type, value, theme, renderers }: import(\"./react\").FieldRenderProps & { theme?: import(\"./react\").Renderers; renderers?: import(\"./react\").Renderers; }) => import(\"react\").ReactElement<import(\"./react\").FieldRenderProps, string | import(\"react\").JSXElementConstructor<any>> | null",
       "LoadedPage": "type { type: \"redirect\"; to: string; status: number; } | { type: \"missing\"; } | { type: \"page\"; template: string; source: import(\"./react\").TemplateSource; accent?: string; props: Omit<import(\"./theme\").TemplateProps<Options>, \"stream\">; everyPage?: { page: import(\"./plugin\").EveryPageInfo; props: Record<string, unknown>; }; }",
       "LoadOptions": {
+        "basePath?": "string | undefined",
         "host?": "string | null | undefined",
         "page?": "string | number | string[] | null | undefined",
         "previewToken?": "string | null | undefined",
         "renderers?": "import(\"./react\").Renderers | undefined"
       },
-      "loadSitePage": "<Options>(theme: import(\"./react\").SiteTheme<Options>, reader: import(\"./server\").SiteReader, requested: string, { previewToken, renderers, page: requestedPage, host }?: import(\"./react\").LoadOptions) => Promise<import(\"./react\").LoadedPage<Options>>",
+      "loadSitePage": "<Options>(theme: import(\"./react\").SiteTheme<Options>, reader: import(\"./server\").SiteReader, requested: string, { previewToken, renderers, page: requestedPage, host, basePath }?: import(\"./react\").LoadOptions) => Promise<import(\"./react\").LoadedPage<Options>>",
       "Menu": "({ items, className }: { items: unknown; className?: string; }) => import(\"react\").JSX.Element | null",
       "MenuLink": {
         "id": "string",
@@ -1051,7 +1053,7 @@
       "SiteWords": {
         "locale": "string",
         "messages": "import(\"use-intl/core\").AbstractIntlMessages",
-        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; basePath?: string; } | undefined"
       },
       "StreamField": "({ blocks, components, theme, renderers, fallback, words }: { blocks: unknown; components?: import(\"./react\").BlockComponents; theme?: import(\"./react\").Renderers; renderers?: import(\"./react\").Renderers; fallback?: import(\"react\").ComponentType<import(\"./react\").BlockProps>; words?: import(\"./plugin\").SiteWords; }) => (import(\"react\").ReactElement<import(\"./react\").BlockProps, string | import(\"react\").JSXElementConstructor<any>> | null)[] | null",
       "TemplateSource": "type \"theme\" | \"plugin\"",
@@ -1315,7 +1317,7 @@
       "SiteWords": {
         "locale": "string",
         "messages": "import(\"use-intl/core\").AbstractIntlMessages",
-        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; } | undefined"
+        "site?": "{ locale: string; defaultLocale: string; routing: import(\"../core/i18n/routing\").SiteRouting; basePath?: string; } | undefined"
       },
       "StreamProps": {
         "fallback?": "import(\"react\").ComponentType<import(\"./react\").BlockProps> | undefined",

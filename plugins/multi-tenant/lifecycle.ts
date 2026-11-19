@@ -1,5 +1,6 @@
 import type { ExtensionContext, RecordValues, ScopeLimits } from "tansy/plugin";
 import { DOMAINS, dnsHasProof, forgetHosts, type Domain } from "./domains";
+import { forgetSlugs } from "./paths";
 import { findTenant, INVITATIONS, listTenants, MEMBERS, ORGANIZATIONS, PLUGIN, SESSIONS, TENANT_ID, type Tenant } from "./tenants";
 
 /**
@@ -110,8 +111,9 @@ export async function scopeLimitsOf(context: ExtensionContext, tenant: string): 
 
 async function setStatus(context: ExtensionContext, tenant: Tenant & { recordId: number }, status: "active" | "suspended") {
   await context.system.records.update(ORGANIZATIONS, tenant.recordId, { organizationStatus: status });
-  // Its domains stop (or start) routing to it at once on this server.
+  // Its domains, and its path prefix, stop (or start) routing to it at once on this server.
   forgetHosts();
+  forgetSlugs();
 }
 
 /** Closes a tenant: nothing resolves to it, so no reads, no writes and no sign-in to it. Its data stays. */
@@ -160,6 +162,7 @@ export async function purgeTenant(context: ExtensionContext, tenant: string) {
   await deleteWhere(context, PLANS, `organizationId = ${quoted}`);
   await deleteWhere(context, ORGANIZATIONS, `authId = ${quoted}`);
   forgetHosts();
+  forgetSlugs();
   await refreshOrigins(context);
   await context.scope.forgetLimits(tenant);
   return removed;

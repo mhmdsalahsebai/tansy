@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import { isBasePath } from "../urls/base-path";
 
 /**
  * Row scopes (SECURITY_MODEL.md, "Row scopes"). A scope provider, from one plugin, splits
@@ -15,7 +16,16 @@ export const SCOPE_VALUE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 
 export type ScopeState =
   /** Work for one scope value, or for none: a request that resolved no value can't touch scoped records. */
-  | { kind: "value"; value: string | null }
+  | {
+      kind: "value";
+      value: string | null;
+      /**
+       * The path prefix this value's site is being served under, such as "/acme", when it has
+       * one and the request came in under it. Only the site layer sets it: the dashboard, the
+       * API and a headless site's own routing stay unprefixed.
+       */
+      basePath?: string;
+    }
   /** Trusted work across every value, such as schema changes, jobs keyed by record id, and exports. Never a request. */
   | { kind: "all"; reason: string };
 
@@ -37,10 +47,24 @@ export function isScopeValue(value: unknown): value is string {
   return typeof value === "string" && SCOPE_VALUE.test(value);
 }
 
-/** Runs work for one scope value, or for none with null. */
-export function withScope<T>(value: string | null, work: () => T): T {
+/**
+ * The path prefix the work in progress is being served under, such as one tenant's "/acme",
+ * or "" outside one. Set by the site layer alone, so everything else builds plain addresses.
+ */
+export function currentBasePath(): string {
+  const state = storage.getStore();
+  return state?.kind === "value" ? state.basePath ?? "" : "";
+}
+
+/**
+ * Runs work for one scope value, or for none with null. `basePath` is the prefix the value's
+ * site is served under for this request, which only the site layer passes.
+ */
+export function withScope<T>(value: string | null, work: () => T, basePath?: string): T {
   if (value !== null && !isScopeValue(value)) throw new Error(`Not a scope value: ${JSON.stringify(value)}`);
-  return storage.run({ kind: "value", value }, work);
+  if (basePath !== undefined && basePath !== "" && !isBasePath(basePath)) throw new Error(`Not a base path: ${JSON.stringify(basePath)}`);
+  if (basePath && value === null) throw new Error("A base path belongs to a scope value, and this work has none.");
+  return storage.run({ kind: "value", value, ...(basePath ? { basePath } : {}) }, work);
 }
 
 /**

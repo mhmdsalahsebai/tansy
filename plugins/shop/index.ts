@@ -116,8 +116,12 @@ async function ordersUrl(context: ExtensionContext, siteUrl: string, locale?: st
   const path = pattern && !pattern.includes(":") ? pattern : "/";
   const languages = await context.schema.languages();
   const known = locale && languages.items.length > 1 && languages.items.some((item) => item.code === locale) ? locale : null;
-  // A tenant's orders page is on its own domain (core/scope), once it has one.
-  return new URL(known ? languages.href(path, known) : path, (await context.scope.siteUrl()) ?? siteUrl).toString();
+  // A tenant's orders page is on its own domain once it has one, and under its path prefix
+  // until then (core/scope), so the two are written one after the other: new URL() would drop
+  // a path on the base. A language with a domain of its own already gives an absolute address.
+  const base = (await context.scope.siteUrl()) ?? siteUrl;
+  const href = known ? languages.href(path, known) : path;
+  return /^https?:\/\//.test(href) ? href : `${base}${href.startsWith("/") ? href : `/${href}`}`;
 }
 
 /** The shop's words in the language the order was placed in, English for orders from before it was kept. */

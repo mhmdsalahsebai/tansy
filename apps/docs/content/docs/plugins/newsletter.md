@@ -120,4 +120,4 @@ Nothing about a visitor is kept beyond their address, the name they gave, their 
 
 ## With tenants
 
-With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Double opt-in, the CAPTCHA and the days before unconfirmed sign-ups are forgotten can differ per tenant, and sending and forgetting run in each one. Links in emails, including unsubscribing, go to the tenant's own domain.
+With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Double opt-in, the CAPTCHA and the days before unconfirmed sign-ups are forgotten can differ per tenant, and sending and forgetting run in each one. Links in emails go to the tenant's own domain, or under its path prefix on this app's address until it has one; the one-click unsubscribe address is the API's, which is never prefixed.

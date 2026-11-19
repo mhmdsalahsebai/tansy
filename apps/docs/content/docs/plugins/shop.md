@@ -140,4 +140,4 @@ Covered by `tests/unit/shop-plugin.test.ts` and the Shop block in `tests/integra
 
 ## With tenants
 
-With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Customer and staff notifications, restocking on refund and the days before unpaid orders are cancelled can differ per tenant, and the cancelling job runs in each one. Links in emails go to the tenant's own domain.
+With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Customer and staff notifications, restocking on refund and the days before unpaid orders are cancelled can differ per tenant, and the cancelling job runs in each one. Links in emails go to the tenant's own domain, or under its path prefix on this app's address until it has one.

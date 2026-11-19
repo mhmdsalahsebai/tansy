@@ -201,9 +201,12 @@ export function blog(options: BlogOptions) {
       const asked = new URL(context.request.url).searchParams.get("locale");
       const locale = languages.items.find((item) => item.code === asked)?.code ?? languages.defaultLocale;
       const language = languages.items.length > 1 ? { locale, href: (to: string) => languages.href(to, locale) } : null;
-      // A tenant's feed links to its own domain (core/scope).
+      // A tenant's feed links to its own domain, or under its path prefix until it has one
+      // (core/scope). Written one after the other: new URL() would drop a path on the base.
       const siteUrl = (await context.scope.siteUrl()) ?? value.siteUrl;
-      const feedUrl = `${siteUrl}${path}${language && locale !== languages.defaultLocale ? `?locale=${encodeURIComponent(locale)}` : ""}`;
+      // The feed's own address, which is served at the root of a domain rather than under a
+      // path prefix, so the self link starts at the origin.
+      const feedUrl = `${new URL(siteUrl).origin}${path}${language && locale !== languages.defaultLocale ? `?locale=${encodeURIComponent(locale)}` : ""}`;
       const body = render({ title: await feedTitle(records, language?.locale), siteUrl, feedUrl, items: await feedItems(records, siteUrl, (await settingsOf(context)).feedItems, language) });
       return new Response(body, { headers: { "content-type": `${type}; charset=utf-8`, "cache-control": "public, max-age=300" } });
     },

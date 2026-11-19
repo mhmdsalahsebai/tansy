@@ -198,4 +198,4 @@ The blog theme's post page is built this way.
 
 ## With tenants
 
-With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Comments, their notifications and the number of feed items can differ per tenant. The feed's links use the tenant's own domain.
+With the multi-tenant plugin (or another row scope provider), each tenant keeps its own data. Comments, their notifications and the number of feed items can differ per tenant. The feed's links use the tenant's own domain, or its path prefix on this app's address until it has one.

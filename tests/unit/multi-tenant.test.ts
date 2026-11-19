@@ -7,6 +7,10 @@ import { definePlugin, type PluginRole } from "@/core/extend/define";
 import { scopeablePluginPermissions } from "@/core/authz/permissions";
 import { capScopedPermissions } from "@/core/scope/provider";
 import { multiTenant, TENANT_ADMIN, TENANT_EDITOR, TENANT_STAFF } from "@tansy/multi-tenant";
+import type { ExtensionContext } from "@/core/extend/define";
+import { ANONYMOUS } from "@/core/authz/principal";
+import { forgetHosts } from "../../plugins/multi-tenant/domains";
+import { forgetSlugs, RESERVED_SEGMENTS } from "../../plugins/multi-tenant/paths";
 import { roleList, SYSTEM_COLLECTIONS } from "../../plugins/multi-tenant/tenants";
 
 declare const globalThis: { cmsConfig?: { plugins?: unknown[] } } & typeof global;
@@ -124,5 +128,73 @@ describe("context.auth.server", () => {
     await expect(auth.server("signInEmail")).rejects.toThrow(/added no better-auth endpoint/);
     await expect(extensionAuth(value, "hooks:x.ts", new Headers()).server("addMember")).rejects.toThrow(/hook file/);
     expect(own).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Which tenant a request is for. A verified domain decides for everyone; below it, a first path
+ * segment naming a tenant serves that tenant's site on the instance's own address. See
+ * MULTI_TENANT_PLAN.md, "A tenant's path prefix".
+ */
+describe("resolving a tenant from a path prefix", () => {
+  /** Acme has a verified domain and the short name "acme". Globex has only its short name. */
+  const context = {
+    system: {
+      records: {
+        list: async (slug: string) => {
+          if (slug === "multi-tenant-domains") return { items: [{ id: 1, host: "acme.example.test", organizationId: "t-acme", primary: true, token: "x", verifiedAt: "2026-01-01T00:00:00.000Z" }], totalPages: 1 };
+          if (slug === "multi-tenant-organization") {
+            return {
+              items: [
+                { id: 1, authId: "t-acme", name: "Acme", slug: "acme", organizationStatus: "active" },
+                { id: 2, authId: "t-globex", name: "Globex", slug: "globex", organizationStatus: "active" },
+                { id: 3, authId: "t-closed", name: "Closed", slug: "closed", organizationStatus: "suspended" },
+              ],
+              totalPages: 1,
+            };
+          }
+          return { items: [], totalPages: 1 };
+        },
+      },
+    },
+  } as unknown as ExtensionContext;
+
+  const resolve = (host: string | null, path: string) => {
+    forgetHosts();
+    forgetSlugs();
+    return plugin().scope!.resolve({ host, headers: new Headers(), path, principal: ANONYMOUS }, context);
+  };
+
+  it("serves a tenant with no domain under its short name on the instance's address", async () => {
+    expect(await resolve("cms.example.com", "/globex/pages/home")).toBe("t-globex");
+    expect(await resolve("cms.example.com", "/globex")).toBe("t-globex");
+    // A tenant that is closed, and a segment that is no tenant's short name, name nothing.
+    expect(await resolve("cms.example.com", "/closed/pages/home")).toBe(null);
+    expect(await resolve("cms.example.com", "/pages/home")).toBe(null);
+    expect(await resolve("cms.example.com", "/")).toBe(null);
+  });
+
+  it("lets a verified domain decide for everyone, whatever the path says", async () => {
+    expect(await resolve("acme.example.test", "/pages/home")).toBe("t-acme");
+    // The policy: a path can never move a visitor off a tenant's own domain onto another tenant.
+    expect(await resolve("acme.example.test", "/globex/pages/home")).toBe("t-acme");
+    // A tenant keeps its prefix once it verifies a domain, so links shared before it still work.
+    expect(await resolve("cms.example.com", "/acme/pages/home")).toBe("t-acme");
+  });
+
+  it("never serves a tenant under an address the CMS answers on itself", async () => {
+    expect(RESERVED_SEGMENTS.has("api")).toBe(true);
+    expect(RESERVED_SEGMENTS.has("dashboard")).toBe(true);
+    expect(await resolve("cms.example.com", "/api/collections/1/content")).toBe(null);
+    expect(await resolve("cms.example.com", "/dashboard/collections")).toBe(null);
+  });
+
+  it("tells core where each tenant's site is served, and nothing for one that is closed", async () => {
+    forgetSlugs();
+    const basePath = plugin().scope!.basePath!;
+    expect(await basePath("t-globex", context)).toBe("/globex");
+    expect(await basePath("t-acme", context)).toBe("/acme");
+    expect(await basePath("t-closed", context)).toBe(null);
+    expect(await basePath("t-missing", context)).toBe(null);
   });
 });

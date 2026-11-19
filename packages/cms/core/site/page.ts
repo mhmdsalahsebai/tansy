@@ -1,4 +1,5 @@
 import type { Renderers } from "../../components/stream/StreamField";
+import { withBasePath } from "../urls/base-path";
 import { normalizePath } from "../urls/path";
 import { bindRecordFilter } from "./filter";
 import { formatters, type Messages } from "../i18n/messages";
@@ -83,6 +84,12 @@ export interface LoadOptions {
   page?: string | string[] | number | null;
   /** The request's host, which picks the language when each language has its own domain. */
   host?: string | null;
+  /**
+   * The path prefix this site is served under, such as one tenant's "/acme", when it has one.
+   * `requested` has already had it taken off, and every address the page builds carries it
+   * again. The site layer passes it; a headless site routes for itself and passes none.
+   */
+  basePath?: string;
 }
 
 export const EMPTY_LIST: SiteList = { page: 1, perPage: 0, totalItems: 0, totalPages: 0, items: [] };
@@ -116,13 +123,14 @@ interface PageLanguage {
 }
 
 /** Which language an address is in, from its prefix or host. A site with one public language has no prefixes at all. */
-async function pageLanguage(reader: SiteReader, path: string, host: string | null | undefined): Promise<PageLanguage> {
+async function pageLanguage(reader: SiteReader, path: string, host: string | null | undefined, basePath: string): Promise<PageLanguage> {
   const localization = await reader.localization?.().catch(() => null);
   if (!localization || localization.items.length < 2) return { language: null, path, options: {} };
   const codes = localization.items.map((item) => item.code);
   const split = splitLocalePath(path, localization.routing, codes, localization.defaultLocale, host);
   const current = localization.items.find((item) => item.code === split.locale)!;
-  const home = (code: string) => hrefFor(localizePath("/", code, localization.routing, localization.defaultLocale));
+  // The scope value's prefix sits outside the language's: /acme/ar/blog/hello.
+  const address = (to: string, code: string) => withBasePath(basePath, hrefFor(localizePath(to, code, localization.routing, localization.defaultLocale)));
   return {
     path: split.path,
     options: { locale: split.locale },
@@ -133,9 +141,9 @@ async function pageLanguage(reader: SiteReader, path: string, host: string | nul
       direction: current.direction,
       defaultLocale: localization.defaultLocale,
       // Every language's home page until a record says where its own translations live.
-      alternates: Object.fromEntries(codes.map((code) => [code, home(code)])),
+      alternates: Object.fromEntries(codes.map((code) => [code, address("/", code)])),
       locales: localization.items.map(({ code, label, direction }) => ({ code, label, direction })),
-      href: (to, code = split.locale) => hrefFor(localizePath(to, code, localization.routing, localization.defaultLocale)),
+      href: (to, code = split.locale) => address(to, code),
     },
   };
 }
@@ -175,11 +183,11 @@ function queriesFor<Options>(manifest: ThemeManifest<Options>, renderers: Render
  * page reads as a visitor, except where it needs the signed-in member: a record only they
  * may view, and queries marked `viewer`. Those go through `reader.viewer()`.
  */
-export async function loadSitePage<Options>(theme: SiteTheme<Options>, reader: SiteReader, requested: string, { previewToken, renderers, page: requestedPage, host }: LoadOptions = {}): Promise<LoadedPage<Options>> {
+export async function loadSitePage<Options>(theme: SiteTheme<Options>, reader: SiteReader, requested: string, { previewToken, renderers, page: requestedPage, host, basePath = "" }: LoadOptions = {}): Promise<LoadedPage<Options>> {
   const { manifest, components } = theme;
   const fullPath = normalizePath(requested);
   if (fullPath === null) return { type: "missing" };
-  const { language, path, options: inLanguage, overrides, routing } = await pageLanguage(reader, fullPath, host);
+  const { language, path, options: inLanguage, overrides, routing } = await pageLanguage(reader, fullPath, host, basePath);
 
   // Looked up at most once, and only when a page needs it, so visitors' pages stay shared reads.
   let member: Promise<SiteReader | null> | undefined;
@@ -240,7 +248,7 @@ export async function loadSitePage<Options>(theme: SiteTheme<Options>, reader: S
       fileText: (id) => files.text.get(id) ?? NO_FILE_TEXT,
       fileFocus: (id) => files.focus.get(id) ?? NO_FILE_FOCUS,
       language: language && address?.type === "record" && address.alternates ? { ...language, alternates: address.alternates } : language,
-      ...wordsFor(components as ThemeComponents, renderers, language, overrides, routing),
+      ...wordsFor(components as ThemeComponents, renderers, language, overrides, routing, basePath),
     },
   };
 }
@@ -268,14 +276,26 @@ function fileMetaOf(records: Array<SiteRecord | null>) {
   return { text, focus };
 }
 
+/**
+ * What `sitePath()` needs in a client component: the page's language and how addresses carry
+ * it, and the path prefix the site is served under. A site with one language and no prefix
+ * needs none of it, so none is sent.
+ */
+function siteOf(locale: string, language: SiteLanguage | null, routing: SiteRouting | undefined, basePath: string): SiteWords["site"] {
+  const prefix = basePath ? { basePath } : {};
+  if (language && routing) return { locale: language.locale, defaultLocale: language.defaultLocale, routing, ...prefix };
+  if (!basePath) return undefined;
+  return { locale, defaultLocale: locale, routing: { mode: "none", prefixDefault: false, domains: {} }, ...prefix };
+}
+
 /** The page's words in its language: plugins' site words, the theme's over them, the owner's changes over both, falling back along the chain. */
-function wordsFor(components: ThemeComponents, renderers: Renderers | undefined, language: SiteLanguage | null, overrides: SiteLocalization["messages"], routing: SiteRouting | undefined) {
+function wordsFor(components: ThemeComponents, renderers: Renderers | undefined, language: SiteLanguage | null, overrides: SiteLocalization["messages"], routing: SiteRouting | undefined, basePath: string) {
   const locale = language?.locale ?? components.defaultLocale ?? "en";
   const words = pageWords(locale, wordsChain(locale, language?.defaultLocale, components.defaultLocale), {
     plugins: renderers?.messages,
     theme: components.messages,
     owner: overrides as Record<string, Messages> | undefined,
-  }, language && routing ? { locale: language.locale, defaultLocale: language.defaultLocale, routing } : undefined);
+  }, siteOf(locale, language, routing, basePath));
   const { t, formatDate, formatNumber } = formatters(locale, words.messages);
   return { words, t, formatDate, formatNumber };
 }

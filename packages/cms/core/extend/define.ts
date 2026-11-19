@@ -195,9 +195,13 @@ export interface ExtensionScope {
    */
   bind<A extends unknown[], R>(work: (...args: A) => R): (...args: A) => R;
   /**
-   * The origin of the current value's own site, such as "https://acme.example", for absolute
-   * links in emails and feeds. Null outside a value, or when it has no site of its own: then
-   * use the site address the plugin was given.
+   * Where the current value's site begins, for absolute links in emails and feeds: the origin
+   * of its own site, such as "https://acme.example", or the instance's address with the value's
+   * path prefix on the end, such as "https://cms.example/acme", when it is served under one.
+   * Null outside a value, or when it has neither: then use the site address the plugin was given.
+   *
+   * It can hold a path, so write a path after it rather than joining it with
+   * `new URL(path, base)`, which drops a path on the base.
    */
   siteUrl(): Promise<string | null>;
   /**

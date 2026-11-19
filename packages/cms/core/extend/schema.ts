@@ -1,7 +1,8 @@
 import "server-only";
 import { describeCollection } from "../schema/portable";
 import { localeCatalog, localizationSettings } from "../i18n/locales";
-import { hrefFor, localizePath } from "../i18n/routing";
+import { localizePath } from "../i18n/routing";
+import { siteHrefFor } from "../urls/site-href";
 import type { CmsPlugin, ExtensionSchema, SiteLanguages } from "./define";
 
 async function languages(): Promise<SiteLanguages> {
@@ -10,7 +11,8 @@ async function languages(): Promise<SiteLanguages> {
   return {
     defaultLocale: catalog.defaultLocale,
     items: items.map(({ code, label, direction }) => ({ code, label, direction })),
-    href: (path, locale) => (items.length < 2 ? path : hrefFor(localizePath(path, locale, settings.routing, catalog.defaultLocale))),
+    // On a site served under a path prefix, such as one tenant's /acme, every address carries it.
+    href: (path, locale) => (items.length < 2 ? siteHrefFor({ path }) : siteHrefFor(localizePath(path, locale, settings.routing, catalog.defaultLocale))),
   };
 }
 
