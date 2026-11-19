@@ -1,0 +1,35 @@
+{
+  "name": "@tansy/captcha",
+  "version": "0.1.0",
+  "description": "A CAPTCHA for Tansy's sign-in forms and any plugin's own forms. Add a provider package, such as @tansy/captcha-turnstile.",
+  "keywords": [
+    "tansy",
+    "tansy-plugin",
+    "cms",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/captcha"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts",
+    "./provider": "./provider.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

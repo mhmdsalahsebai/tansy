@@ -1,0 +1,29 @@
+{
+  "name": "@tansy/search-meilisearch",
+  "version": "0.1.0",
+  "description": "Meilisearch for tansy search.",
+  "keywords": [
+    "tansy",
+    "tansy-search-adapter"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/search-meilisearch"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "tansy": "^0.1.0"
+  }
+}

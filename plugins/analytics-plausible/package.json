@@ -1,0 +1,30 @@
+{
+  "name": "@tansy/analytics-plausible",
+  "version": "0.1.0",
+  "description": "Plausible for @tansy/analytics: the tracker on every page, and its numbers on the dashboard.",
+  "keywords": [
+    "tansy",
+    "tansy-analytics-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/analytics-plausible"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/analytics": "^0.1.0",
+    "tansy": "^0.1.0"
+  }
+}

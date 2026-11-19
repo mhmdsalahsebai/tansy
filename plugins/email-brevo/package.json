@@ -1,0 +1,30 @@
+{
+  "name": "@tansy/email-brevo",
+  "version": "0.1.0",
+  "description": "Brevo for @tansy/email.",
+  "keywords": [
+    "tansy",
+    "tansy-email-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/email-brevo"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/email": "^0.1.0",
+    "tansy": "^0.1.0"
+  }
+}

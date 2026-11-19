@@ -1,0 +1,30 @@
+{
+  "name": "@tansy/captcha-hcaptcha",
+  "version": "0.1.0",
+  "description": "hCaptcha for @tansy/captcha.",
+  "keywords": [
+    "tansy",
+    "tansy-captcha-provider"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/captcha-hcaptcha"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@tansy/captcha": "^0.1.0",
+    "tansy": "^0.1.0"
+  }
+}

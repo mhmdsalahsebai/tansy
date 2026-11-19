@@ -1,0 +1,32 @@
+{
+  "name": "@tansy/storage-uploadthing",
+  "version": "0.1.0",
+  "description": "Uploadthing for tansy file storage.",
+  "keywords": [
+    "tansy",
+    "tansy-storage-adapter"
+  ],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "plugins/storage-uploadthing"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "*.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "tansy": "^0.1.0"
+  },
+  "dependencies": {
+    "uploadthing": "^7.7.4"
+  }
+}
