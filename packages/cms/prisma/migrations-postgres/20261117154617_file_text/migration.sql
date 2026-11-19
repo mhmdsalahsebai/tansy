@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "StoredFile" ADD COLUMN     "alt" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "caption" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "credit" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "text" JSONB;

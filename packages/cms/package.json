@@ -1,0 +1,97 @@
+{
+  "name": "tansy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-hosted, runtime-schema CMS for Next.js.",
+  "keywords": ["tansy", "cms", "headless-cms", "nextjs", "self-hosted", "prisma", "react"],
+  "license": "MIT",
+  "author": "Mohamed Salah <mohamedsalahsebai@gmail.com>",
+  "homepage": "https://github.com/mhmdsalahsebai/tansy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhmdsalahsebai/tansy.git",
+    "directory": "packages/cms"
+  },
+  "bugs": "https://github.com/mhmdsalahsebai/tansy/issues",
+  "bin": {
+    "tansy": "scripts/tansy.mjs"
+  },
+  "exports": {
+    "./config": "./entry/config.ts",
+    "./storage": "./entry/storage.ts",
+    "./search": "./entry/search.ts",
+    "./plugin": "./entry/plugin.ts",
+    "./fields": "./entry/fields.ts",
+    "./theme": "./entry/theme.ts",
+    "./server": "./entry/server.ts",
+    "./site": "./routes/site.tsx",
+    "./testing": "./entry/testing.ts",
+    "./admin": "./entry/admin.ts",
+    "./styles/*": "./styles/*",
+    "./routes": "./routes/api.ts",
+    "./pages": "./routes/pages.tsx",
+    "./layout": "./routes/root-layout.tsx",
+    "./public-pages": "./routes/public-pages.tsx",
+    "./proxy": "./routes/proxy.ts",
+    "./start": "./routes/start.ts",
+    "./next": {
+      "types": "./entry/next.d.mts",
+      "default": "./entry/next.mjs"
+    },
+    "./react": "./entry/react.ts",
+    "./headless": "./entry/headless.ts",
+    "./sdk": "./sdk/index.ts"
+  },
+  "scripts": {
+    "prisma:generate": "node scripts/prisma-generate.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "routes:generate": "node scripts/generate-route-table.mjs",
+    "package": "node scripts/build-package.mjs"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "peerDependencies": {
+    "next": "^16.4.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "^1.7.18",
+    "@better-auth/passkey": "^1.7.18",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@formatjs/icu-messageformat-parser": "~3.5.18",
+    "@headlessui/react": "^2.2.10",
+    "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^7.0.5",
+    "@prisma/adapter-better-sqlite3": "^7.10.1",
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "@tiptap/extensions": "^3.33.0",
+    "@tiptap/pm": "^3.33.0",
+    "@tiptap/react": "^3.33.0",
+    "@tiptap/starter-kit": "^3.33.0",
+    "argon2": "^0.45.2",
+    "aws4fetch": "^1.0.20",
+    "better-auth": "^1.7.18",
+    "better-sqlite3": "^12.11.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^18.0.9",
+    "jiti": "^2.7.0",
+    "kysely": "^0.29.8",
+    "libpg-query": "^18.2.2",
+    "nodemailer": "^10.4.0",
+    "pg": "^8.23.1",
+    "prisma": "^7.10.1",
+    "qrcode.react": "^4.2.0",
+    "react-hook-form": "^7.91.0",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.5",
+    "slugify": "^1.6.9",
+    "sonner": "^2.0.8",
+    "use-intl": "~4.14.9",
+    "zod": "^4.6.7"
+  }
+}

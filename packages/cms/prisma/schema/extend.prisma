@@ -1,0 +1,101 @@
+/// Called after record changes. It sends what `createdById` can read now, so it can't outlive that person's access.
+model Webhook {
+  id          Int      @id @default(autoincrement())
+  /// The scope value it was created in, such as a tenant, or empty for none. It is sent only that value's records (SECURITY_MODEL.md, "Row scopes").
+  scope       String   @default("")
+  name        String
+  url         String
+  /// Encrypted. Signs each delivery.
+  secret      String
+  /// Any of "create", "update", "delete".
+  events      Json
+  /// Collection slugs. Empty means every collection.
+  collections Json
+  enabled     Boolean  @default(true)
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deliveries WebhookDelivery[]
+}
+
+model WebhookDelivery {
+  id             String    @id
+  webhook        Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhookId      Int
+  event          String
+  payload        String
+  /// "pending", "delivered" or "failed".
+  status         String    @default("pending")
+  attempts       Int       @default(0)
+  nextAttemptAt  DateTime  @default(now())
+  responseStatus Int?
+  error          String?
+  createdAt      DateTime  @default(now())
+  finishedAt     DateTime?
+
+  @@index([status, nextAttemptAt])
+  @@index([webhookId, createdAt])
+}
+
+/// The latest run of each scheduled job, so a restart can't run one twice in the same minute.
+model JobRun {
+  name       String   @id
+  lastRunAt  DateTime
+  status     String
+  error      String?
+  durationMs Int?
+}
+
+/// What each plugin has run, so an upgrade runs once. Kept when a plugin is removed, so adding it back doesn't repeat its migrations.
+model PluginState {
+  name      String   @id
+  version   String
+  /// Ids of the migrations already run.
+  applied   Json
+  updatedAt DateTime @updatedAt
+}
+
+/// A plugin's own key-value store. Nothing outside the plugin reads it.
+/// A record after-hook still to run. Written in the record write's own transaction, so a crash can't lose it, then retried with backoff until the hook succeeds. Deleted once it does.
+model HookDelivery {
+  id            Int       @id @default(autoincrement())
+  /// Who registered the hook, such as plugin:payments or a hook file.
+  source        String
+  event         String
+  /// Which of the source's hooks for this event, in registration order.
+  position      Int       @default(0)
+  collectionId  Int
+  recordId      Int
+  /// JSON: the record as written, and for an update the record before.
+  payload       String
+  /// How many hook-triggered writes deep the write was, so hooks that keep triggering each other still stop.
+  depth         Int       @default(0)
+  /// "pending" or "failed".
+  status        String    @default("pending")
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  error         String?
+  createdAt     DateTime  @default(now())
+  finishedAt    DateTime?
+
+  @@index([status, nextAttemptAt])
+}
+
+model PluginData {
+  plugin    String
+  key       String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@id([plugin, key])
+}
+
+/// How far stored values of a versioned field type have been upgraded. A run writes its place in the same transaction as each batch, so a run that stops can resume without upgrading anything twice.
+model FieldValueState {
+  type             String @id
+  version          Int
+  upgradingTo      Int?
+  cursorCollection Int    @default(0)
+  cursorRecord     Int    @default(0)
+}

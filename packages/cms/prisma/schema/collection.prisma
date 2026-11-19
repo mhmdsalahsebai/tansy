@@ -1,0 +1,316 @@
+model Collection {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  /// "base", "singleton" for at most one record, or "view" for a read-only collection filled by viewQuery.
+  type        String   @default("base")
+  viewQuery   String?
+  /// Where records live on the site, such as "/blog/:slug". Null when they have no address.
+  urlPattern  String?
+  description String?
+  /// Null when records have one language. Otherwise `{ enabled, fallback, fieldFallback }`, and localized fields live in `loc_<slug>`.
+  localization Json?
+  /// The name in other interface languages, such as `{ "ar": "المقالات" }`. `name` covers any language missing.
+  labels      Json?
+  /// Publishing needs `record:publish` for this collection. Everyone else submits changes for review.
+  reviewRequired Boolean @default(false)
+  /// Split by the scope provider's value (core/scope). Its tables then carry a "_scope" column.
+  scoped      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // PocketBase-style API rules: null = locked, "" = public, otherwise a filter expression.
+  listRule   String?
+  viewRule   String?
+  createRule String?
+  updateRule String?
+  deleteRule String?
+
+  fields Field[]
+  inboundRefs RecordRef[]
+  revisions   Revision[]
+  schedules   ScheduledAction[]
+  reviews     ReviewRequest[]
+  trashed     TrashedRecord[]
+
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+
+  @@index([createdById])
+}
+
+model Field {
+  id   Int    @id @default(autoincrement())
+  name String
+  type String
+  /// The column kind, kept so values stay readable if the plugin that supplied `type` is removed.
+  storage String?
+
+  config Json?
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+
+  blockRefs RecordRef[]
+  fileRefs  FileRef[]
+
+  @@unique([collectionId, name])
+}
+
+/// History of schema changes. Keeps no foreign key, so it outlives deleted collections.
+model SchemaMigration {
+  id             Int      @id @default(autoincrement())
+  collectionId   Int
+  collectionSlug String
+  action         String
+  changes        Json
+  statements     Json
+  createdById    String?
+  createdAt      DateTime @default(now())
+
+  @@index([collectionId])
+}
+
+/// A runtime-defined StreamField block. `name` is what stored blocks point at, so it never changes.
+model BlockType {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  label       String
+  /// The label in other interface languages, such as `{ "ar": "صورة" }`. `label` covers any language missing.
+  labels      Json?
+  icon        String?
+  /// Stamped on stored blocks as `v`, and bumped whenever `fields` changes.
+  version     Int      @default(1)
+  fields      Json
+  /// The plugin that defines this block. Null for blocks made in the dashboard.
+  source      String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// A record linked from inside a stream field. `RecordRef` is written through the record service's transaction.
+model RecordRef {
+  id                 Int        @id @default(autoincrement())
+  sourceCollectionId Int
+  sourceRecordId     Int
+  field              Field      @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  fieldId            Int
+  blockId            String
+  targetCollection   Collection @relation(fields: [targetCollectionId], references: [id], onDelete: Cascade)
+  targetCollectionId Int
+  targetRecordId     Int
+  /// The language of a localized field's value. Empty for a shared field.
+  locale             String     @default("")
+
+  @@index([sourceCollectionId, sourceRecordId])
+  @@index([fieldId, sourceRecordId])
+  @@index([targetCollectionId, targetRecordId])
+}
+
+/// An uploaded file. `storage` names the adapter holding it, so files survive a change of provider.
+model StoredFile {
+  id          String   @id
+  /// The scope value it was uploaded in, such as a tenant, or empty for the instance's own. Core sets it from the request (SECURITY_MODEL.md, "Row scopes").
+  scope       String   @default("")
+  storage     String
+  key         String
+  name        String
+  /// Detected from the file's bytes, never taken from the client.
+  type        String
+  size        Int
+  width       Int?
+  height      Int?
+  /// What the file shows, for a reader who can't see it. Rendered as an image's alt text.
+  alt         String   @default("")
+  caption     String   @default("")
+  credit      String   @default("")
+  /// The three above in other languages, as `{ "ar": { "alt": "…" } }`. A language with none falls back along the chain (core/files/text.ts).
+  text        Json?
+  /// Where the subject of the picture is, as whole percentages from the left and from the top. A thumbnail that has to crop keeps this point (core/files/focus.ts). Null for the middle.
+  focusX      Int?
+  focusY      Int?
+  createdById String?
+  createdAt   DateTime @default(now())
+  /// Uploaded from a form field, so it is removed later if no record ever used it. Library uploads stay.
+  temporary   Boolean  @default(false)
+
+  refs FileRef[]
+  trashedRefs TrashedFile[]
+
+  @@index([scope, createdAt])
+  @@index([createdAt])
+}
+
+/// A file used by a record, directly or inside a block. Decides who may read the file, and protects it from deletion.
+model FileRef {
+  id                 Int        @id @default(autoincrement())
+  file               StoredFile @relation(fields: [fileId], references: [id], onDelete: Restrict)
+  fileId             String
+  sourceCollectionId Int
+  sourceRecordId     Int
+  field              Field      @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  fieldId            Int
+  /// Empty for a field on the record itself.
+  blockId            String     @default("")
+  /// The language of a localized field's value. Readers must be able to view the record in it. Empty for a shared field.
+  locale             String     @default("")
+
+  @@index([fileId])
+  @@index([sourceCollectionId, sourceRecordId])
+  @@index([fieldId, sourceRecordId])
+}
+
+/// A record's saved state. `history` rows are written with each save, and a `draft` row holds pending changes to a published record.
+model Revision {
+  id           Int        @id @default(autoincrement())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+  recordId     Int
+  /// The language whose values this holds, besides the shared ones. Empty for a collection with one language.
+  locale       String     @default("")
+  kind         String
+  /// Counts up per record for history, and is 0 for a draft.
+  number       Int
+  status       String
+  /// Values by field id, so renaming a field doesn't orphan them.
+  values       Json
+  createdById  String?
+  note         String?
+  createdAt    DateTime   @default(now())
+
+  @@index([collectionId, recordId, locale, kind, number])
+}
+
+/// A publish or unpublish waiting for its time. A failed one stays, with its reason, until it is replaced.
+/// A deleted record, kept so it can be put back. Written in the delete's own transaction (core/content/trash.ts).
+model TrashedRecord {
+  id           Int        @id @default(autoincrement())
+  /// The scope value the record belonged to, empty for the instance's own (core/scope).
+  scope        String     @default("")
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+  /// The record's own id, which a restore puts back, so links and file addresses still match.
+  recordId     Int
+  /// Its one-line summary as it was deleted, so the list reads without rebuilding every record.
+  label        String
+  status       String
+  /// Values by field id, its translations, and the links other records had to it (core/content/trash.ts).
+  snapshot     Json
+  /// Who created the record, so own-record grants (`record:delete@c3:own`) cover its entry too.
+  createdById  String?
+  deletedById  String?
+  deletedAt    DateTime   @default(now())
+  /// When housekeeping removes it for good.
+  expiresAt    DateTime
+
+  files TrashedFile[]
+
+  @@unique([collectionId, recordId])
+  @@index([scope, deletedAt])
+  @@index([createdById])
+  @@index([expiresAt])
+}
+
+/// A file a trashed record used. The library can't delete it while that record can still come back.
+model TrashedFile {
+  id        Int           @id @default(autoincrement())
+  trashed   TrashedRecord @relation(fields: [trashedId], references: [id], onDelete: Cascade)
+  trashedId Int
+  file      StoredFile    @relation(fields: [fileId], references: [id], onDelete: Restrict)
+  fileId    String
+
+  @@unique([trashedId, fileId])
+  @@index([fileId])
+}
+
+model ScheduledAction {
+  id           Int        @id @default(autoincrement())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+  recordId     Int
+  /// The language to publish or unpublish. Empty for a collection with one language.
+  locale       String     @default("")
+  action       String
+  at           DateTime
+  createdById  String?
+  failedAt     DateTime?
+  error        String?
+
+  @@unique([collectionId, recordId, locale, action])
+  @@index([at])
+}
+
+/// Changes waiting for a reviewer, one per record and language. Approving publishes them and removes this.
+model ReviewRequest {
+  id            Int        @id @default(autoincrement())
+  collection    Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId  Int
+  recordId      Int
+  /// The language under review. Empty for a collection with one language.
+  locale        String     @default("")
+  /// "pending" while it waits for a reviewer, "changes" once one sent it back.
+  state         String
+  submittedById String?
+  submittedAt   DateTime
+  note          String?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  reviewNote    String?
+
+  @@unique([collectionId, recordId, locale])
+  @@index([state, submittedAt])
+}
+
+/// A named field type and config, made in the dashboard. Copied into a collection or block when used, so nothing depends on it afterwards.
+model FieldPreset {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  type        String
+  config      Json
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// A set of blocks to start a stream from. Inserted blocks are validated when the record is saved, so a layout grants no access to what it mentions.
+model BlockLayout {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  blocks      Json
+  createdById String?
+  createdAt   DateTime @default(now())
+}
+
+/// Sends an address that moved somewhere else on the same site. Its own table rather than a collection, so nothing can edit `to` into an address off the site.
+model Redirect {
+  id          Int      @id @default(autoincrement())
+  /// The scope value it belongs to, such as a tenant, or empty for an instance without one. Core sets it from the request (SECURITY_MODEL.md, "Row scopes").
+  scope       String   @default("")
+  /// A normalized path, compared exactly.
+  from        String
+  /// A normalized path on this site, with any query string or fragment.
+  to          String
+  status      Int      @default(301)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([scope, from])
+}
+
+/// A language content can be written in. `code` is stored in every translation row, so it never changes.
+model Locale {
+  /// BCP 47, canonical, such as "en", "fr-CA" or "zh-Hant".
+  code      String   @id
+  label     String
+  /// The next language to try when this one has no published translation. Null means the default language.
+  fallback  String?
+  /// "ltr" or "rtl".
+  direction String   @default("ltr")
+  /// Off: editors can still write it, and it never reaches the API or the site.
+  public    Boolean  @default(false)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

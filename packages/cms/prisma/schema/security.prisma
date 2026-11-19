@@ -1,0 +1,64 @@
+// Tables owned by this project's auth layer (core/auth, core/authz, core/audit).
+
+// A role grants "resource:action" permissions. The superadmin role always
+// resolves to every registered permission, so its stored list stays empty.
+model Role {
+  name        String   @id
+  label       String
+  description String?
+  /// A JSON array of permission strings.
+  permissions Json
+  system      Boolean  @default(false)
+  /// "instance" applies everywhere. "scoped" is given by the scope provider, and applies only within one scope value.
+  scope       String   @default("instance")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Dashboard-managed configuration. Secrets inside `value` are AES-256-GCM encrypted.
+model AppSetting {
+  key         String   @id
+  value       Json
+  version     Int      @default(1)
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  at         DateTime @default(now())
+  /// The scope value the event happened in, such as a tenant, or empty for none. Core sets it from the work in progress (SECURITY_MODEL.md, "Row scopes").
+  scope      String   @default("")
+  action     String
+  outcome    String
+  actorId    String?
+  actorEmail String?
+  actorKind  String
+  targetType String?
+  targetId   String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+
+  @@index([at])
+  @@index([action, at])
+  @@index([actorId, at])
+  @@index([scope, at])
+}
+
+// Per-account password failure tracking. `identifier` is a SHA-256 of the
+// normalized email, so addresses typed by attackers are never stored in clear.
+model LoginThrottle {
+  identifier    String    @id
+  failures      Int       @default(0)
+  lockedUntil   DateTime?
+  lastFailureAt DateTime  @default(now())
+
+  @@index([lastFailureAt])
+}
+
+model GuardRateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+}
