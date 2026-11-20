@@ -37,8 +37,8 @@ const list = async (slug, query = "") => (await call("GET", `/api/collections/${
 /* ----------------------------------------------------------------- content */
 
 const paragraph = (text) => ({ type: "paragraph", content: [{ type: "text", text }] });
-const textBlock = (id, ...paragraphs) => ({ id, type: "blog_text", value: { body: { type: "doc", content: paragraphs.map(paragraph) } } });
-const quoteBlock = (id, text, source) => ({ id, type: "blog_quote", value: { text, source } });
+const textBlock = (id, ...paragraphs) => ({ id, type: "blog_text", v: 1, value: { body: { type: "doc", content: paragraphs.map(paragraph) } } });
+const quoteBlock = (id, text, source) => ({ id, type: "blog_quote", v: 1, value: { text, source } });
 
 const CATEGORIES = ["News", "Guides", "Releases", "Security", "Community"];
 const TAGS = ["nextjs", "postgres", "plugins", "security", "themes", "search", "i18n", "performance", "headless", "ai"];
