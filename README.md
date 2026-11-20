@@ -8,7 +8,7 @@ A self-hosted content backend on Next.js with runtime-defined collections, and a
 > every upgrade, and take a [backup](docs/guides/backups.md) first. The compatibility promises in
 > [upgrading](docs/guides/upgrading.md) start at 1.0.
 
-Full documentation, including the guides, every plugin and every theme, is at **<https://tansy-cms.vercel.app>**, built from `docs/` in this repo (`apps/docs`).
+Full documentation, including the guides, every plugin and every theme, is at **<https://tansycms.vercel.app>**, built from `docs/` in this repo (`apps/docs`).
 
 ## Try the demo
 
