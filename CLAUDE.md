@@ -25,7 +25,7 @@ Read `docs/contributing/design-system.md` before building or changing a dashboar
 
 - `npm run check`: type-check, lint, unit and contract tests. Must pass before a change is done. It doesn't cover `apps/docs`, which has its own `npm run docs:build`.
 - `npm run test:integration`: end-to-end security suite. Needs `TEST_DATABASE_URL` set to a disposable SQLite file or Postgres database whose name contains `test` or `smoke`, such as `file:./.data/cms_test.db`; it wipes it. Run it on both databases when a change touches SQL.
-- `npm run test:package`: packs the tarball, installs it into a fresh `create-next-app`, and runs the integration suite there. Takes the same `TEST_DATABASE_URL`. Run it when a change touches `exports`, `scripts/`, the host entry files or anything that only breaks once compiled.
+- `npm run test:package`: packs the tarball, installs it into a fresh `create-next-app`, and runs the integration suite there. Takes the same `TEST_DATABASE_URL`. Run it when a change touches `exports`, `scripts/`, the host entry files or anything that only breaks once compiled. `-- --only init|suite|scaffold` (comma-separated) runs part of it, as CI does side by side.
 - `npm run db:migrate -- <name>`: changes the Prisma schema. Needs `POSTGRES_SCRATCH_URL`, because each change gets a migration for both databases.
 - `npm run package`: builds the tarball npm receives for every published package, into `.release/`. Plugins and themes are compiled, so their `exports` point at `.js` and `.d.ts` in what ships, never at source.
 - `npm run package:metadata`: writes each published package's `files`, README and peer ranges. Run it after adding a plugin or theme, or `tests/unit/package-metadata.test.ts` fails.

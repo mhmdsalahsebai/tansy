@@ -23,7 +23,7 @@
     "dev": "npm run dev -w apps/starter",
     "build": "npm run build -w apps/starter",
     "start": "npm run start -w apps/starter",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-strategy content --cache-location node_modules/.cache/eslint/",
     "db:migrate": "npm run db:migrate -w tansy --",
     "tansy": "npm run tansy -w apps/starter --",
     "test": "vitest run",
@@ -36,7 +36,7 @@
     "docs:sync": "npm run sync -w tansy-docs",
     "docs:dev": "npm run dev -w tansy-docs",
     "docs:build": "npm run build -w tansy-docs",
-    "check": "npm run --silent tansy -- sync && tsc --noEmit && eslint . && vitest run"
+    "check": "npm run --silent tansy -- sync && tsc --noEmit && eslint . --cache --cache-strategy content --cache-location node_modules/.cache/eslint/ && vitest run"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",

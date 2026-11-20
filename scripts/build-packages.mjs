@@ -13,8 +13,10 @@
  * clients, migrations and styles; create-tansy is one plain JavaScript file and is
  * packed as it is.
  */
-import { execFileSync } from "node:child_process";
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { execFile, execFileSync } from "node:child_process";
+import { availableParallelism } from "node:os";
+import { promisify } from "node:util";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { ROOT, publishedPackages } from "./workspace-packages.mjs";
 
@@ -28,6 +30,14 @@ const PUBLISHED_KEYS = ["name", "version", "description", "keywords", "license",
 const CLIENT_DIRECTIVE = /^(?:\s|\/\/[^\n]*\n|\/\*[\s\S]*?\*\/)*["']use client["']/;
 
 const TYPES = path.join(ROOT, "node_modules/@types");
+const TSC = path.join(ROOT, "node_modules/typescript/bin/tsc");
+/** Where the one compile of every plugin and theme lands, each in its own folder, before each is packed. */
+const COMPILED = path.join(RELEASE, ".compiled");
+
+/** How many `npm pack`s run at once. Each is a short node process; the compile is the slow part. */
+const PACK_JOBS = Math.max(1, Math.min(availableParallelism(), 8));
+
+const exec = promisify(execFile);
 
 /** Every @types package the workspace installed, which is what tsc would have included by itself. */
 const installedTypes = () => readdirSync(TYPES).flatMap((name) => (name.startsWith("@") ? readdirSync(path.join(TYPES, name)).map((scoped) => `${name}/${scoped}`) : [name]));
@@ -72,12 +82,15 @@ function assertClientDirectives(folder, out) {
 }
 
 /**
- * The same settings packages/cms is built with, so a plugin compiles the way the CMS does.
- * The config is written next to the output, and names the package by absolute path.
+ * Compiles a set of plugins and themes in one tsc, with the same settings packages/cms is built
+ * with, so a plugin compiles the way the CMS does. One program for many packages rather than one
+ * per package: each plugin reaches the CMS's source through `tansy`, so a tsc per package
+ * type-checked all of the CMS again, sixty times over, which took most of ten minutes. The files
+ * a package reaches through node_modules, the CMS's and another plugin's, are checked but not
+ * emitted. The output keeps the repository's layout under COMPILED, so each package's is its own folder.
  */
-function compile(folder, out) {
-  const source = path.join(ROOT, folder);
-  const config = path.join(RELEASE, `tsconfig.${folder.replaceAll("/", "-")}.json`);
+function compile(packages, name) {
+  const config = path.join(RELEASE, `tsconfig.${name}.json`);
   writeFileSync(config, `${JSON.stringify({
     compilerOptions: {
       target: "ES2022",
@@ -92,19 +105,52 @@ function compile(folder, out) {
       isolatedModules: true,
       declaration: true,
       noEmitOnError: true,
-      rootDir: source,
-      outDir: out,
+      rootDir: ROOT,
+      outDir: COMPILED,
       // The config is written beside the output rather than inside the package, which is far enough
       // from node_modules that tsc stops picking up @types on its own. A declaration that reaches
       // Node's or React's types — a storage adapter reaches both — needs them named.
       typeRoots: [TYPES],
       types: installedTypes(),
     },
-    // The ambient file declares the stylesheets and fonts a package imports for their effect. It emits nothing, so it can sit outside rootDir.
-    include: [`${source}/**/*.ts`, `${source}/**/*.tsx`, path.join(import.meta.dirname, "package-assets.d.ts")],
-    exclude: [...NOT_SHIPPED].map((name) => `${source}/${name}`),
+    // The ambient file declares the stylesheets and fonts a package imports for their effect. It emits nothing.
+    include: [...packages.flatMap(({ folder }) => [`${path.join(ROOT, folder)}/**/*.ts`, `${path.join(ROOT, folder)}/**/*.tsx`]), path.join(import.meta.dirname, "package-assets.d.ts")],
+    exclude: packages.flatMap(({ folder }) => [...NOT_SHIPPED].map((name) => `${path.join(ROOT, folder)}/${name}`)),
   }, null, 2)}\n`);
-  execFileSync("npx", ["tsc", "-p", config], { cwd: ROOT, stdio: "inherit" });
+  execFileSync(process.execPath, [TSC, "-p", config], { cwd: ROOT, stdio: "inherit" });
+}
+
+/**
+ * The packages asked for, in layers: those no other one depends on first, then the ones that
+ * depend on them. A package another one imports, such as @tansy/ai for its providers, has to
+ * be outside the program its dependents compile in. Inside it, tsc would name the base's types
+ * by whichever of its entry points it met first, and a provider's declarations would say
+ * import("@tansy/ai") where the published ones say import("@tansy/ai/provider").
+ */
+function layers(packages) {
+  const names = new Set(packages.map(({ manifest }) => manifest.name));
+  const byName = new Map(packages.map((pkg) => [pkg.manifest.name, pkg]));
+  const depth = new Map();
+  const depthOf = (name, seen = new Set()) => {
+    if (depth.has(name)) return depth.get(name);
+    if (seen.has(name)) throw new Error(`Packages depend on each other in a circle: ${[...seen, name].join(" -> ")}`);
+    const { dependencies = {}, peerDependencies = {} } = byName.get(name).manifest;
+    const inside = Object.keys({ ...dependencies, ...peerDependencies }).filter((dep) => names.has(dep));
+    const value = inside.length ? 1 + Math.max(...inside.map((dep) => depthOf(dep, new Set([...seen, name])))) : 0;
+    depth.set(name, value);
+    return value;
+  };
+  const grouped = [];
+  for (const pkg of packages) (grouped[depthOf(pkg.manifest.name)] ??= []).push(pkg);
+  return grouped.filter(Boolean);
+}
+
+function compileAll(packages) {
+  rmSync(COMPILED, { recursive: true, force: true });
+  layers(packages).forEach((layer, index) => {
+    console.log(`\n--- Compiling ${layer.length} package${layer.length === 1 ? "" : "s"} in one tsc: ${layer.map(({ manifest }) => manifest.name).join(", ")}`);
+    compile(layer, `extensions-${index}`);
+  });
 }
 
 /** Everything tsc doesn't emit but the compiled files still reach: stylesheets, fonts, schema files, notices. */
@@ -119,25 +165,50 @@ function copyAssets(folder, out) {
   }
 }
 
-function buildExtension(pkg) {
+/** Turns one package's share of the compile into the folder npm packs. */
+function assembleExtension(pkg) {
   const out = path.join(RELEASE, pkg.folder);
   rmSync(out, { recursive: true, force: true });
   mkdirSync(out, { recursive: true });
-  compile(pkg.folder, out);
+  const compiled = path.join(COMPILED, pkg.folder);
+  if (existsSync(compiled)) cpSync(compiled, out, { recursive: true });
   copyAssets(pkg.folder, out);
   assertClientDirectives(pkg.folder, out);
   writeManifest(pkg, out);
-  execFileSync("npm", ["pack", "--pack-destination", RELEASE, "--silent"], { cwd: out, stdio: "inherit" });
+  return out;
 }
 
-/** Nothing to compile: the folder is packed as it stands, with its own `files` deciding what goes in. */
-function packAsIs(pkg) {
-  execFileSync("npm", ["pack", "--pack-destination", RELEASE, "--silent"], { cwd: path.join(ROOT, pkg.folder), stdio: "inherit" });
+/** Output is kept, not streamed, so packs running side by side don't interleave theirs. */
+async function pack(cwd) {
+  try {
+    const { stdout, stderr } = await exec("npm", ["pack", "--pack-destination", RELEASE, "--silent"], { cwd, maxBuffer: 16 * 1024 * 1024 });
+    return `${stdout}${stderr}`.trim();
+  } catch (error) {
+    error.message = `npm pack failed in ${path.relative(ROOT, cwd)}\n${error.stdout ?? ""}${error.stderr ?? ""}`;
+    throw error;
+  }
+}
+
+/** Packs each folder, PACK_JOBS at a time. After a failure nothing new starts, and the first error is the one thrown. */
+async function packAll(folders) {
+  const queue = [...folders];
+  let failure = null;
+  const worker = async () => {
+    for (let next = queue.shift(); next && !failure; next = queue.shift()) {
+      try {
+        console.log(`--- ${next.name}: ${await pack(next.folder)}`);
+      } catch (error) {
+        failure ??= error;
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(PACK_JOBS, folders.length) }, worker));
+  if (failure) throw failure;
 }
 
 const buildCms = () => execFileSync("npm", ["run", "package", "-w", "tansy"], { cwd: ROOT, stdio: "inherit" });
 
-function main() {
+async function main() {
   const asked = process.argv.slice(2);
   const all = publishedPackages();
   const chosen = asked.length ? all.filter(({ folder, manifest }) => asked.includes(folder) || asked.includes(manifest.name)) : all;
@@ -150,13 +221,17 @@ function main() {
   if (cms) buildCms();
   else mkdirSync(RELEASE, { recursive: true });
 
-  for (const pkg of chosen.filter(({ builder }) => builder !== "own")) {
-    console.log(`\n--- ${pkg.manifest.name}`);
-    if (pkg.builder === "tsc") buildExtension(pkg);
-    else packAsIs(pkg);
-  }
+  const extensions = chosen.filter(({ builder }) => builder === "tsc");
+  if (extensions.length) compileAll(extensions);
+  const folders = chosen.filter(({ builder }) => builder !== "own").map((pkg) => ({
+    name: pkg.manifest.name,
+    // Nothing to compile for a "copy" package: the folder is packed as it stands, with its own `files` deciding what goes in.
+    folder: pkg.builder === "tsc" ? assembleExtension(pkg) : path.join(ROOT, pkg.folder),
+  }));
+  await packAll(folders);
+  rmSync(COMPILED, { recursive: true, force: true });
   const built = readdirSync(RELEASE).filter((name) => name.endsWith(".tgz"));
   console.log(`\n${built.length} tarball${built.length === 1 ? "" : "s"} in .release/`);
 }
 
-main();
+await main();

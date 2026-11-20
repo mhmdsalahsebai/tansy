@@ -3,8 +3,44 @@ on:
   push:
   pull_request:
 
+# A newer push to the same branch makes the run for the older one moot.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # Whether anything but documentation changed. A change to docs/ or a Markdown file still gets
+  # `npm run check` and the docs build, since the package metadata test reads docs/, but not the
+  # suites that build and serve the CMS.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "No base to compare with, so everything runs."
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$BASE" HEAD)"
+          echo "$changed"
+          # A here-string, not a pipe: grep -q stops reading at its first match, which fails the pipe under pipefail.
+          if [ -n "$changed" ] && ! grep -qvE '^(docs/|apps/docs/)|\.md$' <<< "$changed"; then
+            echo "Only documentation changed."
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          fi
+
   verify:
+    needs: changes
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: file:./.data/cms_test.db
@@ -19,7 +55,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      - run: npm run test:integration
+      - if: needs.changes.outputs.code == 'true'
+        run: npm run test:integration
 
   docs:
     runs-on: ubuntu-latest
@@ -34,6 +71,8 @@ jobs:
       - run: npm run docs:build
 
   browser:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: file:./.data/cms_test.db
@@ -50,6 +89,8 @@ jobs:
       - run: npm run test:e2e
 
   postgres:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -78,12 +119,25 @@ jobs:
       - run: npm ci
       - run: npm run test:integration
 
+  # tests/package/run.mjs in its three parts, side by side. Only the suite uses the database.
   package:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: package (${{ matrix.name }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        database: [sqlite, postgres]
+        include:
+          - name: suite, sqlite
+            only: suite
+            database: file:./.data/cms_package_test.db
+          - name: suite, postgres
+            only: suite
+            database: postgres://postgres:test@localhost:5432/cms_test
+          - name: init and scaffold
+            only: init,scaffold
+            database: file:./.data/cms_package_test.db
     services:
       postgres:
         image: postgres:17-alpine
@@ -98,7 +152,7 @@ jobs:
           --health-timeout 3s
           --health-retries 20
     env:
-      TEST_DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgres://postgres:test@localhost:5432/cms_test' || 'file:./.data/cms_package_test.db' }}
+      TEST_DATABASE_URL: ${{ matrix.database }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -106,4 +160,4 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run test:package
+      - run: npm run test:package -- --only ${{ matrix.only }}

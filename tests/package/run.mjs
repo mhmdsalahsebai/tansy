@@ -6,6 +6,13 @@
  *
  * TEST_DATABASE_URL names a disposable database, as for test:integration.
  * KEEP_APP=1 leaves the app on disk for debugging.
+ *
+ * It runs in three parts, all of them by default. `--only <part>[,<part>]` runs some, so CI
+ * can run them side by side:
+ *   init      the app exactly as `tansy init` leaves it: build, serve, back up and restore
+ *   suite     the integration suite against the installed tarballs, on TEST_DATABASE_URL
+ *   scaffold  create-tansy's templates, and a plugin and theme written with the generators
+ * Only `suite` uses TEST_DATABASE_URL; the others bring their own SQLite files.
  */
 import { execFileSync, spawn } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -18,7 +25,12 @@ const NEXT_VERSION = JSON.parse(readFileSync(path.join(ROOT, "node_modules/next/
 const PORT = 3471;
 const HEADLESS_PORT = 3472;
 
-if (!process.env.TEST_DATABASE_URL) throw new Error("Set TEST_DATABASE_URL to a disposable database.");
+const PARTS = ["init", "suite", "scaffold"];
+const onlyAt = process.argv.indexOf("--only");
+const parts = new Set(onlyAt === -1 ? PARTS : (process.argv[onlyAt + 1] ?? "").split(",").filter(Boolean));
+if (!parts.size || [...parts].some((part) => !PARTS.includes(part))) throw new Error(`--only takes ${PARTS.join(", ")}, separated by commas.`);
+
+if (parts.has("suite") && !process.env.TEST_DATABASE_URL) throw new Error("Set TEST_DATABASE_URL to a disposable database.");
 
 // Not the system temp folder: it's often a small RAM disk, and this holds a full node_modules and build.
 const parent = path.join(homedir(), ".cache/tansy-package-test");
@@ -203,15 +215,23 @@ async function checkTemplates() {
 let failed = true;
 try {
   const packed = packTarballs();
-  run("npx", ["--yes", `create-next-app@${NEXT_VERSION}`, app, "--ts", "--eslint", "--app", "--no-src-dir", "--no-tailwind", "--no-react-compiler", "--import-alias", "@/*", "--use-npm", "--disable-git", "--yes"], { cwd: work });
-  run("npm", ["install", "--no-audit", "--no-fund", ...packed.cms], inApp);
-  await checkPlainInit();
-  run("npm", ["install", "--no-audit", "--no-fund", ...packed.all], inApp);
-  addSuiteFixtures();
-  run("npx", ["next", "build"], { ...inApp, env: { ...appEnv, DATABASE_URL: "file:/tmp/build.db" } });
-  run("npx", ["vitest", "run", "-c", "vitest.integration.config.ts"], { cwd: ROOT, env: { ...process.env, TEST_DATABASE_URL, TANSY_TEST_APP: app } });
-  await checkAuthoring();
-  await checkTemplates();
+  if (parts.has("init") || parts.has("suite")) {
+    run("npx", ["--yes", `create-next-app@${NEXT_VERSION}`, app, "--ts", "--eslint", "--app", "--no-src-dir", "--no-tailwind", "--no-react-compiler", "--import-alias", "@/*", "--use-npm", "--disable-git", "--yes"], { cwd: work });
+    run("npm", ["install", "--no-audit", "--no-fund", ...packed.cms], inApp);
+    // The suite's app starts as tansy init leaves it, whether or not this run checks that app on its own.
+    if (parts.has("init")) await checkPlainInit();
+    else cms("init");
+  }
+  if (parts.has("suite")) {
+    run("npm", ["install", "--no-audit", "--no-fund", ...packed.all], inApp);
+    addSuiteFixtures();
+    run("npx", ["next", "build"], { ...inApp, env: { ...appEnv, DATABASE_URL: "file:/tmp/build.db" } });
+    run("npx", ["vitest", "run", "-c", "vitest.integration.config.ts"], { cwd: ROOT, env: { ...process.env, TEST_DATABASE_URL, TANSY_TEST_APP: app } });
+  }
+  if (parts.has("scaffold")) {
+    await checkAuthoring();
+    await checkTemplates();
+  }
   failed = false;
 } finally {
   if (process.env.KEEP_APP) console.log(`Kept ${app}`);
