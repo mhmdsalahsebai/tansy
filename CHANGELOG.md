@@ -98,8 +98,11 @@ rather than what changed.
 
 ### Installing it
 
-- `npx create-tansy` for a new project, or `npm install tansy && npx tansy init` for an app you
-  already have, with `tansy doctor` to check the result.
+- `npm create tansy@latest` for a new project, or `npm install tansy && npx tansy init` for an app you
+  already have, with `tansy doctor` to check the result. In a terminal, `create-tansy` asks for the
+  theme, the host, the database (SQLite, Postgres, or Postgres it starts in Docker), where uploads
+  go, which features to add and whether to create the admin account, and every question has a flag
+  for scripts and CI.
 - SQLite or Postgres from one build.
 - The `tansy` CLI: `init`, `sync`, `migrate`, `superadmin`, `types`, `routes`, `doctor`, `tick`,
   `backup`, `restore`, and scaffolding for plugins, fields and themes.

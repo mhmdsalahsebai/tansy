@@ -26,10 +26,10 @@ For production with Postgres, set `POSTGRES_PASSWORD` and `BETTER_AUTH_URL`, the
 ## Starting a new project
 
 ```sh
-npx create-tansy my-site                       # the CMS and a site in one app
-npx create-tansy my-blog --template blog       # the same, with a blog theme
-npx create-tansy my-front --template headless  # a front end for a CMS running elsewhere
+npm create tansy@latest
 ```
+
+It asks what you're making, which theme, where it will run, SQLite or Postgres (or Postgres in Docker), where uploads go and which features to add, then installs, migrates and can create your admin account. Every question has a flag, and `--yes` takes the defaults: see [Start a new project](apps/docs/content/docs/getting-started/new-project.md).
 
 To extend it, see the guides for [plugins](docs/guides/plugins.md), [custom fields](docs/guides/fields.md) and [themes](docs/guides/themes.md). Before you commit to it, the [limits](docs/guides/limits.md) are every boundary in one place, and [upgrading](docs/guides/upgrading.md) is what a version number promises.
 

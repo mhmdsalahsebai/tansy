@@ -66,7 +66,7 @@ export default function HomePage() {
         <div className="relative mx-auto flex max-w-3xl flex-col items-center">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs text-fd-muted-foreground">
             <Terminal className="size-3.5" />
-            npx create-tansy my-site
+            npm create tansy@latest
           </span>
           <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
             A content backend that lives inside your Next.js app
@@ -157,7 +157,7 @@ export default function HomePage() {
         </p>
         <div className="mx-auto mt-8 flex max-w-xl flex-col gap-3 text-left">
           {[
-            { label: 'New project', command: 'npx create-tansy my-site' },
+            { label: 'New project', command: 'npm create tansy@latest' },
             { label: 'Existing app', command: 'npm install tansy && npx tansy init' },
             { label: 'Docker', command: 'docker run -p 8090:8090 -v tansy-data:/data tansy' },
           ].map(({ label, command }) => (

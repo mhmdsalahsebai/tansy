@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { doctor } from "../../packages/cms/scripts/doctor.mjs";
 import { PLUGIN_API_VERSION as scaffoldPlugin, THEME_API_VERSION as scaffoldTheme, newField, newPlugin, newTheme } from "../../packages/cms/scripts/scaffold.mjs";
 import { VERSIONS } from "../../packages/create-tansy/index.mjs";
+import { cmsConfig, packageManager, parsePlugin, pluginsFor, problems } from "../../packages/create-tansy/plan.mjs";
 import { PLUGIN_API_VERSION } from "../../packages/cms/core/extend/define";
 import { THEME_API_VERSION } from "../../packages/cms/core/theme/define";
 import { clearDirectoryCache, loadDirectory } from "../../packages/cms/core/extend/directory";
@@ -106,6 +107,62 @@ describe("create-tansy", () => {
     expect(existsSync(path.join(cwd, "site/proxy.ts"))).toBe(false);
   });
 
+  it("still takes the old template names, as a site with that theme", () => {
+    const cwd = folder();
+    create(cwd, "site", "--template", "blank");
+    expect(read(cwd, "site/tansy.config.ts")).toContain("theme: blank()");
+    expect(JSON.parse(read(cwd, "site/package.json")).scripts.tansy).toBe("tansy");
+  });
+
+  it("writes the plugins, providers and storage asked for, with their packages", () => {
+    const cwd = folder();
+    create(cwd, "shop", "--theme", "storefront", "--payments", "polar", "--storage", "s3", "--plugins", "email:postmark,forms");
+    const config = read(cwd, "shop/tansy.config.ts");
+    expect(config).toContain("payments({ siteUrl, providers: [polar()] })");
+    expect(config).toContain("email({ providers: [postmark()] })");
+    expect(config).toContain("env.S3_BUCKET");
+    // Payments comes before the shop that sells through it.
+    expect(config.indexOf("payments({")).toBeLessThan(config.indexOf("shop({"));
+    const { dependencies } = JSON.parse(read(cwd, "shop/package.json"));
+    for (const name of ["@tansy/theme-storefront", "@tansy/payments", "@tansy/payments-polar", "@tansy/shop", "@tansy/email", "@tansy/email-postmark", "@tansy/forms"]) expect(dependencies[name]).toBeDefined();
+  });
+
+  it("starts Postgres in Docker without putting its password in a file git keeps", () => {
+    const cwd = folder();
+    const out = create(cwd, "pg", "--database", "docker", "--host", "serverless", "--storage", "vercel-blob");
+    const compose = read(cwd, "pg/docker-compose.yml");
+    expect(compose).toContain("${POSTGRES_PASSWORD:?");
+    expect(compose).toContain("127.0.0.1:5432:5432");
+    expect(out).toContain("docker compose up -d --wait");
+    expect(JSON.parse(read(cwd, "pg/vercel.json")).crons[0].path).toBe("/api/background");
+  });
+
+  it("refuses what can't work on the host chosen", () => {
+    const cwd = folder();
+    expect(() => create(cwd, "a", "--host", "serverless", "--database-url", "file:./dev.db", "--storage", "s3")).toThrow(/SQLite/);
+    expect(() => create(cwd, "b", "--host", "serverless", "--database", "docker", "--storage", "local")).toThrow(/uploads/);
+    expect(() => create(cwd, "c", "--database", "postgres")).toThrow(/--database-url/);
+    expect(() => create(cwd, "d", "--plugins", "email:carrier-pigeon")).toThrow(/Unknown email provider/);
+    expect(problems({ host: "server", database: "sqlite", storage: "local" })).toEqual([]);
+  });
+
+  it("asks nothing without a terminal, so a folder is required", () => {
+    expect(() => create(folder())).toThrow(/Name a folder/);
+  });
+
+  it("gives every theme the plugins it renders, once each", () => {
+    expect(pluginsFor({ theme: "dispatch", plugins: [parsePlugin("email")] }).map((plugin) => plugin.name)).toEqual(["blog", "email", "newsletter"]);
+    expect(pluginsFor({ theme: "storefront", plugins: [parsePlugin("payments:dodo")] })).toEqual([{ name: "payments", provider: "dodo" }, { name: "shop" }]);
+    expect(cmsConfig({ theme: "blog", storage: "local", plugins: [] })).toContain("blogPlugin({ siteUrl })");
+    expect(cmsConfig({ theme: "blank", storage: "local", plugins: [] })).not.toContain("siteUrl");
+  });
+
+  it("installs with the package manager that ran it", () => {
+    expect(packageManager("pnpm/10.0.0 npm/? node/v24.0.0")).toBe("pnpm");
+    expect(packageManager("bun/1.3.0")).toBe("bun");
+    expect(packageManager("")).toBe("npm");
+  });
+
   it("gives the headless template no database and no secrets", () => {
     const cwd = folder();
     create(cwd, "front", "--template", "headless");
@@ -114,6 +171,9 @@ describe("create-tansy", () => {
     expect(read(cwd, "front/app/[[...path]]/page.tsx")).toContain("client.reader(CACHE)");
     expect(read(cwd, "front/app/api/cms-revalidate/route.ts")).toContain("process.env.TANSY_WEBHOOK_SECRET");
     expect(read(cwd, "front/next.config.ts")).toContain("no-referrer");
+    // The names the generated code reads.
+    expect(read(cwd, "front/.env.example")).toMatch(/^TANSY_URL=/m);
+    expect(read(cwd, "front/.env.example")).toMatch(/^TANSY_WEBHOOK_SECRET=/m);
   });
 
   it("keeps secrets and databases out of git", () => {

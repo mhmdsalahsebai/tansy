@@ -137,7 +137,7 @@ const SERVED = { ALLOW_LOCAL_STORAGE_IN_PRODUCTION: "true" };
 
 function createApp(name, template) {
   const target = path.join(work, name);
-  run(process.execPath, [CREATE, target, "--template", template, "--packages", tarballs], { cwd: work });
+  run(process.execPath, [CREATE, target, "--template", template, "--packages", tarballs, "--yes"], { cwd: work });
   return target;
 }
 

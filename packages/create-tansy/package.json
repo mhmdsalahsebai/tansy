@@ -16,8 +16,11 @@
   "bin": {
     "create-tansy": "index.mjs"
   },
-  "files": ["index.mjs", "README.md", "LICENSE"],
+  "files": ["index.mjs", "ask.mjs", "plan.mjs", "README.md", "LICENSE"],
   "engines": {
     "node": ">=22.18"
+  },
+  "dependencies": {
+    "@clack/prompts": "1.8.1"
   }
 }
