@@ -119,7 +119,8 @@ test("a reference field is filled by searching for a record", async ({ browser }
   await page.getByRole("button", { name: /Grace Hopper/ }).click();
   await expect(page.getByText(/Grace Hopper \(#2\)/)).toBeVisible();
   await page.getByRole("button", { name: "Publish", exact: true }).click();
-  await page.waitForURL(new RegExp(`/dashboard/collections/${books.id}$`));
+  // Creating a record keeps the editor open, at the new record's own address.
+  await page.waitForURL(new RegExp(`/dashboard/collections/${books.id}/content/\\d+$`));
   const saved = await (await page.request.get("/api/collections/books/records")).json() as { items: Array<{ author: number }> };
   expect(saved.items[0].author).toBe(2);
   await page.context().close();
