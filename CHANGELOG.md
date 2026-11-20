@@ -14,7 +14,7 @@ least one minor release deprecating it first.
 Security fixes are called out as such, with what to do about them, and can land in a minor or patch
 release when leaving something in place would keep sites exposed.
 
-## 0.1.0 — unreleased
+## 0.1.0 — 2026-11-20
 
 The first public release. Everything below is new, so this entry describes what the package does
 rather than what changed.

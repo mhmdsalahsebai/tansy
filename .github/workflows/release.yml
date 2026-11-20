@@ -59,7 +59,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish to npm
         if: github.event_name == 'push'
-        run: node scripts/publish-packages.mjs --tag latest
+        # A prerelease such as 0.1.0-beta.0 goes to `next`, so a plain `npm i tansy` never picks it up.
+        run: |
+          version="$(node -p "require('./packages/cms/package.json').version")"
+          case "$version" in *-*) tag=next ;; *) tag=latest ;; esac
+          node scripts/publish-packages.mjs --tag "$tag"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
