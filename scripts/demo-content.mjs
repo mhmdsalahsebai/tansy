@@ -7,7 +7,8 @@
  *   node scripts/demo-content.mjs
  *
  * Safe to run again: posts, categories and tags are matched by slug or name, and only what is
- * missing is added. Covers are drawn here with sharp, so nothing is downloaded.
+ * missing is added, including a category and tags for posts that had none. Covers are drawn
+ * here with sharp, so nothing is downloaded.
  */
 import { readFileSync } from "node:fs";
 import sharp from "sharp";
@@ -115,7 +116,7 @@ async function ensureNamed(slug, names) {
 const categories = await ensureNamed("blog-categories", CATEGORIES);
 const tags = await ensureNamed("blog-tags", TAGS);
 
-const posts = await list("blog-posts", "&fields=id,slug,title,cover");
+const posts = await list("blog-posts", "&fields=id,slug,title,cover,categories,tags");
 const slugs = new Set(posts.map((post) => post.slug));
 
 // Covers for the posts that were there before.
@@ -124,6 +125,30 @@ for (const [index, post] of posts.entries()) {
   const cover = await uploadCover(`${post.slug || post.id}.png`, (index * 67 + 240) % 360, index + 20);
   await call("PATCH", `/api/collections/blog-posts/records/${post.id}`, { cover, status: "published" });
   console.log(`Cover added: ${post.title}`);
+}
+
+// A category and tags for the posts that were there before, guessed from the title, so no card
+// on the front page goes without its label.
+const GUESSES = [
+  [/release|is out|1\.\d/i, "Releases", ["performance"]],
+  [/security|access|rule|backup/i, "Security", ["security"]],
+  [/plugin/i, "Guides", ["plugins"]],
+  [/theme|yours|design/i, "Guides", ["themes"]],
+  [/postgres|sqlite|vps|deploy|hosting/i, "Guides", ["postgres", "performance"]],
+  [/wordpress|moving|migrat/i, "Guides", ["headless"]],
+  [/.*/, "News", ["nextjs"]],
+];
+for (const post of posts) {
+  const hasCategory = Array.isArray(post.categories) && post.categories.length > 0;
+  const hasTags = Array.isArray(post.tags) && post.tags.length > 0;
+  if (hasCategory && hasTags) continue;
+  const [, category, guessed] = GUESSES.find(([pattern]) => pattern.test(String(post.title)));
+  await call("PATCH", `/api/collections/blog-posts/records/${post.id}`, {
+    ...(hasCategory ? {} : { categories: [categories.get(category.toLowerCase())] }),
+    ...(hasTags ? {} : { tags: guessed.map((tag) => tags.get(tag)) }),
+    status: "published",
+  });
+  console.log(`Labelled: ${post.title}`);
 }
 
 for (const [index, [slug, title, excerpt, category, storyTags, featured, hue]] of STORIES.entries()) {

@@ -24,6 +24,7 @@ import { isLocalizedCollection } from "../i18n/context";
 import { localeTableName, tableName } from "../schema/names";
 import { queueSearch, removeLocaleSearchEntry, removeSearchEntry, searchAdapter, wakeSearchQueue, writeLocaleSearchEntry, writeSearchEntry } from "../search";
 import { invalidateSiteCache } from "../site/cache";
+import { THUMB_SIZES } from "../files/service";
 import { adapterNamed, uploadAdapter } from "../storage";
 import type { ByteStream } from "../storage/types";
 import { isScopeValue, SCOPE_COLUMN, unscoped, withScope } from "./context";
@@ -482,7 +483,7 @@ export async function purgeScope(value: string): Promise<{ records: number; file
       await prisma.storedFile.deleteMany({ where: { id: { in: ids } } });
       for (const file of part) {
         const adapter = adapterNamed(file.storage);
-        const keys = [file.key, ...["100x100", "300x300", "800x0"].map((size) => `thumbs/${file.key}/${size}.webp`)];
+        const keys = [file.key, ...THUMB_SIZES.map((size) => `thumbs/${file.key}/${size}.webp`)];
         const results = await Promise.allSettled(keys.map((key) => adapter.delete(key)));
         for (const result of results) if (result.status === "rejected") console.error(`[scope] could not delete bytes of file ${file.id}`, result.reason);
       }

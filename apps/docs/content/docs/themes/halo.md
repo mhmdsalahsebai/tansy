@@ -5,7 +5,7 @@ description: "How themes work in general is in Themes and Write and publish a th
 
 How themes work in general is in [Themes](/docs/extending#themes) and [Write and publish a theme](/docs/guides/themes).
 
-A news front page for the [blog plugin](/docs/plugins/blog): a lead story beside a Recommended panel, the latest news beside a spotlight story, a trending block, readers' choice and a carousel of popular stories, on quiet panels over a pale page. Editors choose what each section shows on a **Front page** record; whatever they leave empty fills itself from featured and recent posts. It follows the visitor's light or dark setting and works right to left.
+A news front page for the [blog plugin](/docs/plugins/blog): a lead story beside a Recommended panel, the latest news beside a spotlight story, a trending block, readers' choice and a carousel of popular stories, on quiet panels over a pale page. Editors choose what each section shows on a **Front page** record; whatever places they leave empty fill themselves from featured and recent posts. It follows the visitor's light or dark setting and works right to left.
 
 ```ts
 // tansy.config.ts
@@ -34,9 +34,9 @@ The post page is built from the blog plugin's exported parts (`PostMeta`, `PostT
 
 ## 2. The front page
 
-The theme's schema creates a singleton, **Front page** (`halo-front`), whose address is `/`. Each of its fields picks stories for one section, in the order chosen:
+The theme's schema creates a singleton, **Front page** (`halo-front`), whose address is `/`. Each of its fields picks stories for one section, in the order chosen. A section shows its picks first; if they're fewer than it holds, the rest of its places fill as the last column says, so picking two stories for Trending gives two picked stories and five more, not a half-empty block:
 
-| Field | Section | Up to | When empty |
+| Field | Section | Up to | Places left are filled with |
 |---|---|---|---|
 | `lead` | Best of the week, the large headline | 1 | The newest featured post, else the newest post |
 | `spotlight` | The large story beside Latest news | 1 | The next featured post, else the next newest |
@@ -46,7 +46,7 @@ The theme's schema creates a singleton, **Front page** (`halo-front`), whose add
 | `popular` | Popular news, a carousel | 10 | Recent posts |
 | `title` | The page's title, for search engines and the browser tab | | The site's name |
 
-**Latest news** always shows the four newest posts no other section has taken, and the three stories under the lead are the next featured posts. Sections that fill themselves never repeat a story an earlier section showed, except Recommended, Trending, Readers' choice and Popular, which reuse stories rather than stay empty on a site with only a few posts. A section with nothing to show is left out.
+**Latest news** always shows the four newest posts no other section has taken, and the three stories under the lead are the next featured posts. Filled places never repeat a story an earlier section showed, nor one of the section's own picks, except Recommended, Trending, Readers' choice and Popular, which reuse stories rather than stay empty on a site with only a few posts. A section with nothing to show is left out.
 
 Until someone creates and publishes the Front page record, `/` renders the same page entirely from featured and recent posts. Nothing has to be set up for the site to look complete. There is no view counter behind "Trending" or "Popular": those are editorial picks, or recent posts when nobody picked.
 

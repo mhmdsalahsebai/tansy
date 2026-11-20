@@ -238,6 +238,6 @@ used, and that is the whole of it. Not built yet:
   server, so the size limit (50 MiB by default) also bounds its temporary disk use.
 
 A record returns file ids, and a client builds addresses as `/api/files/<id>`, with `?thumb=100x100`,
-`300x300` or `800x0`.
+`300x300`, `800x0` or `1600x0`.
 
 The rest of the CMS's boundaries are in [Limits and boundaries](/docs/guides/limits).

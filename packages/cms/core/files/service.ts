@@ -28,7 +28,7 @@ import { detectType, RASTER_IMAGES, SNIFF_BYTES } from "./sniff";
 import { clampPercent, fileFocusOf, focusCrop, focusKeyPart, type FileFocus } from "./focus";
 import { invalidateSiteCache } from "../site/cache";
 
-export const THUMB_SIZES = ["100x100", "300x300", "800x0"] as const;
+export const THUMB_SIZES = ["100x100", "300x300", "800x0", "1600x0"] as const;
 export type ThumbSize = (typeof THUMB_SIZES)[number];
 
 const SIGNED_URL_SECONDS = 300;
@@ -307,7 +307,7 @@ async function bytesOf(stream: ByteStream) {
   return Buffer.from(await new Response(stream).arrayBuffer());
 }
 
-/** "800x0" keeps the image's shape within 800 pixels wide. */
+/** "800x0" and "1600x0" keep the image's shape within that many pixels wide. */
 function thumbShape(size: ThumbSize) {
   const [width, height] = size.split("x").map(Number);
   return height ? { width, height, fit: "cover" as const } : { width, fit: "inside" as const };

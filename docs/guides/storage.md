@@ -78,7 +78,7 @@ Files are uploaded with a private ACL, so either make the app private or allow o
 
 ## Thumbnails
 
-The dashboard and `/api/files/:id?thumb=` use three sizes: `100x100` and `300x300`, cropped, and `800x0`, which keeps the image's shape. By default core makes each with `sharp` on first request and stores it beside the original.
+The dashboard and `/api/files/:id?thumb=` use four sizes: `100x100` and `300x300`, cropped, and `800x0` and `1600x0`, which keep the image's shape. `1600x0` is for images shown wide on high-density screens, as the second entry of a `srcset`. By default core makes each with `sharp` on first request and stores it beside the original.
 
 An adapter with `thumbnailUrl` hands that to the provider's image service instead, and core neither renders nor stores thumbnails for it:
 

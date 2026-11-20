@@ -48,7 +48,7 @@ export interface SiteReader {
   localization?(): Promise<SiteLocalization | null>;
   branding(): Promise<SiteBranding & { accentColor?: string }>;
   preview(token: string): Promise<PreviewedRecord | null>;
-  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0"): string;
+  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0" | "1600x0"): string;
   /**
    * The same reads as the signed-in person making this request, as a member of the site:
    * API rules see who they are through @request.auth, and their role's permissions don't

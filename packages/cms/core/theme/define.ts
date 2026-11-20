@@ -137,7 +137,7 @@ export interface TemplateProps<Options = unknown> {
   branding: SiteBranding;
   /** True when this shows unpublished changes. */
   preview: boolean;
-  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0"): string;
+  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0" | "1600x0"): string;
   /**
    * How a file is described, in this page's language: `alt` for an image's alternative text,
    * with `caption` and `credit` where a theme shows them. Empty strings when the file has no

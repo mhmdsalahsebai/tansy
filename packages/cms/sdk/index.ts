@@ -336,7 +336,7 @@ export class CmsClient<C extends object = Record<string, Record<string, unknown>
   }
 
   /** The URL of a file. Add a size for a thumbnail. */
-  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0") {
+  fileUrl(id: string, thumb?: "100x100" | "300x300" | "800x0" | "1600x0") {
     return `${this.base}${this.api}/files/${encodeURIComponent(id)}${thumb ? `?thumb=${thumb}` : ""}`;
   }
 

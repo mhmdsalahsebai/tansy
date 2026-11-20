@@ -101,6 +101,16 @@ describe("halo theme", () => {
     const recommended = html.slice(html.indexOf('id="ha-recommended"'));
     expect(recommended.indexOf("Story 6")).toBeGreaterThan(-1);
     expect(recommended.indexOf("Story 6")).toBeLessThan(recommended.indexOf("Story 5"));
+    // Two picks for five places: the rest are filled, after the picks.
+    const panel = recommended.slice(0, recommended.indexOf("ha-spotlight-wrap"));
+    expect((panel.match(/class="ha-cover-link"/g) ?? []).length).toBe(5);
+    const titles = [...panel.matchAll(/class="ha-cover-link"[^>]*>([^<]+)</g)].map((match) => match[1]);
+    expect(titles.slice(0, 2)).toEqual(["Story 6", "Story 5"]);
+  });
+
+  it("serves wide pictures at 1600 pixels where the screen needs it", async () => {
+    const { html } = await render(theme(), reader({}), "/");
+    expect(html).toMatch(/srcSet="\/f\/c\d+\?thumb=800x0 800w, \/f\/c\d+\?thumb=1600x0 1600w"/);
   });
 
   it("keeps Recommended beside the lead filled on a small site, featured first, never the lead", async () => {

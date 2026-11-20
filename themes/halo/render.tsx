@@ -166,10 +166,14 @@ function Title({ story, props, as: Tag = "h3", className }: { story: Story; prop
   return <Tag className={className}>{href ? <a className="ha-cover-link" href={href}>{text(story.title)}</a> : text(story.title)}</Tag>;
 }
 
-function Picture({ story, props, size, className, eager = false }: { story: Story; props: Props; size: "300x300" | "800x0"; className: string; eager?: boolean }) {
+/** For a wide picture: the 1600-pixel version where the screen is dense enough to need it. */
+const wide = (props: Pick<Props, "fileUrl">, cover: string) => ({ src: props.fileUrl(cover, "800x0"), srcSet: `${props.fileUrl(cover, "800x0")} 800w, ${props.fileUrl(cover, "1600x0")} 1600w` });
+
+function Picture({ story, props, size, sizes = "(min-width: 60rem) 40vw, 100vw", className, eager = false }: { story: Story; props: Props; size: "300x300" | "800x0"; sizes?: string; className: string; eager?: boolean }) {
   const cover = text(story.cover);
+  const source = size === "800x0" ? { ...wide(props, cover), sizes } : { src: props.fileUrl(cover, size) };
   // eslint-disable-next-line @next/next/no-img-element -- an access-checked API address that redirects to a signed URL, which next/image can't optimize
-  if (cover) return <img className={className} src={props.fileUrl(cover, size)} alt={props.fileText(cover).alt} style={{ objectPosition: props.fileFocus(cover).objectPosition }} loading={eager ? "eager" : "lazy"} />;
+  if (cover) return <img className={className} {...source} alt={props.fileText(cover).alt} style={{ objectPosition: props.fileFocus(cover).objectPosition }} loading={eager ? "eager" : "lazy"} />;
   return <span className={`${className} ha-blank`} aria-hidden="true" />;
 }
 
@@ -216,7 +220,7 @@ function Rows({ stories, props }: { stories: Story[]; props: Props }) {
 function Card({ story, props, eager = false }: { story: Story; props: Props; eager?: boolean }) {
   return (
     <article className="ha-card" lang={text(story.locale) || undefined}>
-      <Picture story={story} props={props} size="800x0" className="ha-card-image" eager={eager} />
+      <Picture story={story} props={props} size="800x0" sizes="(min-width: 60rem) 25vw, 100vw" className="ha-card-image" eager={eager} />
       <Meta story={story} props={props} />
       <Title story={story} props={props} className="ha-card-title" />
       <Tags story={story} props={props} />
@@ -228,7 +232,7 @@ function Card({ story, props, eager = false }: { story: Story; props: Props; eag
 function Feature({ story, props, large = false }: { story: Story; props: Props; large?: boolean }) {
   return (
     <article className={large ? "ha-feature ha-feature-large" : "ha-feature"} lang={text(story.locale) || undefined}>
-      <Picture story={story} props={props} size="800x0" className="ha-feature-image" />
+      <Picture story={story} props={props} size="800x0" sizes={large ? "(min-width: 60rem) 50vw, 100vw" : "(min-width: 60rem) 22rem, 100vw"} className="ha-feature-image" />
       <div className="ha-feature-body">
         <Meta story={story} props={props} />
         <Title story={story} props={props} className="ha-feature-title" />
@@ -351,18 +355,13 @@ function Layout(props: LayoutProps<HaloOptions>) {
 
 /**
  * Hands out stories to the front page's sections, most important first. A section an editor
- * filled shows their picks in their order. Otherwise it takes stories no earlier section
- * showed, and, where `reuse` allows, tops up with ones that did, so a young site's page isn't
- * mostly empty.
+ * filled starts with their picks in their order. The rest of its places go to stories no
+ * earlier section showed and, where `reuse` allows, to ones that did, so a section an editor
+ * only half filled, or a young site's page, isn't left mostly empty.
  */
 function allocator() {
   const used = new Set<number>();
   return (picks: Story[], order: number[], pools: Story[][], count: number, reuse = false, never: Story[] = []): Story[] => {
-    if (picks.length) {
-      const sorted = [...picks].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)).slice(0, count);
-      for (const story of sorted) used.add(story.id);
-      return sorted;
-    }
     const chosen: Story[] = [];
     const seen = new Set<number>(never.map((story) => story.id));
     const add = (story: Story) => {
@@ -370,6 +369,7 @@ function allocator() {
       seen.add(story.id);
       chosen.push(story);
     };
+    for (const story of [...picks].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))) add(story);
     for (const pool of pools) for (const story of pool) if (!used.has(story.id)) add(story);
     if (reuse) for (const pool of pools) for (const story of pool) add(story);
     for (const story of chosen) used.add(story.id);
@@ -621,7 +621,7 @@ const Tag = (props: Props) => <Taxonomy {...props} kind="tag" />;
  * through `data`, so they behave exactly as on its own page.
  */
 function Post(props: Props) {
-  const { record, data, stream, fileUrl, fileText, fileFocus, t, words } = props;
+  const { record, data, stream, fileText, fileFocus, t, words } = props;
   if (!record) return null;
   const side = items(data.sideStories);
   const more = (items(data.moreStories).length ? items(data.moreStories) : side).slice(0, 4);
@@ -637,7 +637,7 @@ function Post(props: Props) {
             {props.options.showDates && <PostMeta post={record} data={data} words={words} />}
           </header>
           {/* eslint-disable-next-line @next/next/no-img-element -- an access-checked API address that redirects to a signed URL, which next/image can't optimize */}
-          {cover && <figure className="ha-article-cover"><img src={fileUrl(cover, "800x0")} alt={fileText(cover).alt} style={{ objectPosition: fileFocus(cover).objectPosition }} /></figure>}
+          {cover && <figure className="ha-article-cover"><img {...wide(props, cover)} sizes="(min-width: 52rem) 52rem, 100vw" alt={fileText(cover).alt} style={{ objectPosition: fileFocus(cover).objectPosition }} /></figure>}
           <div className="ha-prose">
             <StreamField blocks={record.body} {...stream} />
             <PostTags post={record} data={data} words={words} />
