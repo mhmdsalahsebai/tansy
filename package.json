@@ -39,15 +39,15 @@
     "check": "npm run --silent tansy -- sync && tsc --noEmit && eslint . && vitest run"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.0",
+    "@playwright/test": "^1.65.1",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.6",
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "eslint": "^10.14.0",
-    "eslint-config-next": "^16.4.5",
+    "eslint": "^10.15.0",
+    "eslint-config-next": "^16.4.6",
     "typescript": "6.0.3",
     "vitest": "^5.1.0"
   }
