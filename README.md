@@ -17,16 +17,17 @@ Full documentation, including the guides, every plugin and every theme, is at **
 
 ## Try the demo
 
-A live install with the blog, shop and courses plugins and some sample content:
+A live install with the blog, shop, courses and AI plugins and some sample content:
 **<https://tansy-demo.vercel.app/dashboard>**
 
 | Email | Password |
 | --- | --- |
 | `demo@example.com` | `explore-tansy-demo` |
 
-The demo account is shared by everyone and can only look: browse the collections, records, block
-editor, files, roles and settings. It can't change anything, including its own password. To try
-editing, run your own copy with `npm create tansy@latest`, which takes a minute.
+The demo account is shared by everyone. Write posts, publish them, upload images, add fields
+and collections: the demo is put back as it was every hour, so change whatever you like. It can't
+touch users, roles, settings, webhooks or API keys, or change its own password. To keep what you
+build, run your own copy with `npm create tansy@latest`, which takes a minute.
 
 ## Quick start with Docker
 

@@ -1,6 +1,6 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
-import { appName, gitConfig } from './shared';
+import { appName, demo, gitConfig } from './shared';
 
 /** The mark and the wordmark, whose dark letters are swapped for light ones on the dark theme. */
 function Brand() {
@@ -22,6 +22,7 @@ export function baseOptions(): BaseLayoutProps {
       { text: 'Documentation', url: '/docs', active: 'nested-url' },
       { text: 'Plugins', url: '/docs/plugins' },
       { text: 'Themes', url: '/docs/themes' },
+      { text: 'Live demo', url: demo.url, external: true },
     ],
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { demo } from '@/lib/shared';
 import {
   ArrowRight,
   Blocks,
@@ -7,6 +8,7 @@ import {
   FileCode,
   Globe,
   KeyRound,
+  LayoutDashboard,
   Layers,
   ShieldCheck,
   Terminal,
@@ -93,7 +95,18 @@ export default function HomePage() {
               <Blocks className="size-4" />
               Browse plugins
             </Link>
+            <a
+              href={demo.url}
+              className="inline-flex items-center gap-2 rounded-lg border border-fd-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fd-accent"
+            >
+              <LayoutDashboard className="size-4" />
+              Try the live demo
+            </a>
           </div>
+          <p className="mt-4 text-sm text-fd-muted-foreground">
+            Sign in as <code>{demo.email}</code> with <code>{demo.password}</code>. Change anything:
+            the demo resets every hour.
+          </p>
         </div>
       </section>
 
