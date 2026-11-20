@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 /**
- * Fills the live demo with stories for the halo theme, and takes "Courses" out of its menu.
+ * Fills the live demo with stories for the halo theme, takes "Courses" out of its menu, and removes
+ * the sample posts that would mislead a visitor, such as one announcing a release that doesn't exist.
  * Run it yourself: it signs in as the demo's admin from .demo-admin (gitignored), whose lines are
  * "URL: …", "Email: …" and "Password: …".
  *
  *   node scripts/demo-content.mjs
+ *
+ * The demo resets to its baseline every hour, so afterwards run the "Demo reset" workflow with
+ * "baseline", or the next reset puts back what this changed.
  *
  * Safe to run again: posts, categories and tags are matched by slug or name, and only what is
  * missing is added, including a category and tags for posts that had none. Covers are drawn
@@ -101,6 +105,15 @@ if (menu && Array.isArray(menu.items)) {
     await call("PATCH", `/api/collections/site-menu/records/${menu.id}`, { items, status: "published" });
     console.log("Menu: removed Courses.");
   } else console.log("Menu: no Courses link.");
+}
+
+// Sample posts from before this script that read as real news about Tansy. "Tansy 1.1 is out"
+// announced a version that was never released. Deleting moves them to the collection's trash.
+const RETIRED = ["tansy-1-1-is-out"];
+for (const post of await list("blog-posts", "&fields=id,slug,title")) {
+  if (!RETIRED.includes(post.slug)) continue;
+  await call("DELETE", `/api/collections/blog-posts/records/${post.id}`);
+  console.log(`Removed: ${post.title}`);
 }
 
 async function ensureNamed(slug, names) {
