@@ -9,6 +9,8 @@ import type { AdminConfig } from "../core/extend/admin";
 import { createMatcher } from "./match";
 import { authPages } from "./pages-table.generated";
 import { AdminI18nProvider } from "../components/i18n";
+import { AuthConfigProvider } from "../components/auth/AuthConfig";
+import { loadPublicAuthConfig } from "../core/auth/public-config";
 import { adminDirection, adminLocale, adminMessages } from "../core/i18n/admin";
 
 type Query = Record<string, string | string[] | undefined>;
@@ -31,11 +33,14 @@ export function createAuthPage(config: CmsConfig) {
     const Page = (await found.entry.load()).default as TablePage;
     // A plain copy, because some of these are client components and the original is tied to this request.
     // Nobody is signed in yet, so the language comes from the remembered choice or the browser.
-    const locale = await adminLocale();
+    // The enabled methods and branding come with the page, so the form paints whole instead of filling in after a request.
+    const [locale, authConfig, query] = await Promise.all([adminLocale(), loadPublicAuthConfig(), searchParams]);
     const direction = adminDirection(locale);
     return (
       <AdminI18nProvider locale={locale} direction={direction} messages={adminMessages(locale)}>
-        <div lang={locale} dir={direction} className="cms-contents"><Page searchParams={Promise.resolve({ ...(await searchParams) })} /></div>
+        <AuthConfigProvider value={authConfig}>
+          <div lang={locale} dir={direction} className="cms-contents"><Page searchParams={Promise.resolve({ ...query })} /></div>
+        </AuthConfigProvider>
       </AdminI18nProvider>
     );
   };

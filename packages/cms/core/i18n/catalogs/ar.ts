@@ -304,6 +304,7 @@ export const ar: Catalog = {
     passkey: "تسجيل الدخول بمفتاح مرور",
     magicLink: "أرسل لي رابط تسجيل الدخول",
     emailMeCode: "أرسل لي رمزًا",
+    or: "أو",
     continueWith: "المتابعة باستخدام {provider}",
   },
   overview: {

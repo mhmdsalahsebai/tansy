@@ -23,9 +23,12 @@ export function Button({ variant = "primary", loading, className, children, disa
       type="button"
       {...props}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={cn("cms-btn", variants[variant], className)}
     >
-      {loading ? t("common.working") : children}
+      {/* The label stays, so the button keeps its width and says what is under way. */}
+      {loading && <><span className="cms-spinner" aria-hidden="true" /><span className="cms-sr-only">{t("common.working")}</span></>}
+      {children}
     </button>
   );
 }

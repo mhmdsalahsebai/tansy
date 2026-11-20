@@ -162,11 +162,20 @@
   .cms-dot-danger { background: var(--cms-color-danger); }
 
   /* Sign-in pages */
-  .cms-auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: var(--cms-space-12) var(--cms-space-4); background: var(--cms-color-page); }
-  .cms-auth-panel { width: 100%; max-width: 24rem; }
-  :where(.cms-auth-panel > :not(:last-child)) { margin-block-end: var(--cms-space-6); }
-  .cms-auth-title { font-size: var(--cms-text-3xl); line-height: var(--cms-leading-3xl); font-weight: 600; letter-spacing: -0.03em; color: var(--cms-color-text-strong); }
-  .cms-auth-logo { width: auto; height: 2.25rem; margin: 0 auto var(--cms-space-4); }
+  .cms-auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; min-height: 100dvh; padding: var(--cms-space-12) var(--cms-space-4); background: var(--cms-color-page); }
+  .cms-auth-panel { width: 100%; max-width: 25rem; }
+  :where(.cms-auth-panel > :not(:last-child)) { margin-block-end: var(--cms-space-5); }
+  .cms-auth-panel .cms-card-body { padding: var(--cms-space-6); }
+  .cms-auth-brand { display: flex; justify-content: center; }
+  .cms-auth-mark { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: var(--cms-radius-lg); background: var(--cms-color-accent); color: var(--cms-color-on-accent); box-shadow: var(--cms-shadow-xs); font-size: var(--cms-text-lg); font-weight: 700; }
+  .cms-auth-logo { width: auto; max-width: 12rem; height: 2.5rem; object-fit: contain; }
+  .cms-auth-head { margin-block-end: var(--cms-space-5); }
+  .cms-auth-title { font-size: var(--cms-text-2xl); line-height: var(--cms-leading-2xl); font-weight: 650; letter-spacing: -0.02em; color: var(--cms-color-text-strong); }
+  .cms-auth-subtitle { margin-block-start: var(--cms-space-1); font-size: var(--cms-text-sm); line-height: var(--cms-leading-sm); color: var(--cms-color-text-muted); }
+  .cms-auth-footer { text-align: center; font-size: var(--cms-text-sm); line-height: var(--cms-leading-sm); color: var(--cms-color-text-muted); }
+  .cms-auth-divider { display: flex; align-items: center; gap: var(--cms-space-3); font-size: var(--cms-text-xs); line-height: var(--cms-leading-xs); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: var(--cms-color-text-faint); }
+  .cms-auth-divider::before, .cms-auth-divider::after { content: ""; flex: 1 1 0%; border-top: 1px solid var(--cms-color-border-soft); }
+  @media (min-width: 40rem) { .cms-auth-panel .cms-card-body { padding: var(--cms-space-8); } }
   /* Keeps room for the widget while its script loads, so the form doesn't jump. 65px is Turnstile's and hCaptcha's height, 78px reCAPTCHA's. */
   .cms-captcha { min-height: 65px; }
 
@@ -174,6 +183,9 @@
   .cms-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--cms-space-1); min-height: 2rem; padding: 0.375rem 0.75rem; border: 1px solid transparent; border-radius: var(--cms-radius-md); white-space: nowrap; font-size: var(--cms-text-sm); line-height: var(--cms-leading-xs); font-weight: 500; transition: background-color var(--cms-transition), border-color var(--cms-transition), color var(--cms-transition); }
   .cms-btn:focus-visible, .cms-btn-label:focus-within { outline: 2px solid var(--cms-focus-ring); outline-offset: 2px; }
   .cms-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .cms-btn[aria-busy="true"] { opacity: 0.85; cursor: progress; }
+  .cms-spinner { flex-shrink: 0; width: 0.875rem; height: 0.875rem; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 9999px; animation: cms-spin 0.6s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .cms-spinner { animation-duration: 1.5s; } }
   .cms-btn-primary { background: var(--cms-color-accent); color: var(--cms-color-on-accent); }
   .cms-btn-primary:hover { background: var(--cms-color-accent-hover); }
   .cms-btn-secondary { border-color: var(--cms-color-border); background: var(--cms-color-surface); color: var(--cms-color-text-strong); box-shadow: var(--cms-shadow-xs); }
@@ -485,3 +497,4 @@
 }
 
 @keyframes cms-pulse { 50% { opacity: 0.5; } }
+@keyframes cms-spin { to { rotate: 360deg; } }

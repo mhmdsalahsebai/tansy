@@ -305,6 +305,7 @@ export const en = {
     passkey: "Sign in with a passkey",
     magicLink: "Email me a sign-in link",
     emailMeCode: "Email me a code",
+    or: "or",
     continueWith: "Continue with {provider}",
   },
   overview: {

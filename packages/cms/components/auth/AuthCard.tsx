@@ -1,22 +1,38 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useApi } from "../../lib/client/api";
-import { apiPath } from "../../lib/paths";
+import { useT } from "../i18n";
+import { Card } from "../ui/kit";
+import { useAuthConfig } from "./AuthConfig";
 
-export function AuthCard({ title, subtitle, children }: { title: string; subtitle?: ReactNode; children: ReactNode }) {
-  const { data } = useApi<{ logoUrl: string }>(apiPath("/auth-config"));
+/**
+ * The frame of every sign-in page: the site's mark, a card holding the title and the form, and
+ * `footer` under it for the way to another auth page ("No account? Create one").
+ */
+export function AuthCard({ title, subtitle, footer, children }: { title: string; subtitle?: ReactNode; footer?: ReactNode; children: ReactNode }) {
+  const { appName, logoUrl } = useAuthConfig();
   return (
-    <div className="cms-auth-page">
+    <main className="cms-auth-page">
       <div className="cms-auth-panel">
-        <div className="cms-center">
+        <div className="cms-auth-brand">
           {/* eslint-disable-next-line @next/next/no-img-element -- an administrator's path, whose size next/image can't know */}
-          {data?.logoUrl && <img src={data.logoUrl} alt="" className="cms-auth-logo" />}
-          <h1 className="cms-auth-title">{title}</h1>
-          {subtitle && <p className="cms-mt-2 cms-text-sm cms-soft">{subtitle}</p>}
+          {logoUrl ? <img src={logoUrl} alt={appName} className="cms-auth-logo" /> : <span className="cms-auth-mark" aria-hidden="true">{appName.trim().charAt(0) || "C"}</span>}
         </div>
-        <div className="cms-panel cms-p-6 cms-stack-4">{children}</div>
+        <Card>
+          <div className="cms-auth-head">
+            <h1 className="cms-auth-title">{title}</h1>
+            {subtitle && <p className="cms-auth-subtitle">{subtitle}</p>}
+          </div>
+          {children}
+        </Card>
+        {footer && <p className="cms-auth-footer">{footer}</p>}
       </div>
-    </div>
+    </main>
   );
+}
+
+/** A rule with "or" on it, between the main way to sign in and the others. */
+export function AuthDivider() {
+  const { t } = useT();
+  return <div className="cms-auth-divider" role="separator"><span>{t("auth.or")}</span></div>;
 }
