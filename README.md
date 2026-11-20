@@ -8,7 +8,20 @@ A self-hosted content backend on Next.js with runtime-defined collections, and a
 > every upgrade, and take a [backup](docs/guides/backups.md) first. The compatibility promises in
 > [upgrading](docs/guides/upgrading.md) start at 1.0.
 
-Full documentation, including the guides, every plugin and every theme, is on the docs site, built from `docs/` in this repo (`apps/docs`).
+Full documentation, including the guides, every plugin and every theme, is at **<https://tansy-cms.vercel.app>**, built from `docs/` in this repo (`apps/docs`).
+
+## Try the demo
+
+A live install with the blog, shop and courses plugins and some sample content:
+**<https://tansy-demo.vercel.app/dashboard>**
+
+| Email | Password |
+| --- | --- |
+| `demo@example.com` | `explore-tansy-demo` |
+
+The demo account is shared by everyone and can only look: browse the collections, records, block
+editor, files, roles and settings. It can't change anything, including its own password. To try
+editing, run your own copy with `npm create tansy@latest`, which takes a minute.
 
 ## Quick start with Docker
 
