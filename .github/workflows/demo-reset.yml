@@ -39,7 +39,7 @@ jobs:
       TASK: ${{ github.event_name == 'schedule' && 'reset' || inputs.task }}
       DEMO_DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 24
