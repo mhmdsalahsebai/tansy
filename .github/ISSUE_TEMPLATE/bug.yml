@@ -1,0 +1,48 @@
+name: Bug
+description: Something doesn't work the way the documentation says.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: A security problem goes to Security → Report a vulnerability, not here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. npm create tansy@latest my-site -- --yes
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tansy version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database
+      options: [SQLite, Postgres]
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Where it runs
+      placeholder: local, Docker, Vercel, a VPS…
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: The server's output or the browser console. Remove secrets first.
+      render: text

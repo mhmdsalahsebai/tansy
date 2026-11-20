@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for looking at tansy. This page is the short version of how the repository works and
+Thanks for looking at tansy. Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md), and security problems are reported privately as [SECURITY.md](SECURITY.md) explains, never in an issue. This page is the short version of how the repository works and
 which rules a change has to keep. The two reference documents it links to are binding: a change
 that breaks them will fail `npm run check`.
 

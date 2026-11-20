@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem
+    url: https://github.com/mhmdsalahsebai/tansy/security/advisories/new
+    about: Privately. Never in a public issue.
+  - name: Ask a question
+    url: https://github.com/mhmdsalahsebai/tansy/discussions
+    about: How do I…, is this a good idea, show what you made.
