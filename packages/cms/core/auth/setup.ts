@@ -20,20 +20,33 @@ export async function setupRequired(): Promise<boolean> {
 /**
  * PocketBase's first-run flow: only someone who can read the server log can
  * claim the instance, so a freshly deployed server cannot be taken over.
+ *
+ * A link stays valid for its hour however many servers start meanwhile. Serverless hosts start
+ * a new instance for many requests, and each one replacing the link would break the one the
+ * person is about to open. Under the startup lock, so servers starting together print one link.
  */
 export async function announceSetup(): Promise<void> {
-  if (!(await setupRequired())) {
-    await prisma.appSetting.deleteMany({ where: { key: KEY } });
-    return;
-  }
-  const token = randomBytes(32).toString("base64url");
-  const value = { hash: hash(token).toString("hex"), expiresAt: Date.now() + TTL_MS };
-  await prisma.appSetting.upsert({ where: { key: KEY }, create: { key: KEY, value }, update: { value } });
-  console.info(`\n[setup] No superadmin exists. Open this link within 1 hour to create one:\n[setup] ${baseUrl()}${authPath("setup")}?token=${token}\n`);
+  const { LOCK, onlyOneServer } = await import("../content/locks");
+  await onlyOneServer(LOCK.startup, async () => {
+    if (!(await setupRequired())) {
+      await prisma.appSetting.deleteMany({ where: { key: KEY } });
+      return;
+    }
+    const existing = (await prisma.appSetting.findUnique({ where: { key: KEY } }))?.value as { expiresAt?: number } | undefined;
+    if (existing?.expiresAt && existing.expiresAt > Date.now()) {
+      const minutes = Math.ceil((existing.expiresAt - Date.now()) / 60_000);
+      console.info(`[setup] No superadmin exists. The setup link printed earlier in this log is valid for ${minutes} more minute${minutes === 1 ? "" : "s"}. Or run: tansy superadmin <email>`);
+      return;
+    }
+    const token = randomBytes(32).toString("base64url");
+    const value = { hash: hash(token).toString("hex"), expiresAt: Date.now() + TTL_MS };
+    await prisma.appSetting.upsert({ where: { key: KEY }, create: { key: KEY, value }, update: { value } });
+    console.info(`\n[setup] No superadmin exists. Open this link within 1 hour to create one:\n[setup] ${baseUrl()}${authPath("setup")}?token=${token}\n`);
+  });
 }
 
 export async function completeSetup(input: { token: string; name: string; email: string; password: string }) {
-  const invalid = () => new HttpError(403, "INVALID_SETUP_TOKEN", "This setup link is invalid or has expired. Restart the server for a new one.");
+  const invalid = () => new HttpError(403, "INVALID_SETUP_TOKEN", "This setup link is invalid or has expired. The server prints a new one when it next starts after the old one expires, or run tansy superadmin <email>.");
   const row = await prisma.appSetting.findUnique({ where: { key: KEY } });
   const stored = row?.value as { hash?: string; expiresAt?: number } | undefined;
   if (!stored?.hash || !stored.expiresAt || stored.expiresAt < Date.now()) throw invalid();

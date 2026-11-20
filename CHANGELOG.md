@@ -97,7 +97,8 @@ rather than what changed.
 - A Docker image and `docker-compose.yml` that need no configuration on first boot.
 - Several servers can start at once against a new database, as serverless hosts do on their first
   requests: one runs the startup setup (blocks, field upgrades, plugin migrations, theme seeds)
-  while the others wait, so none of them fails on what another just created.
+  while the others wait, so none of them fails on what another just created. The first-run setup
+  link stays valid for its hour however many servers start meanwhile.
 
 ### Installing it
 
