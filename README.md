@@ -53,8 +53,6 @@ To extend it, see the guides for [plugins](docs/guides/plugins.md), [custom fiel
 
 ## Adding it to a Next.js app
 
-`tansy` isn't on npm yet. Build the tarballs with `npm run package`, which writes one per package in `.release/`, and install `.release/tansy-<version>.tgz` in place of the package name below.
-
 ```bash
 npx create-next-app@latest my-site
 cd my-site
