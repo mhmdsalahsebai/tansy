@@ -68,6 +68,7 @@ import { dispatch } from "@tansy/theme-dispatch";
 import { magazine } from "@tansy/theme-magazine";
 import { storefront } from "@tansy/theme-storefront";
 import { defineCms } from "tansy/config";
+import { defineAdminTheme } from "tansy/theme";
 import { localStorage } from "tansy/storage";
 import { s3Storage } from "tansy/storage";
 
@@ -109,6 +110,8 @@ export default defineCms({
   // of them a site is served in is a setting, so a tenant can change that without one.
   ...(installed.length > 1 ? { themes: installed } : { theme: installed[0] }),
   previewUrl: env.TANSY_PREVIEW_URL,
+  // Tansy's own mark on the dashboard and sign-in pages, from public/. A logo set under Settings replaces it.
+  adminTheme: defineAdminTheme({ name: "tansy", tokens: {}, logo: "/tansy-icon.png" }),
   // Features are plugins. Remove a line to remove the feature. See docs/EXTENDING.md.
   plugins: [
     socialSignIn(),

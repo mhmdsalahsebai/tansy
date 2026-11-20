@@ -1,4 +1,9 @@
-# Tansy
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="apps/docs/public/brand/logo-light.png">
+    <img src="apps/docs/public/brand/logo-dark.png" alt="Tansy" height="64">
+  </picture>
+</h1>
 
 A self-hosted content backend on Next.js with runtime-defined collections, and authentication and authorization managed from its dashboard.
 

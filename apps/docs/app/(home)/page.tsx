@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -64,6 +65,7 @@ export default function HomePage() {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--color-fd-primary)/8%,transparent_60%)]"
         />
         <div className="relative mx-auto flex max-w-3xl flex-col items-center">
+          <Image src="/brand/icon.png" alt="" width={72} height={72} className="mb-6 size-18" priority />
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-fd-border bg-fd-card px-3 py-1 text-xs text-fd-muted-foreground">
             <Terminal className="size-3.5" />
             npm create tansy@latest
