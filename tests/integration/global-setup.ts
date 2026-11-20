@@ -139,6 +139,7 @@ export default async function setup(project: TestProject) {
     MAINTENANCE_TICK_MS: "500",
     CRON_SECRET: "integration-cron-secret",
     TANSY_BACKGROUND: "timers",
+    TANSY_SHARED_ACCOUNTS: "shared@example.test",
     WEBHOOK_TICK_MS: "200",
     HOOK_TICK_MS: "200",
     TANSY_WEBHOOK_ALLOW_PRIVATE: "true",

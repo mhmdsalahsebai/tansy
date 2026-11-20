@@ -2,7 +2,7 @@ import "server-only";
 import { mailWords } from "../i18n/admin";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware, getSessionFromCtx } from "better-auth/api";
 import { admin, bearer, emailOTP, magicLink, twoFactor } from "better-auth/plugins";
 import { createAccessControl } from "better-auth/plugins/access";
 import { apiKey } from "@better-auth/api-key";
@@ -20,6 +20,7 @@ import { hashPassword, verifyPassword } from "../../lib/argon2";
 import prisma from "../../lib/prisma";
 import { isPostgres } from "../../lib/prisma/kind";
 import { clearFailures, isLocked, recordFailure } from "./lockout";
+import { ACCOUNT_CHANGING_PATHS, ACCOUNT_RECOVERY_PATHS, isSharedAccount, SHARED_ACCOUNT_MESSAGE, sharedAccounts } from "./shared-accounts";
 import { currentRevision, loadAuthSettings, type AuthSettings } from "./settings";
 import { SERVER_ONLY_PATHS } from "./server-only-paths";
 import { composeEmail, oauthProviders, passwordProblem, runSignInHooks } from "./extension-hooks";
@@ -251,8 +252,17 @@ function createAuthInstance(s: AuthSettings, roleMap: RoleMap, extensions: Exten
           const problem = typeof password === "string" ? await passwordProblem(password, s) : null;
           if (problem) throw new APIError("BAD_REQUEST", { message: problem, code: "PASSWORD_REJECTED" });
         }
+        if (sharedAccounts().size) {
+          const named = typeof ctx.body?.email === "string" ? ctx.body.email : null;
+          const shared = ACCOUNT_RECOVERY_PATHS.has(ctx.path)
+            ? isSharedAccount(named)
+            : ACCOUNT_CHANGING_PATHS.has(ctx.path) && isSharedAccount((await getSessionFromCtx(ctx))?.user.email);
+          if (shared) throw new APIError("FORBIDDEN", { message: SHARED_ACCOUNT_MESSAGE, code: "SHARED_ACCOUNT" });
+        }
         if (ctx.path !== "/sign-in/email" || !s.lockout.enabled) return;
         const email = typeof ctx.body?.email === "string" ? ctx.body.email : "";
+        // Its password is handed out, so a lockout would only let one visitor shut out the rest.
+        if (isSharedAccount(email)) return;
         // Applies to unknown emails too, so a lockout never confirms an account exists.
         if (email && (await isLocked(email))) {
           await audit({ action: "auth.sign_in_locked", outcome: "denied", actorEmail: email, ipAddress: ctx.request ? clientIp(ctx.request.headers, s) : null });
@@ -268,7 +278,7 @@ function createAuthInstance(s: AuthSettings, roleMap: RoleMap, extensions: Exten
         const headers = ctx.request?.headers;
 
         let locked = false;
-        if (ctx.path === "/sign-in/email" && email && s.lockout.enabled) {
+        if (ctx.path === "/sign-in/email" && email && s.lockout.enabled && !isSharedAccount(email)) {
           if (failed) locked = (await recordFailure(email, s.lockout)).locked;
           else await clearFailures(email);
         }

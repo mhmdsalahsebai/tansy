@@ -36,6 +36,9 @@ rather than what changed.
 
 ### Access
 
+- `TANSY_SHARED_ACCOUNTS` names accounts whose login is handed out, as for a public demo: anyone
+  can sign in and use the account's role, nobody can change the account, sign others out of it or
+  lock it with failed sign-ins.
 - Roles carry permissions; per-collection rules decide which rows a caller may read or write. The
   same rules apply to the API, the dashboard, realtime, files and the site's own pages.
 - A rule language with a parser, an evaluator, save-time validation and SQL compilation, including

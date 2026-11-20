@@ -983,6 +983,31 @@ describe("dashboard-controlled settings", () => {
     await db.query(`DELETE FROM "LoginThrottle"`);
     await configure((s) => { s.lockout.enabled = false; });
   });
+  it("let anyone sign in to a shared account, and nobody change it or lock it", async () => {
+    const email = await makeUser("shared", "editor");
+    await configure((s) => { s.lockout.enabled = true; s.lockout.maxFailures = 3; s.lockout.baseDelaySeconds = 60; });
+    for (let i = 0; i < 5; i++) expect((await call("/api/auth/sign-in/email", { method: "POST", body: { email, password: "wrong-password-wrong-password" } })).status).toBe(401);
+    const visitor = await signIn(email);
+    const refused = async (path: string, body: unknown, method = "POST") => {
+      const r = await call(path, { method, body, as: visitor });
+      expect(r.status, `${path}: ${r.text}`).toBe(403);
+      expect(r.text).toContain("SHARED_ACCOUNT");
+    };
+    await refused("/api/auth/change-password", { currentPassword: PASSWORD, newPassword: "another-long-password-1234" });
+    await refused("/api/auth/change-email", { newEmail: "taken@example.test" });
+    await refused("/api/auth/update-user", { name: "Mine now" });
+    await refused("/api/auth/two-factor/enable", { password: PASSWORD });
+    await refused("/api/auth/revoke-other-sessions", {});
+    await refused("/api/auth/delete-user", { password: PASSWORD });
+    await refused("/api/account/fields", { values: {} }, "PATCH");
+    const reset = await call("/api/auth/request-password-reset", { method: "POST", body: { email, redirectTo: "/" } });
+    expect(reset.status).toBe(403);
+    // Still the same password, and still signed in.
+    expect((await call("/api/auth/get-session", { as: visitor })).json.user.email).toBe(email);
+    await signIn(email);
+    await db.query(`DELETE FROM "LoginThrottle"`);
+    await configure((s) => { s.lockout.enabled = false; });
+  });
   it("rate-limit authentication endpoints", async () => {
     await configure((s) => { s.rateLimit.authMax = 3; s.rateLimit.authWindow = 60; });
     const codes: number[] = [];
