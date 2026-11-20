@@ -31,7 +31,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "better-auth": "^1.7.18",
+    "better-auth": "^1.7.25",
     "next": "^16.4.6",
     "react": "^19.3.0",
     "tansy": "^0.1.0"

@@ -42,6 +42,6 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@lobehub/icons-static-svg": "^1.102.0"
+    "@lobehub/icons-static-svg": "^1.103.0"
   }
 }
