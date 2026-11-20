@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@dodopayments/better-auth": "^1.6.7",
-    "dodopayments": "^2.62.0"
+    "dodopayments": "^2.63.0"
   }
 }
