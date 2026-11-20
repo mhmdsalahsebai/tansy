@@ -67,7 +67,8 @@ function assertClientDirectives() {
 }
 
 generateClients();
-rmSync(RELEASE, { recursive: true, force: true });
+// Only this build's own folder: the other packages' tarballs beside it are what a release publishes.
+rmSync(OUTPUT, { recursive: true, force: true });
 mkdirSync(OUTPUT, { recursive: true });
 execFileSync("npx", ["tsc", "-p", "tsconfig.build.json"], { cwd: PACKAGE, stdio: "inherit" });
 for (const entry of COPIED) {
