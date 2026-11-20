@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "collections": [
+    {
+      "slug": "site-menu",
+      "name": "Menu",
+      "description": "Links shown at the top of every page.",
+      "type": "singleton",
+      "urlPattern": null,
+      "rules": {
+        "listRule": "",
+        "viewRule": "",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        {
+          "name": "items",
+          "type": "stream",
+          "config": {
+            "allowedBlocks": [
+              "menu_item"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "halo-front",
+      "name": "Front page",
+      "description": "The stories the home page leads with. Any section left empty is filled with featured and recent posts.",
+      "type": "singleton",
+      "urlPattern": "/",
+      "rules": {
+        "listRule": "",
+        "viewRule": "",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "config": {
+            "maxLength": 120
+          }
+        },
+        {
+          "name": "lead",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title"
+          }
+        },
+        {
+          "name": "recommended",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title",
+            "allowMultiple": true,
+            "maxSelect": 5
+          }
+        },
+        {
+          "name": "spotlight",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title"
+          }
+        },
+        {
+          "name": "trending",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title",
+            "allowMultiple": true,
+            "maxSelect": 7
+          }
+        },
+        {
+          "name": "readersChoice",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title",
+            "allowMultiple": true,
+            "maxSelect": 9
+          }
+        },
+        {
+          "name": "popular",
+          "type": "reference",
+          "config": {
+            "collection": "blog-posts",
+            "displayField": "title",
+            "allowMultiple": true,
+            "maxSelect": 10
+          }
+        }
+      ]
+    }
+  ],
+  "blocks": []
+}

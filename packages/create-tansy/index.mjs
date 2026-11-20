@@ -7,7 +7,7 @@
  * SQLite, uploads on local disk, no extra plugins.
  *
  *   --template site|headless          blank and blog still work, as site with that theme
- *   --theme blank|blog|magazine|dispatch|storefront|academy
+ *   --theme blank|blog|magazine|halo|dispatch|storefront|academy
  *   --payments <provider>             for themes that sell: stripe, polar, dodo, creem, commet
  *   --host local|server|serverless    where it will run, which rules out what can't work there
  *   --database sqlite|postgres|docker docker writes docker-compose.yml and starts Postgres

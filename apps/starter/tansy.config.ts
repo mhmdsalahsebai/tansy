@@ -65,6 +65,7 @@ import { academy } from "@tansy/theme-academy";
 import { blank } from "@tansy/theme-blank";
 import { blog } from "@tansy/theme-blog";
 import { dispatch } from "@tansy/theme-dispatch";
+import { halo } from "@tansy/theme-halo";
 import { magazine } from "@tansy/theme-magazine";
 import { storefront } from "@tansy/theme-storefront";
 import { defineCms } from "tansy/config";
@@ -85,7 +86,7 @@ const themeNames = (env.TANSY_THEMES || env.TANSY_THEME || "blank").split(",").m
 const uses = (name: string) => themeNames.includes(name);
 
 // A theme that is a site for a feature turns that feature's plugin on, whether it is the default or a theme a tenant may pick.
-const blogging = showing("TANSY_PLUGIN_BLOG") || uses("blog") || uses("magazine") || uses("dispatch");
+const blogging = showing("TANSY_PLUGIN_BLOG") || uses("blog") || uses("magazine") || uses("halo") || uses("dispatch");
 // The dispatch theme is a newsletter's site, so it turns the newsletter on too.
 const mailing = showing("TANSY_PLUGIN_NEWSLETTER") || uses("dispatch");
 // The storefront theme needs the shop, which sells through Payments.
@@ -98,6 +99,7 @@ const tagline = env.TANSY_SITE_TAGLINE;
 const themesByName = {
   blog: () => blog({ tagline }),
   magazine: () => magazine({ tagline }),
+  halo: () => halo({ tagline }),
   storefront: () => storefront({ tagline }),
   dispatch: () => dispatch({ tagline }),
   academy: () => academy({ tagline }),

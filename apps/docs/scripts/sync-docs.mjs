@@ -44,7 +44,7 @@ const SECTIONS = [
     out: "themes",
     title: "Themes",
     before: ["index"],
-    order: ["magazine", "storefront", "dispatch", "academy"],
+    order: ["magazine", "halo", "storefront", "dispatch", "academy"],
   },
 ];
 

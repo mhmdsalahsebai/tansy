@@ -1,0 +1,1093 @@
+/*
+ * Halo theme. Every colour, size and radius comes from the --site-* tokens in index.ts (see
+ * DESIGN.md for each one's role), so the accent under Settings, or a site's own tokens,
+ * restyle it without touching this file. Class names start with ha- so nothing here reaches
+ * the dashboard or another plugin's page. Logical properties keep it right for right-to-left.
+ */
+
+/* ------------------------------------------------------------ foundations */
+
+body:has(.site-root[data-theme="halo"]) { margin: 0; }
+
+.site-root[data-theme="halo"] {
+  min-height: 100vh;
+  background: var(--site-color-page);
+  color: var(--site-color-text);
+  font-family: var(--site-font-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ha-shell {
+  /* Derived from tokens, so they follow the owner's accent. */
+  --ha-accent-soft: color-mix(in srgb, var(--site-color-accent) 10%, var(--site-color-panel));
+  --ha-surface-strong: color-mix(in srgb, var(--site-color-surface) 80%, var(--site-color-text) 8%);
+  --ha-glow-soft: color-mix(in srgb, var(--site-color-glow) 22%, var(--site-color-panel));
+  --ha-ring: 0 0 0 3px color-mix(in srgb, var(--site-color-accent) 35%, transparent);
+  --ha-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--site-color-page);
+  color: var(--site-color-text);
+}
+
+/* Dark colours, unless the site chose "light". Neutrals only: the accent stays the owner's. */
+@media (prefers-color-scheme: dark) {
+  .ha-shell[data-scheme="auto"] {
+    --site-color-page: #0b0c14;
+    --site-color-panel: #141622;
+    --site-color-surface: #1d2030;
+    --site-color-text: #eceef7;
+    --site-color-muted: #9da3b8;
+    --site-color-border: #262a3c;
+    --site-color-ink: #eceef7;
+    --site-shadow-float: 0 18px 40px rgba(0, 0, 0, 0.5);
+    --ha-accent-soft: color-mix(in srgb, var(--site-color-accent) 24%, var(--site-color-panel));
+    --ha-surface-strong: color-mix(in srgb, var(--site-color-surface) 85%, #fff 8%);
+    --ha-glow-soft: color-mix(in srgb, var(--site-color-glow) 16%, var(--site-color-panel));
+    color-scheme: dark;
+  }
+  /* The accent is chosen for light pages, so lift it for text on dark ones. */
+  .ha-shell[data-scheme="auto"] :is(.ha-category, .ha-prose a, .ha-more:hover) { color: color-mix(in srgb, var(--site-color-accent) 55%, #fff); }
+  .ha-shell[data-scheme="auto"] .ha-round-ink { color: var(--site-color-page); }
+}
+
+.ha-shell *,
+.ha-shell *::before,
+.ha-shell *::after { box-sizing: border-box; }
+
+.ha-shell :is(h1, h2, h3, p) { margin: 0; }
+.ha-shell :is(h1, h2, h3) { color: var(--site-color-text); letter-spacing: -0.03em; text-wrap: balance; }
+
+.ha-shell a { color: inherit; text-decoration: none; }
+.ha-shell :focus-visible { outline: 2px solid var(--site-color-accent); outline-offset: 2px; border-radius: 6px; }
+
+.ha-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ha-skip {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: var(--site-space-gutter);
+  z-index: 50;
+  padding: 0.5rem 1rem;
+  border-radius: var(--site-radius-control);
+  background: var(--site-color-ink);
+  color: var(--site-color-page) !important;
+  transform: translateY(-200%);
+}
+.ha-skip:focus { transform: none; }
+
+/* Right-to-left pages point arrows the other way. */
+[dir="rtl"] .ha-arrow { transform: scaleX(-1); }
+.ha-arrow-back { transform: scaleX(-1); }
+[dir="rtl"] .ha-arrow-back { transform: none; }
+
+/* ---------------------------------------------------------------- shared */
+
+.ha-panel {
+  border-radius: var(--site-radius-panel);
+  background: var(--site-color-panel);
+}
+
+.ha-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline-start: 0.6rem;
+  border-inline-start: 3px solid var(--site-color-glow);
+  color: var(--site-color-text);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.ha-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+}
+.ha-section-head-plain { margin-block-end: 1rem; }
+.ha-panel-title { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+
+.ha-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 160ms var(--ha-ease), gap 160ms var(--ha-ease);
+}
+.ha-more:hover { gap: 0.6rem; color: var(--site-color-accent); }
+
+.ha-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-block-end: 0.5rem;
+  color: var(--site-color-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.ha-category { color: var(--site-color-accent); }
+a.ha-category:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.ha-dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+
+.ha-tags {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  list-style: none;
+  color: var(--site-color-muted);
+  font-size: 0.75rem;
+}
+.ha-tags a:hover { color: var(--site-color-text); }
+
+/* The title's link covers the whole story, which is positioned for it. */
+.ha-cover-link::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; }
+.ha-cover-link:focus-visible { outline: 0; }
+.ha-cover-link:focus-visible::before { outline: 2px solid var(--site-color-accent); outline-offset: 3px; }
+
+.ha-blank {
+  display: block;
+  background:
+    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--site-color-glow) 55%, transparent), transparent 60%),
+    var(--site-color-surface);
+}
+
+.ha-display {
+  font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+.ha-headline {
+  font-size: clamp(1.55rem, 1.15rem + 1.4vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.ha-excerpt { color: var(--site-color-text); font-size: 0.9rem; line-height: 1.55; }
+
+/* The primary pill: surface, text, and a circled arrow. */
+.ha-read {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+  width: fit-content;
+  padding: 0.3rem 0.3rem 0.3rem 1.1rem;
+  padding-inline: 1.1rem 0.3rem;
+  margin-block-start: 1.75rem;
+  border-radius: var(--site-radius-control);
+  background: var(--site-color-surface);
+  color: var(--site-color-text) !important;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 160ms var(--ha-ease);
+}
+.ha-read:hover { background: var(--ha-surface-strong); }
+.ha-read-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--site-color-panel);
+  transition: transform 200ms var(--ha-ease);
+}
+.ha-read:hover .ha-read-icon { transform: translateX(2px); }
+[dir="rtl"] .ha-read:hover .ha-read-icon { transform: translateX(-2px); }
+
+/* Pager and carousel circles: outline for back, ink for forward. */
+.ha-round {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--site-color-border);
+  border-radius: 50%;
+  background: var(--site-color-panel);
+  color: var(--site-color-text);
+  cursor: pointer;
+  transition: background-color 160ms var(--ha-ease), opacity 160ms var(--ha-ease), transform 160ms var(--ha-ease);
+}
+.ha-round:hover { background: var(--site-color-surface); }
+.ha-round-ink { border-color: transparent; background: var(--site-color-ink); color: var(--site-color-panel); }
+.ha-round-ink:hover { background: color-mix(in srgb, var(--site-color-ink) 82%, var(--site-color-glow)); }
+.ha-round:disabled,
+span.ha-round { opacity: 0.4; cursor: default; pointer-events: none; }
+
+.ha-empty { padding: 2.5rem; color: var(--site-color-muted); text-align: center; }
+
+/* ---------------------------------------------------------------- header */
+
+.ha-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--site-color-page) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+}
+
+.ha-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: var(--site-size-wide);
+  min-height: 4.25rem;
+  padding-inline: var(--site-space-gutter);
+  margin-inline: auto;
+}
+
+.ha-brand,
+.ha-chip,
+.ha-nav > ul > li > a,
+.ha-nav > ul > li > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0 0.95rem;
+  border-radius: var(--site-radius-control);
+  background: var(--site-color-panel);
+  color: var(--site-color-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 160ms var(--ha-ease), color 160ms var(--ha-ease);
+}
+.ha-brand { background: var(--site-color-surface); font-weight: 650; }
+.ha-brand img { width: 1.25rem; height: 1.25rem; object-fit: contain; }
+/* A small halo stands in for a logo until one is set under Settings. */
+.ha-brand-mark {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, var(--site-color-glow), var(--site-color-accent), #9ad8ff, var(--site-color-glow));
+  box-shadow: inset 0 0 0 3px var(--site-color-surface);
+}
+.ha-chip:hover,
+.ha-nav > ul > li > a:hover { background: var(--site-color-surface); }
+.ha-chip-ink { background: var(--site-color-ink); color: var(--site-color-panel) !important; }
+.ha-chip-ink:hover { background: color-mix(in srgb, var(--site-color-ink) 82%, var(--site-color-glow)); }
+
+.ha-nav { min-width: 0; }
+.ha-nav > ul,
+.ha-drawer-panel nav > ul { display: flex; align-items: center; gap: 0.5rem; padding: 0; margin: 0; list-style: none; }
+.ha-nav li { position: relative; }
+.ha-nav a[aria-current="page"] { color: var(--site-color-accent); }
+
+/* An item with children shows a plus, and opens on hover or keyboard focus. */
+.ha-nav > ul > li:has(> ul) > a::after {
+  content: "+";
+  margin-inline-start: 0.1rem;
+  color: var(--site-color-muted);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  transition: transform 200ms var(--ha-ease);
+}
+.ha-nav > ul > li:has(> ul):is(:hover, :focus-within) > a::after { transform: rotate(45deg); }
+
+.ha-nav li > ul {
+  position: absolute;
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  min-width: 13rem;
+  padding: 0.4rem;
+  margin: 0;
+  list-style: none;
+  border-radius: var(--site-radius-field);
+  background: var(--site-color-panel);
+  box-shadow: var(--site-shadow-float);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 160ms var(--ha-ease), transform 160ms var(--ha-ease), visibility 160ms;
+}
+.ha-nav li > ul::before { content: ""; position: absolute; inset: -0.6rem 0 auto; height: 0.6rem; }
+.ha-nav li:hover > ul,
+.ha-nav li:focus-within > ul { opacity: 1; visibility: visible; transform: none; }
+.ha-nav li > ul a {
+  display: flex;
+  padding: 0.55rem 0.7rem;
+  border-radius: calc(var(--site-radius-field) - 0.3rem);
+  font-size: 0.875rem;
+}
+.ha-nav li > ul a:hover { background: var(--site-color-surface); }
+
+.ha-header-end { display: flex; align-items: center; gap: 0.75rem; margin-inline-start: auto; }
+.ha-account { display: flex; gap: 0.4rem; }
+
+/* Languages: the current code, opening a list. */
+.ha-languages { position: relative; font-size: 0.8125rem; }
+.ha-languages-menu > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0 0.6rem;
+  border-radius: var(--site-radius-control);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+.ha-languages-menu > summary::-webkit-details-marker { display: none; }
+.ha-languages-menu > summary:hover,
+.ha-languages-menu[open] > summary { background: var(--site-color-panel); }
+.ha-languages-current { text-transform: capitalize; }
+.ha-chevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-block-end: 1.5px solid currentColor;
+  border-inline-end: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 160ms var(--ha-ease);
+}
+.ha-languages-menu[open] .ha-chevron { transform: translateY(1px) rotate(-135deg); }
+.ha-languages-panel {
+  position: absolute;
+  inset-block-start: calc(100% + 0.4rem);
+  inset-inline-end: 0;
+  z-index: 30;
+  min-width: 12rem;
+  max-height: min(22rem, 70vh);
+  overflow-y: auto;
+  padding: 0.35rem;
+  border-radius: var(--site-radius-field);
+  background: var(--site-color-panel);
+  box-shadow: var(--site-shadow-float);
+}
+.ha-languages-list { display: grid; gap: 0.1rem; padding: 0; margin: 0; list-style: none; }
+.ha-languages-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: calc(var(--site-radius-field) - 0.3rem);
+}
+.ha-languages-list a:hover { background: var(--site-color-surface); }
+.ha-languages-list a[aria-current="true"] { background: var(--ha-accent-soft); color: var(--site-color-accent); font-weight: 600; }
+.ha-languages-code { color: var(--site-color-muted); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.ha-languages-inline .ha-label { margin-block-end: 0.6rem; }
+.ha-languages-inline .ha-languages-list { grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.3rem; }
+.ha-languages-inline .ha-languages-list a { background: var(--site-color-surface); }
+
+/* Search: a surface field with the icon at its end; results float below it. */
+.ha-search { position: relative; width: min(24rem, 32vw); }
+.ha-search form {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--site-radius-field);
+  background: var(--site-color-surface);
+  transition: border-color 160ms var(--ha-ease), box-shadow 160ms var(--ha-ease);
+}
+.ha-search form:focus-within { border-color: var(--site-color-accent); box-shadow: var(--ha-ring); }
+.ha-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--site-color-text);
+  font: inherit;
+  font-size: 0.875rem;
+}
+.ha-search input::placeholder { color: var(--site-color-muted); }
+.ha-search input:focus { outline: 0; }
+.ha-search input::-webkit-search-cancel-button { display: none; }
+.ha-search button {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--site-color-muted);
+  cursor: pointer;
+}
+.ha-search button:hover { color: var(--site-color-text); }
+.ha-search-results {
+  position: absolute;
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline: 0;
+  z-index: 30;
+  padding: 0.4rem;
+  border-radius: var(--site-radius-field);
+  background: var(--site-color-panel);
+  box-shadow: var(--site-shadow-float);
+}
+.ha-search-results[hidden] { display: none; }
+.ha-search-results ul { display: grid; gap: 0.1rem; padding: 0; margin: 0; list-style: none; }
+.ha-search-results a {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.45rem;
+  border-radius: calc(var(--site-radius-field) - 0.3rem);
+}
+.ha-search-results a:hover { background: var(--site-color-surface); }
+.ha-search-results img,
+.ha-thumb-empty { width: 2.75rem; height: 2.75rem; border-radius: 0.5rem; object-fit: cover; background: var(--ha-glow-soft); }
+.ha-search-title { display: block; font-size: 0.85rem; font-weight: 600; line-height: 1.35; }
+.ha-search-results time { color: var(--site-color-muted); font-size: 0.72rem; }
+.ha-search-empty { padding: 0.75rem; color: var(--site-color-muted); font-size: 0.85rem; }
+
+/* The menu button and its panel, on small screens only. */
+.ha-drawer { display: none; margin-inline-start: auto; }
+.ha-drawer > summary {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--site-color-panel);
+  list-style: none;
+  cursor: pointer;
+}
+.ha-drawer > summary::-webkit-details-marker { display: none; }
+.ha-drawer > summary span,
+.ha-drawer > summary span::before,
+.ha-drawer > summary span::after {
+  display: block;
+  width: 1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--site-color-text);
+  transition: transform 200ms var(--ha-ease), background-color 200ms;
+}
+.ha-drawer > summary span { position: relative; }
+.ha-drawer > summary span::before,
+.ha-drawer > summary span::after { content: ""; position: absolute; }
+.ha-drawer > summary span::before { transform: translateY(-5px); }
+.ha-drawer > summary span::after { transform: translateY(5px); }
+.ha-drawer[open] > summary span { background: transparent; }
+.ha-drawer[open] > summary span::before { transform: rotate(45deg); }
+.ha-drawer[open] > summary span::after { transform: rotate(-45deg); }
+.ha-drawer-panel {
+  position: absolute;
+  inset-inline: var(--site-space-gutter);
+  inset-block-start: calc(100% + 0.25rem);
+  display: grid;
+  gap: 1rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  padding: 1rem;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-color-panel);
+  box-shadow: var(--site-shadow-float);
+}
+.ha-drawer-panel .ha-search { width: 100%; }
+.ha-drawer-panel nav > ul { flex-direction: column; align-items: stretch; gap: 0.1rem; }
+.ha-drawer-panel nav ul ul { padding-inline-start: 1rem; margin: 0; list-style: none; }
+.ha-drawer-panel nav a { display: flex; padding: 0.65rem 0.5rem; border-radius: 0.6rem; font-weight: 550; }
+.ha-drawer-panel nav a:hover { background: var(--site-color-surface); }
+.ha-drawer-panel .ha-account .ha-chip { flex: 1; justify-content: center; min-height: 2.75rem; background: var(--site-color-surface); }
+.ha-drawer-panel .ha-account .ha-chip-ink { background: var(--site-color-ink); }
+
+@media (max-width: 1080px) {
+  .ha-nav,
+  .ha-header-end { display: none; }
+  .ha-drawer { display: block; }
+}
+
+/* ------------------------------------------------------------------ page */
+
+.ha-content { flex: 1; }
+.ha-page {
+  display: grid;
+  gap: var(--site-space-section);
+  max-width: var(--site-size-wide);
+  padding: 0.5rem var(--site-space-gutter) var(--site-space-section);
+  margin-inline: auto;
+}
+.ha-section { min-width: 0; }
+
+/* ------------------------------------------------- lead: best of the week */
+
+.ha-lead-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--site-size-aside);
+  gap: var(--site-space-gap);
+  align-items: start;
+}
+
+.ha-lead {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  gap: 3rem;
+  min-height: 34rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 3rem);
+  overflow: hidden;
+  border-radius: var(--site-radius-panel);
+  background: linear-gradient(160deg, var(--site-color-panel) 30%, var(--ha-glow-soft));
+  isolation: isolate;
+}
+.ha-lead-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 34rem;
+}
+.ha-lead-main > .ha-label { margin-block-end: 2rem; }
+.ha-lead .ha-display { margin-block-start: 0.25rem; }
+.ha-lead .ha-cover-link::before { display: none; }
+.ha-lead .ha-cover-link:hover { color: color-mix(in srgb, var(--site-color-text) 75%, var(--site-color-accent)); }
+
+/*
+ * The halo: a soft iridescent orb, layered from conic and radial gradients. Pure decoration,
+ * drawn from the accent and the glow, so it changes with them.
+ */
+.ha-halo {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: -4%;
+  z-index: -1;
+  width: min(30rem, 62%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--site-color-panel) 92%, transparent) 0 34%, transparent 35%),
+    conic-gradient(from 210deg, color-mix(in srgb, var(--site-color-glow) 75%, transparent), color-mix(in srgb, var(--site-color-accent) 35%, transparent), rgba(150, 215, 255, 0.55), color-mix(in srgb, var(--site-color-glow) 75%, transparent));
+  filter: blur(2px);
+  opacity: 0.85;
+  transform: translateY(-58%);
+}
+.ha-halo > span {
+  position: absolute;
+  inset: 18%;
+  border: 1px solid color-mix(in srgb, var(--site-color-glow) 60%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 60px color-mix(in srgb, var(--site-color-glow) 55%, transparent), inset 0 0 40px color-mix(in srgb, var(--site-color-panel) 80%, transparent);
+}
+.ha-halo::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--site-color-glow) 30%, transparent), transparent 65%);
+  z-index: -1;
+}
+
+.ha-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ha-strip-item {
+  position: relative;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--site-color-border);
+}
+.ha-strip-item::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: 0;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--site-color-text);
+}
+.ha-strip-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.ha-strip-item:hover .ha-strip-title { color: var(--site-color-accent); }
+
+/* Recommended: a feature card, then rows. */
+.ha-recommended { position: sticky; inset-block-start: 5rem; padding: 1.25rem; }
+.ha-recommended .ha-feature { margin-block-end: 0.5rem; }
+
+/* ------------------------------------------------------------ rows, cards */
+
+.ha-rows { display: grid; padding: 0; margin: 0; list-style: none; }
+.ha-rows > li + li { border-block-start: 1px solid var(--site-color-border); }
+
+.ha-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  gap: 1rem;
+  align-items: center;
+  padding-block: 0.9rem;
+}
+.ha-row-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.ha-row:hover .ha-row-title { color: var(--site-color-accent); }
+.ha-row-image {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--site-radius-card);
+  object-fit: cover;
+  background: var(--site-color-surface);
+}
+
+.ha-card { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.ha-card-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-block-end: 0.9rem;
+  border-radius: var(--site-radius-card);
+  object-fit: cover;
+  background: var(--site-color-surface);
+  transition: transform 300ms var(--ha-ease), filter 300ms var(--ha-ease);
+}
+.ha-card:hover .ha-card-image { filter: saturate(1.1) brightness(1.03); transform: translateY(-2px); }
+.ha-card-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.ha-card:hover .ha-card-title { color: var(--site-color-accent); }
+.ha-card .ha-tags { margin-block-start: 0.6rem; }
+
+.ha-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem var(--site-space-gap);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ha-grid-four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* The feature card: the cover with the lavender wash, and white text over it. */
+.ha-feature {
+  position: relative;
+  display: grid;
+  align-content: end;
+  min-height: 13rem;
+  overflow: hidden;
+  border-radius: var(--site-radius-card);
+  background: var(--site-color-ink);
+  isolation: isolate;
+}
+.ha-feature-image { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform 500ms var(--ha-ease); }
+.ha-feature::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, color-mix(in srgb, var(--site-color-glow) 92%, #4b3bb8) 0%, color-mix(in srgb, var(--site-color-glow) 55%, transparent) 38%, transparent 70%);
+}
+.ha-feature:hover .ha-feature-image { transform: scale(1.03); }
+.ha-feature-body { padding: 1rem; }
+.ha-feature :is(.ha-meta, .ha-category, .ha-tags, .ha-tags a, .ha-feature-title) { color: #fff; }
+.ha-feature .ha-meta { opacity: 0.92; }
+.ha-feature-title { font-size: 0.95rem; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em !important; }
+.ha-feature-large { min-height: 30rem; border-radius: var(--site-radius-panel); }
+.ha-feature-large .ha-feature-body { padding: clamp(1.25rem, 1rem + 1.5vw, 2.25rem); }
+.ha-feature-large .ha-feature-title { max-width: 32rem; font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.6rem); line-height: 1.1; letter-spacing: -0.03em !important; }
+.ha-feature-large .ha-tags { opacity: 0.85; }
+
+/* -------------------------------------------------- latest and spotlight */
+
+.ha-spotlight-wrap {
+  display: grid;
+  grid-template-columns: var(--site-size-aside) minmax(0, 1fr);
+  gap: var(--site-space-gap);
+  align-items: stretch;
+}
+.ha-latest { padding: 1.25rem 1.25rem 0.5rem; }
+
+.ha-spotlight {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 2rem 3rem;
+  align-content: start;
+  min-height: 26rem;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+  overflow: hidden;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-color-panel);
+  isolation: isolate;
+}
+/* Long soft sweeps along the bottom, the spotlight's one decoration. */
+.ha-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 45% -20% -60% -10%;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(ellipse at 30% 100%, transparent 0 22px, color-mix(in srgb, var(--site-color-glow) 28%, transparent) 23px 24px, transparent 25px 46px),
+    radial-gradient(ellipse at 40% 90%, var(--ha-glow-soft), transparent 70%);
+  transform: rotate(-8deg);
+}
+.ha-spotlight-head { position: relative; }
+.ha-spotlight-side { display: flex; flex-direction: column; align-items: flex-start; padding-block-start: 1.6rem; }
+.ha-spotlight-side .ha-read { margin-block-start: 1.5rem; }
+.ha-spotlight .ha-headline .ha-cover-link::before { display: none; }
+.ha-spotlight .ha-headline a:hover { color: color-mix(in srgb, var(--site-color-text) 75%, var(--site-color-accent)); }
+
+/* A small floating card that points to Readers' choice. */
+.ha-badge {
+  position: absolute;
+  inset-block-end: 1.25rem;
+  inset-inline-end: 1.25rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  width: 6.5rem;
+  padding: 0.9rem 0.6rem 0.75rem;
+  border-radius: 1rem;
+  background: var(--site-color-panel);
+  box-shadow: var(--site-shadow-float);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  transition: transform 200ms var(--ha-ease);
+}
+.ha-badge:hover { transform: translateY(-3px); }
+.ha-badge small { color: var(--site-color-muted); font-size: 0.68rem; font-weight: 500; }
+.ha-badge-halo {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-block-end: 0.35rem;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, var(--site-color-glow), color-mix(in srgb, var(--site-color-accent) 45%, transparent), #a9dcff, var(--site-color-glow));
+  filter: blur(0.5px);
+}
+.ha-badge-halo > span { position: absolute; inset: 22%; border-radius: 50%; background: var(--site-color-panel); opacity: 0.85; }
+
+/* ---------------------------------------------------- trending, archives */
+
+.ha-trending {
+  display: grid;
+  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: var(--site-radius-panel);
+  background: color-mix(in srgb, var(--site-color-panel) 55%, var(--site-color-page));
+}
+.ha-trending-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+  background: var(--site-color-panel);
+}
+.ha-trending-lead > .ha-section-head { margin-block-end: 2rem; }
+.ha-trending-story { position: relative; display: flex; flex-direction: column; margin-block-end: 2rem; }
+.ha-trending-story .ha-cover-link::before { display: none; }
+.ha-trending-story .ha-headline a:hover { color: color-mix(in srgb, var(--site-color-text) 75%, var(--site-color-accent)); }
+.ha-trending-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-block-start: auto;
+  border-radius: var(--site-radius-card);
+  object-fit: cover;
+}
+.ha-trending > .ha-grid,
+.ha-archive-grid { padding: clamp(1.25rem, 1rem + 1vw, 2rem); }
+.ha-archive-grid { display: grid; align-content: start; gap: 2rem; }
+.ha-trending .ha-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-content: start; }
+
+.ha-archive .ha-trending-lead > .ha-label { align-self: flex-start; margin-block-end: 1rem; }
+.ha-archive-title { margin-block-end: 0.75rem; font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem); font-weight: 600; line-height: 1.15; }
+.ha-archive-intro { margin-block-end: 2rem; color: var(--site-color-muted); font-size: 0.9rem; }
+.ha-archive-intro > :last-child { margin-block-end: 0; }
+.ha-archive .ha-trending-story { padding-block-start: 1.5rem; border-block-start: 1px solid var(--site-color-border); }
+
+.ha-page-arrows { display: flex; justify-content: center; gap: 0.75rem; }
+.ha-archive > .ha-page-arrows { grid-column: 1 / -1; padding-block: 1.5rem; }
+
+/* ---------------------------------------------------------- readers' choice */
+
+.ha-readers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--site-space-gap) 2.5rem;
+  align-items: start;
+}
+.ha-readers > .ha-rows {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+  padding: 0.25rem 1.25rem;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-color-panel);
+}
+/* In two columns, the rule goes above every row past the first two. */
+.ha-readers > .ha-rows > li + li { border-block-start: 0; }
+.ha-readers > .ha-rows > li:nth-child(n + 3) { border-block-start: 1px solid var(--site-color-border); }
+
+/* ---------------------------------------------------------------- popular */
+
+.ha-carousel { display: grid; gap: 1.25rem; }
+.ha-carousel-track {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  border-radius: var(--site-radius-card);
+}
+.ha-carousel-track::-webkit-scrollbar { display: none; }
+.ha-carousel-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 4 * var(--site-space-gap)) / 5);
+  gap: var(--site-space-gap);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ha-carousel-list > li { scroll-snap-align: start; }
+.ha-carousel-list .ha-card { padding: 0.6rem 0.6rem 1rem; border-radius: var(--site-radius-card); background: var(--site-color-panel); }
+.ha-carousel-list .ha-card-image { border-radius: calc(var(--site-radius-card) - 0.25rem); }
+.ha-carousel-controls { display: flex; justify-content: center; gap: 0.75rem; }
+
+/* ------------------------------------------------------------------ posts */
+
+.ha-post {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--site-size-aside);
+  gap: var(--site-space-gap);
+  align-items: start;
+}
+.ha-article { padding: clamp(1.5rem, 1rem + 3vw, 4rem) var(--site-space-gutter); }
+.ha-article-solo { max-width: calc(var(--site-size-measure) + 8rem); width: 100%; margin-inline: auto; }
+.ha-article-head { display: grid; gap: 0.25rem; max-width: var(--site-size-measure); margin-inline: auto; }
+.ha-article-title { margin-block: 0.25rem 0.75rem; font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3rem); line-height: 1.1; }
+.ha-lead-text { color: var(--site-color-muted); font-size: 1.125rem; line-height: 1.55; }
+.ha-article-head .bl-meta { margin: 0.75rem 0 0; color: var(--site-color-muted); font-size: 0.85rem; }
+.ha-article-head .bl-byline { color: var(--site-color-text); font-weight: 600; }
+
+.ha-article-cover { max-width: calc(var(--site-size-measure) + 10rem); margin: 2.25rem auto 0; }
+.ha-article-cover img { display: block; width: 100%; height: auto; max-height: 34rem; border-radius: var(--site-radius-card); object-fit: cover; }
+
+.ha-post-aside { position: sticky; inset-block-start: 5rem; }
+
+/* Reading text, and the blog plugin's blocks inside it. */
+.ha-prose {
+  max-width: var(--site-size-measure);
+  padding-block: 2.25rem 0;
+  margin-inline: auto;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.ha-prose > * + * { margin-block-start: 1.4em; }
+.ha-prose p { margin-block: 0 1.1em; }
+.ha-prose h2 { margin-block: 2em 0.6em; font-size: 1.55rem; line-height: 1.25; }
+.ha-prose h3 { margin-block: 1.6em 0.5em; font-size: 1.2rem; }
+.ha-prose a { color: var(--site-color-accent); text-decoration: underline; text-underline-offset: 0.2em; }
+.ha-prose ul,
+.ha-prose ol { padding-inline-start: 1.4em; }
+.ha-prose li + li { margin-block-start: 0.35em; }
+.ha-prose img { max-width: 100%; height: auto; border-radius: var(--site-radius-card); }
+.ha-prose hr { margin-block: 2.5em; border: 0; border-block-start: 1px solid var(--site-color-border); }
+.ha-prose :not(pre) > code { padding: 0.12em 0.4em; border-radius: 0.35rem; background: var(--site-color-surface); font-size: 0.9em; }
+
+.ha-prose .bl-quote {
+  padding: 0.25rem 0;
+  padding-inline-start: 1.25rem;
+  margin: 2em 0;
+  border: 0;
+  border-inline-start: 3px solid var(--site-color-glow);
+  font-style: normal;
+}
+.ha-prose .bl-quote p { margin: 0; font-size: 1.3rem; font-weight: 550; line-height: 1.5; letter-spacing: -0.01em; }
+.ha-prose .bl-quote cite { margin-block-start: 0.5rem; color: var(--site-color-muted); font-size: 0.9rem; }
+.ha-prose .bl-callout {
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-inline-start: 3px solid var(--site-color-accent);
+  border-radius: var(--site-radius-field);
+  background: var(--ha-accent-soft);
+}
+.ha-prose .bl-callout-tip { border-inline-start-color: #16a34a; background: color-mix(in srgb, #16a34a 10%, var(--site-color-panel)); }
+.ha-prose .bl-callout-warning { border-inline-start-color: #d97706; background: color-mix(in srgb, #d97706 12%, var(--site-color-panel)); }
+.ha-prose .bl-callout > :last-child { margin-block-end: 0; }
+.ha-prose .bl-code {
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--site-radius-field);
+  background: #10111a;
+  color: #e4e6f0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.ha-prose .bl-figure figcaption { color: var(--site-color-muted); font-size: 0.85rem; text-align: center; }
+.ha-prose .bl-tags { margin-block-start: 2.5rem; }
+.ha-prose .bl-tags a {
+  padding: 0.3rem 0.85rem;
+  border: 0;
+  border-radius: var(--site-radius-control);
+  background: var(--site-color-surface);
+  color: var(--site-color-text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.ha-prose .bl-tags a::before { content: "#"; color: var(--site-color-muted); }
+.ha-prose .bl-tags a:hover { background: var(--ha-surface-strong); }
+
+/* The blog plugin's comments, in the reading column. */
+.ha-comments { max-width: var(--site-size-measure); margin-inline: auto; }
+.ha-comments .bl-comments { margin-block-start: 3rem; padding-block-start: 2rem; border-block-start: 1px solid var(--site-color-border); }
+.ha-comments .bl-form input,
+.ha-comments .bl-form textarea {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--site-radius-field);
+  background: var(--site-color-surface);
+  color: var(--site-color-text);
+  font: inherit;
+}
+.ha-comments .bl-form input:focus,
+.ha-comments .bl-form textarea:focus { border-color: var(--site-color-accent); outline: 0; box-shadow: var(--ha-ring); }
+.ha-comments .bl-form button {
+  min-height: 2.5rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: var(--site-radius-control);
+  background: var(--site-color-ink);
+  color: var(--site-color-panel);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+.ha-footer { padding: 0 var(--site-space-gutter) var(--site-space-gutter); }
+.ha-footer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem 2rem;
+  align-items: start;
+  max-width: calc(var(--site-size-wide) - 2 * var(--site-space-gutter));
+  padding: 2rem;
+  margin-inline: auto;
+  border-radius: var(--site-radius-panel);
+  background: var(--site-color-panel);
+}
+.ha-footer-tagline { max-width: 26rem; margin-block-start: 0.75rem !important; color: var(--site-color-muted); font-size: 0.875rem; }
+.ha-footer-nav > ul { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; padding: 0; margin: 0; list-style: none; }
+.ha-footer-nav ul ul { display: none; }
+.ha-footer-nav a { color: var(--site-color-muted); font-size: 0.875rem; }
+.ha-footer-nav a:hover { color: var(--site-color-text); }
+.ha-footer-legal {
+  grid-column: 1 / -1;
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--site-color-border);
+  color: var(--site-color-muted);
+  font-size: 0.78rem;
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 1180px) {
+  .ha-carousel-list { grid-auto-columns: calc((100% - 3 * var(--site-space-gap)) / 4); }
+  .ha-trending { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
+  .ha-trending .ha-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ha-grid-four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 960px) {
+  .ha-lead-wrap,
+  .ha-spotlight-wrap,
+  .ha-post,
+  .ha-trending,
+  .ha-readers { grid-template-columns: minmax(0, 1fr); }
+  .ha-recommended,
+  .ha-post-aside { position: static; }
+  .ha-lead { min-height: 0; }
+  .ha-halo { inset-block-start: 0; width: 70%; opacity: 0.6; transform: translateY(-15%); }
+  .ha-spotlight { grid-template-columns: minmax(0, 1fr); padding-block-end: 8rem; }
+  .ha-spotlight-side { padding-block-start: 0; }
+  .ha-carousel-list { grid-auto-columns: calc((100% - 2 * var(--site-space-gap)) / 2.4); }
+  .ha-feature-large { min-height: 22rem; }
+}
+
+@media (max-width: 640px) {
+  .ha-strip,
+  .ha-grid,
+  .ha-trending .ha-grid,
+  .ha-grid-four,
+  .ha-readers > .ha-rows { grid-template-columns: minmax(0, 1fr); }
+  .ha-readers > .ha-rows > li:nth-child(n + 2) { border-block-start: 1px solid var(--site-color-border); }
+  .ha-carousel-list { grid-auto-columns: 78%; }
+  .ha-footer-inner { grid-template-columns: minmax(0, 1fr); padding: 1.5rem; }
+  .ha-page { gap: 2.5rem; }
+}
+
+/* ---------------------------------------------------- CMS notices, motion */
+
+.site-root[data-theme="halo"] [data-preview-notice] {
+  padding: 0.55rem 1rem;
+  margin: 0;
+  background: var(--site-color-ink);
+  color: var(--site-color-panel);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.site-root[data-theme="halo"] [data-preview-notice] a { color: inherit; font-weight: 600; }
+
+.ha-shell [data-missing-block] {
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--site-color-border);
+  border-radius: var(--site-radius-field);
+  color: var(--site-color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ha-shell *,
+  .ha-shell *::before,
+  .ha-shell *::after { transition: none !important; scroll-behavior: auto !important; }
+  .ha-card:hover .ha-card-image,
+  .ha-feature:hover .ha-feature-image,
+  .ha-badge:hover { transform: none; }
+}

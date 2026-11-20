@@ -85,6 +85,7 @@
     "@tansy/theme-blog": "*",
     "@tansy/theme-academy": "*",
     "@tansy/theme-dispatch": "*",
+    "@tansy/theme-halo": "*",
     "@tansy/theme-magazine": "*",
     "@tansy/theme-storefront": "*",
     "next": "^16.4.6",

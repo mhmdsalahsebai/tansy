@@ -76,7 +76,7 @@ import { blog } from "@tansy/theme-blog";
 export default defineCms({ theme: blog({ tagline: "Field notes" }) });
 ```
 
-`themes/blank` is a starting point, `themes/blog` a working example, and `themes/magazine` a fuller one: image cards, search and a sidebar ([docs](docs/themes/magazine.md)). `themes/storefront` redesigns the shop plugin's pages, styled with Tailwind compiled inside the theme ([docs](docs/themes/storefront.md)). `themes/dispatch` is a newsletter's site: the sign-up form up front and posts as numbered issues ([docs](docs/themes/dispatch.md)). `themes/academy` is a school's site for the LMS: the course catalogue, course pages, and plans that open courses, worked out from the data ([docs](docs/themes/academy.md)). A headless site renders the same theme package over the API. See "Themes" in [docs/EXTENDING.md](docs/EXTENDING.md).
+`themes/blank` is a starting point, `themes/blog` a working example, and `themes/magazine` a fuller one: image cards, search and a sidebar ([docs](docs/themes/magazine.md)). `themes/halo` is a news front page whose sections editors curate from a Front page record ([docs](docs/themes/halo.md)). `themes/storefront` redesigns the shop plugin's pages, styled with Tailwind compiled inside the theme ([docs](docs/themes/storefront.md)). `themes/dispatch` is a newsletter's site: the sign-up form up front and posts as numbered issues ([docs](docs/themes/dispatch.md)). `themes/academy` is a school's site for the LMS: the course catalogue, course pages, and plans that open courses, worked out from the data ([docs](docs/themes/academy.md)). A headless site renders the same theme package over the API. See "Themes" in [docs/EXTENDING.md](docs/EXTENDING.md).
 
 ## Languages
 

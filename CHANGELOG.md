@@ -72,7 +72,7 @@ rather than what changed.
 - `tansy/server` for rule-checked reads as a visitor, `defineTheme`, `<ThemedPage>` rendering the
   same theme in the same app or over the API, signed previews, and cached reads dropped per
   collection on a write.
-- Themes: `blank`, `blog`, `magazine`, `storefront`, `dispatch` and `academy`.
+- Themes: `blank`, `blog`, `magazine`, `halo` (a news front page whose sections editors curate), `storefront`, `dispatch` and `academy`.
 - Several themes in one build, with `themes` in `tansy.config.ts`, the first being the default. With a
   scope provider, each scope value picks one under **Site**, so two tenants serve their own themes
   from one install. A theme's `options` stay the instance's.

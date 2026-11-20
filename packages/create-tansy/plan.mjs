@@ -27,6 +27,7 @@ export const THEMES = {
   blank: { label: "Blank", hint: "unstyled, a starting point for your own", plugins: [] },
   blog: { label: "Blog", hint: "posts, categories and comments", plugins: ["blog"] },
   magazine: { label: "Magazine", hint: "a publication with featured stories", plugins: ["blog"] },
+  halo: { label: "Halo", hint: "a news front page with curated sections", plugins: ["blog"] },
   dispatch: { label: "Dispatch", hint: "a newsletter and its archive", plugins: ["blog", "newsletter"] },
   storefront: { label: "Storefront", hint: "a shop that takes payments", plugins: ["payments", "shop"] },
   academy: { label: "Academy", hint: "courses, lessons and quizzes", plugins: ["lms"] },
