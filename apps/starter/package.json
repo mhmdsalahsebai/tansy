@@ -87,7 +87,7 @@
     "@tansy/theme-dispatch": "*",
     "@tansy/theme-magazine": "*",
     "@tansy/theme-storefront": "*",
-    "next": "^16.4.5",
+    "next": "^16.4.6",
     "tansy": "*",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

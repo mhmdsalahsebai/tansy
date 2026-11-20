@@ -28,7 +28,7 @@
   ],
   "peerDependencies": {
     "@tansy/lms": "^0.1.0",
-    "next": "^16.4.5",
+    "next": "^16.4.6",
     "react": "^19.3.0",
     "tansy": "^0.1.0"
   },

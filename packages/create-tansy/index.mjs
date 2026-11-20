@@ -37,7 +37,7 @@ import {
 const own = JSON.parse(readFileSync(path.join(import.meta.dirname, "package.json"), "utf8"));
 
 // Must match Tansy's peer dependencies. A unit test holds them together.
-export const VERSIONS = { next: "^16.4.5", react: "^19.3.0", "react-dom": "^19.3.0" };
+export const VERSIONS = { next: "^16.4.6", react: "^19.3.0", "react-dom": "^19.3.0" };
 const DEV_VERSIONS = { typescript: "^6.0.3", "@types/node": "^26.6.6", "@types/react": "^19.3.0", "@types/react-dom": "^19.3.0" };
 const LEGACY_TEMPLATES = { blank: "blank", blog: "blog" };
 const SQLITE_URL = "file:./dev.db";
