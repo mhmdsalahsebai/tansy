@@ -81,6 +81,27 @@ permission check.
 | On Vercel, Netlify or Lambda, set `CRON_SECRET` and call `/api/background` | Nothing keeps timers running there. See [background work](/docs/guides/background-work) |
 | Decide `TANSY_SITE_CACHE_SECONDS` | How long a public read may lag a write. 0 turns the cache off |
 
+## Handing out a login
+
+A public demo, a workshop or a reviewer's trial needs an account whose email and password
+everyone knows. List it in `TANSY_SHARED_ACCOUNTS`, separated by commas:
+
+```bash
+TANSY_SHARED_ACCOUNTS=demo@example.com
+```
+
+Anyone can sign in to a shared account and do whatever its role allows. Nobody signed in as it can
+change the account itself: its password, email, name, user fields, two-factor, passkeys or linked
+sign-ins, sign other people out of it, or delete it, and a password reset can't be requested for it.
+Failed sign-ins never lock it, since the password is public anyway. Its interface language is kept
+in each visitor's browser rather than on the account. A superadmin still manages it under **Users**.
+
+Give it a role with only the permissions you mean to hand out. For a demo to look around in, that's
+the read permissions: `dashboard:access`, `collection:read`, `record:list`, `record:read`,
+`file:list`, `file:read`, `setting:read`, `redirect:read`, `webhook:read` and `role:list`. Leave out
+`audit:read`, which shows other people's addresses and IPs, and anything with `user:`. **Require MFA
+for dashboard users** would shut a shared account out, because nobody can set up its second factor.
+
 ## Docker
 
 The image needs no configuration: `docker run -v tansy-data:/data` keeps the SQLite database,
