@@ -95,6 +95,9 @@ rather than what changed.
   log's storage, HTTP and console destinations. Repeated refusals from one caller are folded into
   one audit entry, so nobody outside can grow the log without bound.
 - A Docker image and `docker-compose.yml` that need no configuration on first boot.
+- Several servers can start at once against a new database, as serverless hosts do on their first
+  requests: one runs the startup setup (blocks, field upgrades, plugin migrations, theme seeds)
+  while the others wait, so none of them fails on what another just created.
 
 ### Installing it
 

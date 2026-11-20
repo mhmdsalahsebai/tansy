@@ -18,6 +18,7 @@ import { loadHookFiles, watchHookFiles } from "./loader";
 import { assertConfiguredExtensions } from "./registry";
 import { enqueueWebhooks, runWebhookDeliveries } from "./webhooks";
 import { unscoped } from "../scope/context";
+import { LOCK, onlyOneServer } from "../content/locks";
 
 /** An operator's file, applied on every boot. Safe to repeat: it only changes what differs, and never loses data. */
 async function replaySchemaFile() {
@@ -34,15 +35,19 @@ const logged = (label: string, work: () => Promise<unknown>) => () => void work(
 export async function startExtensions() {
   try {
     assertConfiguredExtensions();
-    await replaySchemaFile();
-    await backfillFieldStorage();
-    await (await import("../i18n/startup")).prepareLocalization();
-    await syncCoreBlocks();
-    await syncPluginBlocks((getCmsConfig().plugins ?? []).flatMap((plugin) => (plugin.blocks ?? []).map((block) => ({ ...block, source: plugin.name }))));
-    await loadHookFiles({ strict: true });
-    await runFieldUpgrades();
-    await runPluginMigrations();
-    await seedTheme();
+    // Servers starting together would each create the same collections and blocks, and all but one
+    // would then fail on what the first made. One runs this; the rest wait and find it done.
+    await onlyOneServer(LOCK.startup, async () => {
+      await replaySchemaFile();
+      await backfillFieldStorage();
+      await (await import("../i18n/startup")).prepareLocalization();
+      await syncCoreBlocks();
+      await syncPluginBlocks((getCmsConfig().plugins ?? []).flatMap((plugin) => (plugin.blocks ?? []).map((block) => ({ ...block, source: plugin.name }))));
+      await loadHookFiles({ strict: true });
+      await runFieldUpgrades();
+      await runPluginMigrations();
+      await seedTheme();
+    });
   } catch (error) {
     console.error("[extensions] could not start", error);
     process.exit(1);
