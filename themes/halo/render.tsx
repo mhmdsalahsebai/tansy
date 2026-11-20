@@ -357,14 +357,14 @@ function Layout(props: LayoutProps<HaloOptions>) {
  */
 function allocator() {
   const used = new Set<number>();
-  return (picks: Story[], order: number[], pools: Story[][], count: number, reuse = false): Story[] => {
+  return (picks: Story[], order: number[], pools: Story[][], count: number, reuse = false, never: Story[] = []): Story[] => {
     if (picks.length) {
       const sorted = [...picks].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)).slice(0, count);
       for (const story of sorted) used.add(story.id);
       return sorted;
     }
     const chosen: Story[] = [];
-    const seen = new Set<number>();
+    const seen = new Set<number>(never.map((story) => story.id));
     const add = (story: Story) => {
       if (chosen.length >= count || seen.has(story.id)) return;
       seen.add(story.id);
@@ -386,7 +386,8 @@ function frontStories({ data, record }: Props) {
   const lead = take(items(data.pickLead), order("lead"), [featured, recent], 1)[0];
   const spotlight = take(items(data.pickSpotlight), order("spotlight"), [featured, recent], 1)[0];
   const latest = take([], [], [recent], 4);
-  const recommended = take(items(data.pickRecommended), order("recommended"), [recent], 5);
+  // Beside the lead, so never empty and never the lead itself: featured stories first.
+  const recommended = take(items(data.pickRecommended), order("recommended"), [featured, recent], 5, true, lead ? [lead] : []);
   const strip = take([], [], [featured, recent], 3);
   const trending = take(items(data.pickTrending), order("trending"), [recent], 7, true);
   const readers = take(items(data.pickReaders), order("readersChoice"), [featured, recent], 9, true);

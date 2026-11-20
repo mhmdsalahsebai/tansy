@@ -40,13 +40,13 @@ The theme's schema creates a singleton, **Front page** (`halo-front`), whose add
 |---|---|---|---|
 | `lead` | Best of the week, the large headline | 1 | The newest featured post, else the newest post |
 | `spotlight` | The large story beside Latest news | 1 | The next featured post, else the next newest |
-| `recommended` | The Recommended panel: a feature card, then rows | 5 | Recent posts |
+| `recommended` | The Recommended panel beside the lead: a feature card, then rows | 5 | Featured, then recent posts, never the lead |
 | `trending` | Trending now: the first leads, the rest are cards | 7 | Recent posts |
 | `readersChoice` | Readers' choice: a large feature, then two columns of rows | 9 | Featured, then recent posts |
 | `popular` | Popular news, a carousel | 10 | Recent posts |
 | `title` | The page's title, for search engines and the browser tab | | The site's name |
 
-**Latest news** always shows the four newest posts no other section has taken, and the three stories under the lead are the next featured posts. Sections that fill themselves never repeat a story an earlier section showed, except Trending, Readers' choice and Popular, which reuse stories rather than stay empty on a site with only a few posts. A section with nothing to show is left out.
+**Latest news** always shows the four newest posts no other section has taken, and the three stories under the lead are the next featured posts. Sections that fill themselves never repeat a story an earlier section showed, except Recommended, Trending, Readers' choice and Popular, which reuse stories rather than stay empty on a site with only a few posts. A section with nothing to show is left out.
 
 Until someone creates and publishes the Front page record, `/` renders the same page entirely from featured and recent posts. Nothing has to be set up for the site to look complete. There is no view counter behind "Trending" or "Popular": those are editorial picks, or recent posts when nobody picked.
 

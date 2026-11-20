@@ -103,6 +103,20 @@ describe("halo theme", () => {
     expect(recommended.indexOf("Story 6")).toBeLessThan(recommended.indexOf("Story 5"));
   });
 
+  it("keeps Recommended beside the lead filled on a small site, featured first, never the lead", async () => {
+    const few = [story(4, { featured: true, title: "Lead story" }), story(3, { title: "Other featured" }), story(2), story(1)];
+    const source = vi.fn(async (collection: string, options?: Record<string, unknown>) => {
+      if (collection === "blog-posts" && options?.filter === "featured = true") return list([few[0], few[1]]);
+      if (collection === "blog-posts") return list(few);
+      return lists(collection, options);
+    });
+    const { html } = await render(theme(), reader({}, source), "/");
+    const panel = html.slice(html.indexOf('id="ha-recommended"'), html.indexOf("ha-spotlight-wrap"));
+    expect(panel).toContain("Other featured");
+    expect(panel).not.toContain("Lead story");
+    expect((panel.match(/class="ha-cover-link"/g) ?? []).length).toBe(3);
+  });
+
   it("shows an empty front page plainly", async () => {
     const source = vi.fn(async () => EMPTY_LIST);
     const { html } = await render(theme(), reader({}, source as never), "/");
