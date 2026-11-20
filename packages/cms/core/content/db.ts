@@ -1,6 +1,6 @@
 import "server-only";
 import Database from "better-sqlite3";
-import { Kysely, PostgresDialect, SqliteDialect, sql } from "kysely";
+import { CompiledQuery, Kysely, PostgresDialect, SqliteDialect, SqliteDriver, sql, type DatabaseConnection, type SqliteDialectConfig } from "kysely";
 import pg from "pg";
 import { registerRuleFunctions } from "../authz/rules/sql";
 import { scopePlugin } from "../scope/plugin";
@@ -46,12 +46,33 @@ export function postgresPool() {
   return (pool ??= new pg.Pool({ connectionString: process.env.DATABASE_URL, max: Number(process.env.DATABASE_POOL_SIZE) || 10, types: { getTypeParser } }));
 }
 
+/**
+ * A plain BEGIN reads first and asks for the write lock only at its first write. In WAL mode, if
+ * Prisma's connection committed in between, SQLite refuses that upgrade at once with "database is
+ * locked", without waiting out the busy timeout. BEGIN IMMEDIATE takes the lock up front, so a
+ * transaction waits its turn instead.
+ */
+class ImmediateSqliteDriver extends SqliteDriver {
+  override async beginTransaction(connection: DatabaseConnection) {
+    await connection.executeQuery(CompiledQuery.raw("begin immediate"));
+  }
+}
+
+class ImmediateSqliteDialect extends SqliteDialect {
+  constructor(private readonly config: SqliteDialectConfig) {
+    super(config);
+  }
+  override createDriver() {
+    return new ImmediateSqliteDriver(this.config);
+  }
+}
+
 function create() {
   // Every record query passes through row scopes (core/scope/plugin.ts).
   const plugins = [scopePlugin];
   if (isPostgres()) return new Kysely<Tables>({ dialect: new PostgresDialect({ pool: async () => postgresPool() }), plugins });
   // A function, so importing this module never creates a database file.
-  return new Kysely<Tables>({ dialect: new SqliteDialect({ database: async () => open() }), plugins });
+  return new Kysely<Tables>({ dialect: new ImmediateSqliteDialect({ database: async () => open() }), plugins });
 }
 
 declare const globalThis: { recordsDb?: ReturnType<typeof create> } & typeof global;
