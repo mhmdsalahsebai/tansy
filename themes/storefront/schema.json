@@ -25,6 +25,81 @@
           }
         }
       ]
+    },
+    {
+      "slug": "shop-products",
+      "name": "Products",
+      "type": "base",
+      "urlPattern": "/shop/:slug",
+      "rules": {
+        "listRule": "status = \"published\"",
+        "viewRule": "status = \"published\"",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        {
+          "name": "format",
+          "type": "radio",
+          "config": {
+            "options": [
+              { "label": "Physical", "value": "physical" },
+              { "label": "Digital", "value": "digital" },
+              { "label": "Physical and digital", "value": "both" }
+            ],
+            "description": "The badge the storefront shows. What is posted still follows Shipping, and what buyers download follows Download."
+          }
+        },
+        {
+          "name": "membership",
+          "type": "reference",
+          "config": {
+            "collection": "payments-access",
+            "displayField": "name",
+            "allowMultiple": true,
+            "description": "Memberships whose members read its digital edition in the library for free. Add the file under Library files."
+          }
+        }
+      ]
+    },
+    {
+      "slug": "library",
+      "name": "Library page",
+      "description": "The members' library: digital editions members read for free, and the memberships that open them.",
+      "type": "singleton",
+      "urlPattern": "/library",
+      "rules": {
+        "listRule": "",
+        "viewRule": "",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        { "name": "title", "type": "text", "config": { "required": true, "maxLength": 120 } },
+        { "name": "intro", "type": "rich_text", "config": {} }
+      ]
+    },
+    {
+      "slug": "library-files",
+      "name": "Library files",
+      "description": "Digital editions for members. Only people whose membership includes one of a file's Included in can see it or download it. A file in no membership is shown to nobody.",
+      "type": "base",
+      "urlPattern": null,
+      "rules": {
+        "listRule": "status = \"published\" && included:length > 0 && included ?= @request.auth.payments_access",
+        "viewRule": "status = \"published\" && included:length > 0 && included ?= @request.auth.payments_access",
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null
+      },
+      "fields": [
+        { "name": "product", "type": "reference", "config": { "collection": "shop-products", "displayField": "title", "required": true } },
+        { "name": "label", "type": "text", "config": { "maxLength": 40, "description": "What the download is, such as EPUB or PDF." } },
+        { "name": "file", "type": "file", "config": { "required": true } },
+        { "name": "included", "type": "reference", "config": { "collection": "payments-access", "displayField": "name", "allowMultiple": true, "required": true, "label": "Included in" } }
+      ]
     }
   ],
   "blocks": []

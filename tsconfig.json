@@ -59,6 +59,8 @@
   "exclude": [
     "**/node_modules",
     "apps/docs",
+    "demo",
+    "demo-*",
     "**/.next/build",
     "**/.next/server",
     "**/.next/static"

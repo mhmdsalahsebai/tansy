@@ -16,6 +16,11 @@ export const ChevronLeft = (props: Props) => <Icon {...props}><path d="m15 18-6-
 export const ChevronRight = (props: Props) => <Icon {...props}><path d="m9 18 6-6-6-6" /></Icon>;
 export const ChevronDown = (props: Props) => <Icon {...props}><path d="m6 9 6 6 6-6" /></Icon>;
 export const Bag = (props: Props) => <Icon {...props}><path d="M5 8h14l-1 12H6L5 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></Icon>;
+export const Store = (props: Props) => <Icon {...props}><path d="M4 10v10h16V10" /><path d="M3 10 5 4h14l2 6c0 1.7-1.3 3-3 3s-3-1.3-3-3c0 1.7-1.3 3-3 3s-3-1.3-3-3c0 1.7-1.3 3-3 3s-3-1.3-3-3Z" /><path d="M10 20v-5h4v5" /></Icon>;
+export const BookOpen = (props: Props) => <Icon {...props}><path d="M12 6.5C10.3 5.2 7.9 4.5 4 4.5v14c3.9 0 6.3.7 8 2 1.7-1.3 4.1-2 8-2v-14c-3.9 0-6.3.7-8 2Z" /><path d="M12 6.5v14" /></Icon>;
+export const Download = (props: Props) => <Icon {...props}><path d="M12 4v11m0 0-4-4m4 4 4-4" /><path d="M5 20h14" /></Icon>;
+export const Lock = (props: Props) => <Icon {...props}><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></Icon>;
+export const Close = (props: Props) => <Icon {...props}><path d="M6 6l12 12M18 6 6 18" /></Icon>;
 export const User = (props: Props) => <Icon {...props}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></Icon>;
 export const Search = (props: Props) => <Icon {...props}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Icon>;
 export const Send = (props: Props) => <Icon {...props}><path d="M21 3 10 14" /><path d="m21 3-7 18-4-7-7-4 18-7Z" /></Icon>;

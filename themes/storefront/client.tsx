@@ -1,15 +1,81 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { addToCart, type VariantOption } from "@tansy/shop/react";
 import { apiPath, contentLocale, sitePath, siteWords, type SiteWords } from "tansy/react";
-import { Bag, Check, ChevronLeft, ChevronRight, Minus, Plus, Search, Send } from "./icons";
+import { Bag, Check, ChevronLeft, ChevronRight, Close, Minus, Plus, Search, Send } from "./icons";
 import { cx, money, text } from "./lib";
 
 /**
  * The theme's parts that need the browser. Each takes `pickWords(words, "storefront")` from a
  * template, so it speaks the page's language and keeps links in it.
  */
+
+/* ------------------------------------------------------- view transitions */
+
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Runs a change to the page as a same-document view transition where the browser has them, with
+ * `type` so styles.css can tell it from moving between pages. Browsers that have transitions but
+ * not types get it without one.
+ */
+function transition(change: () => void, type: string) {
+  if (typeof document.startViewTransition !== "function" || reducedMotion()) return change();
+  const update = () => flushSync(change);
+  try {
+    document.startViewTransition({ update, types: [type] });
+  } catch {
+    document.startViewTransition(update);
+  }
+}
+
+/** What `pageswap` hands over, in browsers that have cross-document view transitions. */
+interface PageSwap extends Event { viewTransition: object | null; activation: { entry: { url: string } | null } | null }
+
+const pathOf = (href: string) => {
+  try { return new URL(href, window.location.href).pathname; } catch { return ""; }
+};
+
+/**
+ * Picks the picture that flies when a page is left for a product. Pictures that lead to a product
+ * carry `data-sf-vt` (the name) and `data-sf-vt-href`. When the same product shows twice, such as
+ * in the spotlight and the grid, the one pressed (or else the one most in view) takes the name and
+ * the others give it up, since a page may use a name once. The new page names its picture itself.
+ */
+export function ViewTransitionNames() {
+  useEffect(() => {
+    let pressed: Element | null = null;
+    const press = (event: PointerEvent) => { pressed = event.target instanceof Element ? event.target : null; };
+    const swap = (event: Event) => {
+      const { viewTransition, activation } = event as PageSwap;
+      const to = activation?.entry?.url;
+      if (!viewTransition || !to) return;
+      const path = pathOf(to);
+      const pictures = [...document.querySelectorAll<HTMLElement>("[data-sf-vt-href]")].filter((picture) => pathOf(picture.dataset.sfVtHref ?? "") === path);
+      if (!pictures.length) return;
+      const near = (picture: HTMLElement) => pressed && picture.closest("li, article, [data-sf-vt-scope]")?.contains(pressed);
+      const inView = (picture: HTMLElement) => {
+        const box = picture.getBoundingClientRect();
+        return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0)) * Math.max(0, Math.min(box.right, window.innerWidth) - Math.max(box.left, 0));
+      };
+      const chosen = pictures.find(near) ?? pictures.reduce((best, picture) => (inView(picture) > inView(best) ? picture : best));
+      const name = chosen.dataset.sfVt ?? "";
+      for (const other of document.querySelectorAll<HTMLElement>("[data-sf-vt]")) {
+        if (other !== chosen && other.style.viewTransitionName === name) other.style.viewTransitionName = "none";
+      }
+      chosen.style.viewTransitionName = name;
+    };
+    window.addEventListener("pointerdown", press, true);
+    window.addEventListener("pageswap", swap);
+    return () => {
+      window.removeEventListener("pointerdown", press, true);
+      window.removeEventListener("pageswap", swap);
+    };
+  }, []);
+  return null;
+}
 
 const thumb = (fileId: string, size: "100x100" | "300x300" = "100x100") => apiPath(`/files/${encodeURIComponent(fileId)}?thumb=${size}`);
 
@@ -24,9 +90,10 @@ const WAIT_MS = 250;
  * Searches published products as the visitor types, through the records API. It reads as
  * whoever is looking, so the products collection's list rule still decides what can be found.
  */
-export function ProductSearch({ words, currency }: { words?: SiteWords; currency: string }) {
+export function ProductSearch({ id: anchor, words, currency }: { id?: string; words?: SiteWords; currency: string }) {
   const { t, formatNumber } = siteWords(words);
   const id = useId();
+  const input = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Found[] | null>(null);
   const [state, setState] = useState<"idle" | "busy" | "failed">("idle");
@@ -71,6 +138,15 @@ export function ProductSearch({ words, currency }: { words?: SiteWords; currency
 
   useEffect(() => () => pending.current?.abort(), []);
 
+  // The Search tab links here by its id: arriving that way puts the cursor in the box.
+  useEffect(() => {
+    if (!anchor) return;
+    const focus = () => { if (window.location.hash === `#${anchor}`) input.current?.focus({ preventScroll: false }); };
+    focus();
+    window.addEventListener("hashchange", focus);
+    return () => window.removeEventListener("hashchange", focus);
+  }, [anchor]);
+
   function submit(event: FormEvent) {
     event.preventDefault();
     void run(query);
@@ -84,14 +160,16 @@ export function ProductSearch({ words, currency }: { words?: SiteWords; currency
       : results === null ? "" : results.length ? t("storefront.found", { count: results.length }) : t("storefront.noResults", { query: query.trim() });
 
   return (
-    <div className="sf:relative sf:w-full sf:max-w-xl">
+    <div id={anchor} className="sf:relative sf:w-full sf:max-w-xl sf:scroll-mt-24">
       <form role="search" onSubmit={submit}>
         <label className="sf:sr-only" htmlFor={`${id}-q`}>{t("storefront.searchLabel")}</label>
         <span className="sf:flex sf:h-14 sf:items-center sf:gap-3 sf:rounded-full sf:border sf:border-line sf:bg-surface sf:ps-5 sf:pe-2 sf:transition sf:focus-within:border-accent sf:focus-within:bg-page sf:focus-within:ring-4 sf:focus-within:ring-accent/15">
           <Search className="sf:size-5 sf:shrink-0 sf:text-muted" />
           <input
+            ref={input}
             id={`${id}-q`}
             type="search"
+            enterKeyHint="search"
             name="q"
             autoComplete="off"
             maxLength={200}
@@ -120,7 +198,7 @@ export function ProductSearch({ words, currency }: { words?: SiteWords; currency
                 <li key={product.id}>
                   <a href={path ? sitePath(words, path) : undefined} className="sf:flex sf:items-center sf:gap-3 sf:rounded-2xl sf:p-2 sf:text-ink sf:no-underline sf:hover:bg-surface sf:focus-visible:bg-surface sf:focus-visible:outline-none">
                     {/* eslint-disable-next-line @next/next/no-img-element -- an access-checked API address that redirects to a signed URL */}
-                    {image ? <img src={thumb(image)} alt="" width={48} height={48} loading="lazy" className="sf:size-12 sf:rounded-full sf:bg-surface sf:object-cover" /> : <span className="sf:grid sf:size-12 sf:place-items-center sf:rounded-full sf:bg-surface sf:text-muted" aria-hidden="true"><Bag /></span>}
+                    {image ? <img src={thumb(image)} alt="" width={48} height={48} loading="lazy" {...(path ? { "data-sf-vt": `sf-product-${product.id}`, "data-sf-vt-href": sitePath(words, path) } : {})} className="sf-vt-product sf:size-12 sf:rounded-full sf:bg-surface sf:object-cover" /> : <span className="sf:grid sf:size-12 sf:place-items-center sf:rounded-full sf:bg-surface sf:text-muted" aria-hidden="true"><Bag /></span>}
                     <span className="sf:min-w-0 sf:flex-1 sf:truncate sf:font-medium">{text(product.title)}</span>
                     {price !== null && <span className="sf:text-sm sf:text-muted sf:tabular-nums">{money(formatNumber, price, currency)}</span>}
                   </a>
@@ -144,24 +222,62 @@ const RoundButton = ({ label, onClick, children }: { label: string; onClick: () 
   </button>
 );
 
+/** Smooth unless the visitor asks for less motion. */
+const scrollBehavior = (): ScrollBehavior => (reducedMotion() ? "auto" : "smooth");
+
 /**
- * The product's pictures on a soft stage, with a ring around it and arrows to step through
- * them. Arrow keys step too once the stage has focus, the way they point in the page's direction.
+ * The product's pictures on a soft stage, with a ring around it. They sit side by side in a
+ * track that snaps, so a finger swipes through them as in an app, and arrows, thumbnails or the
+ * arrow keys (once the stage has focus) step through them too. The picture showing carries
+ * `transitionName`, the name its card in a list has, so moving between them flies it across.
+ * Tapping it zooms it to fill the screen, the same picture growing out of the stage, and closing
+ * shrinks it back.
  */
-export function ProductGallery({ images, words }: { images: GalleryImage[]; words?: SiteWords }) {
+export function ProductGallery({ images, transitionName, words }: { images: GalleryImage[]; transitionName?: string; words?: SiteWords }) {
   const { t } = siteWords(words);
   const [index, setIndex] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
+  const track = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
   const count = images.length;
-  const go = (step: number) => setIndex((current) => (current + step + count) % count);
+  const name = transitionName ?? "sf-zoom";
+
+  function zoom(open: boolean) {
+    transition(() => setZoomed(open), "sf-zoom");
+    if (!open) opener.current?.focus({ preventScroll: true });
+  }
+
+  // While zoomed: Escape closes, and the page behind holds still.
+  useEffect(() => {
+    if (!zoomed) return;
+    const keys = (event: globalThis.KeyboardEvent) => { if (event.key === "Escape") zoom(false); };
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    window.addEventListener("keydown", keys);
+    return () => { root.style.overflow = overflow; window.removeEventListener("keydown", keys); };
+  }, [zoomed]);
+
+  /** Scrolls the track to a picture. The index follows from the scroll, so swiping and stepping agree. */
+  function show(at: number) {
+    const slide = track.current?.children[(at + count) % count] as HTMLElement | undefined;
+    slide?.scrollIntoView({ behavior: scrollBehavior(), block: "nearest", inline: "center" });
+  }
+
+  function onScroll() {
+    const element = track.current;
+    if (!element || !element.clientWidth) return;
+    // scrollLeft runs negative right to left, so its size is what counts.
+    setIndex(Math.min(count - 1, Math.round(Math.abs(element.scrollLeft) / element.clientWidth)));
+  }
 
   function keys(event: KeyboardEvent<HTMLDivElement>) {
     if (count < 2 || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
     event.preventDefault();
     const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
-    go((event.key === "ArrowRight") !== rtl ? 1 : -1);
+    show(index + ((event.key === "ArrowRight") !== rtl ? 1 : -1));
   }
 
-  const current = images[index];
   return (
     <section aria-label={t("storefront.images")} className="sf:flex sf:flex-col sf:gap-4">
       <div
@@ -169,30 +285,67 @@ export function ProductGallery({ images, words }: { images: GalleryImage[]; word
         aria-roledescription={count > 1 ? "carousel" : undefined}
         tabIndex={count > 1 ? 0 : undefined}
         onKeyDown={keys}
-        className="sf:group sf:relative sf:isolate sf:grid sf:aspect-square sf:place-items-center sf:overflow-hidden sf:rounded-card sf:bg-surface sf:focus-visible:outline-2 sf:focus-visible:outline-offset-4 sf:focus-visible:outline-accent"
+        className="sf:group sf:relative sf:isolate sf:aspect-square sf:overflow-hidden sf:rounded-card sf:bg-surface sf:focus-visible:outline-2 sf:focus-visible:outline-offset-4 sf:focus-visible:outline-accent"
       >
         {/* The ring the product sits in. */}
         <span aria-hidden="true" className="sf:absolute sf:top-[58%] sf:left-1/2 sf:-z-10 sf:h-[26%] sf:w-[118%] sf:-translate-x-1/2 sf:-rotate-6 sf:rounded-[50%] sf:border sf:border-ink/15" />
         <span aria-hidden="true" className="sf:absolute sf:top-1/2 sf:left-1/2 sf:-z-20 sf:size-[72%] sf:-translate-1/2 sf:rounded-full sf:bg-page/70 sf:blur-2xl" />
-        {current ? (
-          // eslint-disable-next-line @next/next/no-img-element -- an access-checked API address that redirects to a signed URL, which next/image can't optimize
-          <img key={current.src} src={current.src} alt={current.alt} className="sf:size-[82%] sf:object-contain sf:drop-shadow-[0_24px_30px_rgba(0,0,0,0.18)] sf:transition-transform sf:duration-500 sf:ease-out sf:group-hover:scale-[1.03] sf:motion-reduce:transition-none" />
-        ) : <Bag className="sf:size-16 sf:text-muted/50" strokeWidth={1} />}
-        {count > 1 && (
-          <div className="sf:absolute sf:bottom-6 sf:left-1/2 sf:flex sf:-translate-x-1/2 sf:items-center sf:gap-1 sf:rounded-full sf:border sf:border-line sf:bg-page/80 sf:p-1 sf:shadow-sm sf:backdrop-blur">
-            <RoundButton label={t("storefront.previousImage")} onClick={() => go(-1)}><ChevronLeft className="sf:size-5 sf:rtl:-scale-x-100" /></RoundButton>
-            <span className="sf:min-w-12 sf:text-center sf:text-sm sf:text-muted sf:tabular-nums" aria-live="polite">{index + 1} / {count}</span>
-            <RoundButton label={t("storefront.nextImage")} onClick={() => go(1)}><ChevronRight className="sf:size-5 sf:rtl:-scale-x-100" /></RoundButton>
+        {count > 0 ? (
+          <div ref={track} onScroll={onScroll} className="sf-track sf:absolute sf:inset-0 sf:flex sf:snap-x sf:snap-mandatory sf:overflow-x-auto sf:overscroll-x-contain">
+            {images.map((image, at) => (
+              <div key={image.src} className="sf:grid sf:size-full sf:shrink-0 sf:snap-center sf:snap-always sf:place-items-center" aria-hidden={at !== index ? true : undefined}>
+                <button
+                  type="button"
+                  ref={at === index ? opener : undefined}
+                  tabIndex={at === index ? 0 : -1}
+                  onClick={() => zoom(true)}
+                  aria-label={t("storefront.zoomIn")}
+                  className="sf:grid sf:size-full sf:cursor-zoom-in sf:place-items-center sf:focus-visible:outline-none"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- an access-checked API address that redirects to a signed URL, which next/image can't optimize */}
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    loading={at === 0 ? "eager" : "lazy"}
+                    draggable={false}
+                    style={at === index && !zoomed ? { viewTransitionName: name } : undefined}
+                    className={cx(at === index && "sf-zoom-target", "sf-vt-product sf:size-[82%] sf:object-contain sf:drop-shadow-[0_24px_30px_rgba(0,0,0,0.18)] sf:transition-transform sf:duration-500 sf:ease-out sf:select-none sf:group-hover:scale-[1.03] sf:motion-reduce:transition-none")}
+                  />
+                </button>
+              </div>
+            ))}
           </div>
+        ) : <div className="sf:grid sf:size-full sf:place-items-center"><Bag className="sf:size-16 sf:text-muted/50" strokeWidth={1} /></div>}
+        {count > 1 && (
+          <>
+            {/* Small screens: dots, since a finger swipes. */}
+            <div aria-hidden="true" className="sf:pointer-events-none sf:absolute sf:bottom-5 sf:left-1/2 sf:flex sf:-translate-x-1/2 sf:gap-1.5 sf:sm:hidden">
+              {images.map((image, at) => <span key={image.src} className={cx("sf:h-1.5 sf:rounded-full sf:transition-all sf:duration-300", at === index ? "sf:w-5 sf:bg-ink" : "sf:w-1.5 sf:bg-ink/25")} />)}
+            </div>
+            <div className="sf:absolute sf:bottom-6 sf:left-1/2 sf:hidden sf:-translate-x-1/2 sf:items-center sf:gap-1 sf:rounded-full sf:border sf:border-line sf:bg-page/80 sf:p-1 sf:shadow-sm sf:backdrop-blur sf:sm:flex">
+              <RoundButton label={t("storefront.previousImage")} onClick={() => show(index - 1)}><ChevronLeft className="sf:size-5 sf:rtl:-scale-x-100" /></RoundButton>
+              <span className="sf:min-w-12 sf:text-center sf:text-sm sf:text-muted sf:tabular-nums" aria-live="polite">{index + 1} / {count}</span>
+              <RoundButton label={t("storefront.nextImage")} onClick={() => show(index + 1)}><ChevronRight className="sf:size-5 sf:rtl:-scale-x-100" /></RoundButton>
+            </div>
+          </>
         )}
       </div>
+      {zoomed && images[index] && (
+        <div role="dialog" aria-modal="true" aria-label={images[index].alt || t("storefront.images")} className="sf-zoom sf:fixed sf:inset-0 sf:z-[60] sf:grid sf:cursor-zoom-out sf:place-items-center sf:p-4" onClick={() => zoom(false)}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- the same address as on the stage, so it's already loaded and the transition has it */}
+          <img src={images[index].src} alt={images[index].alt} draggable={false} style={{ viewTransitionName: name }} className="sf-zoom-target sf-vt-product sf:max-h-[88dvh] sf:w-full sf:max-w-[min(92vw,56rem)] sf:object-contain sf:select-none" />
+          <button type="button" autoFocus onClick={(event) => { event.stopPropagation(); zoom(false); }} aria-label={t("storefront.closeZoom")} className="sf-zoom-close sf:fixed sf:end-4 sf:top-4 sf:grid sf:size-11 sf:place-items-center sf:rounded-full sf:border sf:border-line sf:bg-page sf:text-ink sf:shadow-card">
+            <Close />
+          </button>
+        </div>
+      )}
       {count > 1 && (
-        <ul className="sf:flex sf:gap-3 sf:overflow-x-auto sf:pb-1">
+        <ul className="sf-chips sf:flex sf:gap-3 sf:overflow-x-auto sf:pb-1">
           {images.map((image, at) => (
             <li key={image.src} className="sf:shrink-0">
               <button
                 type="button"
-                onClick={() => setIndex(at)}
+                onClick={() => show(at)}
                 aria-label={t("storefront.showImage", { number: at + 1 })}
                 aria-current={at === index ? "true" : undefined}
                 className={cx(
@@ -271,6 +424,8 @@ export function BuyBox({ product, price, compareAt, stock, variants = [], curren
     event.preventDefault();
     if (soldOut) return;
     addToCart(product, chosen?.id ?? null, quantity);
+    // A short tap, as an app gives, on phones that can. Only after a real tap, as browsers refuse it otherwise.
+    if (navigator.userActivation?.isActive) navigator.vibrate?.(12);
     const submitter = (event.nativeEvent as SubmitEvent).submitter;
     if (submitter?.getAttribute("value") === "buy") window.location.assign(sitePath(words, cartHref));
     else setAdded(true);
@@ -318,7 +473,8 @@ export function BuyBox({ product, price, compareAt, stock, variants = [], curren
         </div>
       )}
 
-      <div className="sf:grid sf:grid-cols-2 sf:gap-3">
+      {/* Small screens: pinned to the bottom of the screen, where a thumb reaches, as in an app. */}
+      <div className="sf-buybar sf:grid sf:grid-cols-2 sf:gap-3">
         <button type="submit" value="buy" disabled={soldOut} className="sf:inline-flex sf:h-14 sf:items-center sf:justify-center sf:rounded-full sf:bg-accent sf:px-6 sf:text-base sf:font-semibold sf:text-on-accent sf:shadow-[0_10px_24px_-10px] sf:shadow-accent sf:transition sf:hover:brightness-110 sf:active:scale-[0.98] sf:disabled:cursor-not-allowed sf:disabled:opacity-50 sf:disabled:shadow-none sf:focus-visible:outline-2 sf:focus-visible:outline-offset-2 sf:focus-visible:outline-accent">
           {t("storefront.buyNow")}
         </button>

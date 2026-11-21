@@ -159,6 +159,157 @@ body:has(.site-root[data-theme="storefront"]) { margin: 0; }
   .sf-prose :where(hr) { border: 0; border-top: 1px solid var(--site-color-border); }
 }
 
+/* ------------------------------------------------- feeling like an app */
+
+/*
+ * Touch: no grey flash on tap, no wait for a double tap, and things that answer a press by
+ * giving way a little. Rows that scroll sideways snap and keep the page from moving with them.
+ */
+.sf-shell { -webkit-tap-highlight-color: transparent; }
+.sf-shell :where(a, button, summary, label, input, select) { touch-action: manipulation; }
+.sf-shell :where(.sf-press, .sf-tab) { transition-property: transform, color; transition-duration: 0.15s; }
+.sf-shell :where(.sf-press, .sf-tab):active { transform: scale(0.97); }
+.sf-chips, .sf-track { scrollbar-width: none; overscroll-behavior-x: contain; }
+.sf-chips::-webkit-scrollbar, .sf-track::-webkit-scrollbar { display: none; }
+.sf-chips { scroll-snap-type: x proximity; }
+.sf-chips > ul > li, .sf-chips > li { scroll-snap-align: start; scroll-margin-inline: var(--site-space-gutter); }
+.sf-track { -webkit-overflow-scrolling: touch; }
+
+/* The tab bar's own count, over its icon rather than in the corner of the tab. */
+.sf-tabbar .shop-count { inset-block-start: 0.25rem; inset-inline-end: calc(50% - 1.5rem); }
+.sf-tabbar { padding-bottom: env(safe-area-inset-bottom); }
+/* The cart's tab is the shop's CartLink, which takes no aria-current, so the cart page marks it here. */
+.sf-shell[data-page="shop-cart"] .sf-tab-cart { color: var(--site-color-accent); }
+/* Its frosted glass is a layer behind it: backdrop-filter on the bar itself would pin the menu sheet, which is fixed, to the bar instead of the screen. */
+.sf-tabbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--site-color-page) 85%, transparent);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+}
+
+/* The dot under the current tab, which slides between tabs as pages change. */
+.sf-tab-dot {
+  position: absolute;
+  inset-block-end: 0.2rem;
+  inset-inline-start: calc(50% - 0.6rem);
+  width: 1.2rem;
+  height: 0.2rem;
+  border-radius: 999px;
+  background: var(--site-color-accent);
+}
+
+/* A product's picture zoomed to fill the screen, over a frosted page. */
+.sf-zoom {
+  background: color-mix(in srgb, var(--site-color-page) 92%, transparent);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  touch-action: pinch-zoom;
+}
+
+/* Payments' Subscribe and Billing buttons, in the theme's shape. */
+.sf-shell .sf-plan-action .payments-button {
+  width: 100%;
+  height: 3.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--site-color-accent);
+  color: var(--site-color-on-accent);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.15s;
+}
+.sf-shell .sf-plan-action .payments-button:hover { filter: brightness(1.1); }
+.sf-shell .sf-plan-action .payments-button:active { transform: scale(0.98); }
+.sf-shell .sf-plan-action .payments-error { margin-top: 0.5rem; font-size: 0.875rem; color: var(--site-color-muted); }
+
+/* The menu as a sheet that rises from the bottom, over a dimmed page. Tapping the page closes it. */
+.sf-sheet > summary::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgb(0 0 0 / 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.sf-sheet[open] > summary::before { opacity: 1; pointer-events: auto; }
+.sf-sheet-panel { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+.sf-sheet[open] > .sf-sheet-panel { animation: sf-sheet-up 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.sf-sheet-panel a { padding-block: 0.875rem; font-size: 1.0625rem; }
+@keyframes sf-sheet-up { from { transform: translateY(100%); } }
+
+@media (max-width: 63.99rem) {
+  /* Room at the bottom for the tab bar, so nothing sits under it. */
+  .sf-shell { padding-bottom: calc(4.25rem + env(safe-area-inset-bottom)); }
+  /* The cart is in the tab bar, except on a product page, which has no tab bar, as a pushed screen in an app has none. */
+  .sf-shell:not([data-page="shop-products"]) .sf-header-cart { display: none; }
+  .sf-shell[data-page="shop-products"] .sf-tabbar { display: none; }
+  /* A product's buttons pinned to the bottom of the screen instead. */
+  .sf-shell[data-page="shop-products"] { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  .sf-buybar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 40;
+    padding: 0.75rem var(--site-space-gutter) calc(0.75rem + env(safe-area-inset-bottom));
+    border-top: 1px solid color-mix(in srgb, var(--site-color-border) 70%, transparent);
+    background: color-mix(in srgb, var(--site-color-page) 88%, transparent);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+  .sf-shell footer { margin-top: 4rem; }
+}
+
+/*
+ * Moving between pages. The layout switches cross-document view transitions on (render.tsx);
+ * these say how they look. Each starts at html:has(.sf-shell), so they apply only to this
+ * theme's pages. The header and tab bar hold still while the page beneath them changes, a
+ * product's picture flies between its card and its page, and the bars that come and go slide.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.sf-shell)::view-transition-old(root) { animation: 160ms cubic-bezier(0.4, 0, 1, 1) both sf-page-out; }
+  html:has(.sf-shell)::view-transition-new(root) { animation: 340ms cubic-bezier(0.2, 0.8, 0.2, 1) both sf-page-in; }
+  /* The picture flies above everything else, so it never passes under the header or a bar. */
+  html:has(.sf-shell)::view-transition-group(*.sf-product) { z-index: 10; animation-duration: 460ms; animation-timing-function: cubic-bezier(0.2, 0.9, 0.1, 1); }
+  /* The chosen category chip and the tab dot slide to their new place. */
+  html:has(.sf-shell)::view-transition-group(sf-chip),
+  html:has(.sf-shell)::view-transition-group(sf-tab-dot) { animation-duration: 380ms; animation-timing-function: cubic-bezier(0.3, 1.25, 0.4, 1); }
+  html:has(.sf-shell)::view-transition-old(*.sf-product),
+  html:has(.sf-shell)::view-transition-new(*.sf-product) { height: 100%; object-fit: contain; }
+  html:has(.sf-shell)::view-transition-new(sf-tabbar):only-child,
+  html:has(.sf-shell)::view-transition-new(sf-buybar):only-child { animation: 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both sf-bar-in; }
+  html:has(.sf-shell)::view-transition-old(sf-tabbar):only-child,
+  html:has(.sf-shell)::view-transition-old(sf-buybar):only-child { animation: 200ms ease-in both sf-bar-out; }
+
+  /*
+   * Zooming a picture on its page (a same-document transition of type sf-zoom): the page beneath
+   * only crossfades to the frosted backdrop, and nothing else takes part, so no named header, bar
+   * or other product paints over the backdrop while the picture grows.
+   */
+  html:active-view-transition-type(sf-zoom)::view-transition-old(root) { animation: 260ms ease both sf-fade-out; }
+  html:active-view-transition-type(sf-zoom)::view-transition-new(root) { animation: 260ms ease both sf-fade-in; }
+  html:active-view-transition-type(sf-zoom) :is(.sf-header, .sf-tabbar, .sf-buybar, .sf-vt-product:not(.sf-zoom-target)) { view-transition-name: none !important; }
+  html:active-view-transition-type(sf-zoom)::view-transition-group(*) { animation-duration: 380ms; animation-timing-function: cubic-bezier(0.2, 0.9, 0.1, 1); }
+
+  .sf-header { view-transition-name: sf-header; }
+  .sf-vt-product { view-transition-class: sf-product; }
+  @media (max-width: 63.99rem) {
+    .sf-tabbar { view-transition-name: sf-tabbar; }
+    .sf-buybar { view-transition-name: sf-buybar; }
+  }
+}
+@keyframes sf-page-out { to { opacity: 0; transform: scale(0.985); } }
+@keyframes sf-page-in { from { opacity: 0; transform: translateY(1.25rem); } }
+@keyframes sf-fade-out { to { opacity: 0; } }
+@keyframes sf-fade-in { from { opacity: 0; } }
+@keyframes sf-bar-in { from { transform: translateY(100%); } }
+@keyframes sf-bar-out { to { transform: translateY(100%); } }
+
 /* ------------------------------------------------------- the shop's parts */
 
 /*

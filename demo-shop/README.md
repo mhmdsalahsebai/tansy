@@ -1,18 +1,23 @@
 # Shop demo
 
-A live online store on the published tansy packages: the storefront theme, the shop plugin and
-Payments, filled with a small coffee and homeware store. One of the use-case demos next to the
+A live bookstore on the published tansy packages: the storefront theme, the shop plugin, Payments and
+Subscriptions, filled with made-up books. One of the use-case demos next to the
 general one in `../demo`. Not part of the npm workspace.
 
 What a visitor can try:
 
-- The storefront: categories, search, a sale price, a sold-out product, low stock on one variant,
-  products with options (sizes, colours) whose pictures change with them.
+- The storefront: genres, search, a sale price, a sold-out book, low stock, paperback and hardcover
+  options, and on phones an app's feel: a tab bar, pictures that fly from card to page and zoom.
+- Three formats: printed books are posted; digital editions skip the address and are downloadable
+  once paid; books in both are posted and come with their PDF.
 - A real checkout in Stripe's test mode with the card `4242 4242 4242 4242`, then the order on
-  `/orders`. The brewing guide is download-only: it skips the address and is downloadable once paid.
-- Shipping by zone: free in the US over $75, in Europe over $120, a flat rate everywhere else.
+  `/orders`.
+- The Readers' Club at `/library`: a membership whose members read some books' digital editions for
+  free. Only members can open those files. Printed books are still bought.
+- Shipping by zone: free in the US over $50, in Europe over $80, a flat rate everywhere else.
 - In the dashboard: the Shop overview (orders, revenue, what to ship, low stock), orders in every
-  state with Mark shipped and Mark delivered, products and their variants, and Payments settings.
+  state with Mark shipped and Mark delivered, products and their variants, Payments settings, the
+  Readers' Club plan and its access, Library files, and Subscriptions, which gives free memberships.
 
 ## Running it yourself
 
@@ -36,7 +41,9 @@ Like `../demo`: its own Vercel project and Postgres database, deployed from this
    `TANSY_ENCRYPTION_KEY`, `TANSY_BACKUP_KEY`, `CRON_SECRET`, storage (`S3_*` or
    `BLOB_READ_WRITE_TOKEN`), `TANSY_SHARED_ACCOUNTS=demo@example.com`, and Stripe **test** keys:
    `STRIPE_SECRET_KEY=sk_test_…` and `STRIPE_WEBHOOK_SECRET` for a webhook to
-   `/api/auth/stripe/webhook`. Never live keys.
+   `/api/auth/stripe/webhook`. Never live keys. For the Readers' Club, a test recurring price of
+   $9 a month (and $90 a year) in Stripe, whose ids go in `STRIPE_CLUB_PRICE` and
+   `STRIPE_CLUB_ANNUAL_PRICE` when running the script below.
 2. Create the admin from the first-run link, put its URL, email and password in `.demo-shop-admin`
    at the repository root (gitignored), and run `node scripts/demo-shop-content.mjs`.
 3. Under Payments settings, choose Stripe and turn on test mode.
