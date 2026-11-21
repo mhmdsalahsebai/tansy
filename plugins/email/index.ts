@@ -94,9 +94,9 @@ export function email(options: EmailOptions) {
 
   return definePlugin({
     name: "email",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/email/admin" },
     options: { schema: optionsSchema, value },
     messages: mergeMessagesByLanguage(messages, ...providers.map((provider) => provider.messages)),

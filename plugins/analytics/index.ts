@@ -162,9 +162,9 @@ export function analytics(options: AnalyticsOptions = {}) {
 
   return definePlugin({
     name: "analytics",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/analytics/admin", render: "@tansy/analytics/render" },
     options: { schema: optionsSchema, value },
     messages: mergeMessagesByLanguage(messages, ...providers.map((provider) => provider.messages)),

@@ -75,9 +75,9 @@ export function multiTenant(options: MultiTenantOptions) {
   const parsed = optionsSchema.parse({ siteUrl: options.siteUrl.replace(/\/+$/, ""), scopeNewCollections: options.scopeNewCollections ?? true, ...(options.dnsServers?.length ? { dnsServers: options.dnsServers } : {}) });
   return definePlugin({
     name: PLUGIN,
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     options: { schema: optionsSchema, value: parsed },
     admin: { server: "@tansy/multi-tenant/admin" },
     messages,

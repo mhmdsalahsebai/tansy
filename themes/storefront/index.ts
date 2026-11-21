@@ -57,7 +57,7 @@ const FRONT: Record<string, ThemeQuery> = {
  */
 export const storefront = ({ tagline, search = true, accountLinks = true, library = false, colorScheme = "auto" }: Partial<StorefrontOptions> = {}) => defineTheme<StorefrontOptions>({
   name: "storefront",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-storefront/render",
   requires: { plugins: ["shop"] },

@@ -1,6 +1,6 @@
 {
   "name": "@tansy/theme-magazine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A magazine look for the blog plugin: a hero with search, image cards, and a sidebar of featured and latest posts.",
   "keywords": [
     "tansy-theme"
@@ -28,10 +28,10 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/blog": "^0.1.0",
+    "@tansy/blog": "^0.1.1",
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

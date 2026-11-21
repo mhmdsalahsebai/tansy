@@ -1,6 +1,6 @@
 {
   "name": "@tansy/captcha",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A CAPTCHA for Tansy's sign-in forms and any plugin's own forms. Add a provider package, such as @tansy/captcha-turnstile.",
   "keywords": [
     "tansy",
@@ -27,7 +27,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

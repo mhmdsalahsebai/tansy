@@ -1,6 +1,6 @@
 {
   "name": "@tansy/theme-blog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A blog look for tansy: a header with a menu, posts on the home page, post pages and plain pages.",
   "keywords": [
     "tansy",
@@ -31,10 +31,10 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/blog": "^0.1.0",
+    "@tansy/blog": "^0.1.1",
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

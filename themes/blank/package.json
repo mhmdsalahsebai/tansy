@@ -1,6 +1,6 @@
 {
   "name": "@tansy/theme-blank",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The smallest tansy theme that works: no styling or blocks of its own, made to be copied.",
   "keywords": [
     "tansy",
@@ -29,6 +29,6 @@
   ],
   "peerDependencies": {
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   }
 }

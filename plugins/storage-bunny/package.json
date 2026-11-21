@@ -1,6 +1,6 @@
 {
   "name": "@tansy/storage-bunny",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bunny Storage for tansy file storage.",
   "keywords": [
     "tansy",
@@ -24,6 +24,6 @@
     "README.md"
   ],
   "peerDependencies": {
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   }
 }

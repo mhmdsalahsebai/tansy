@@ -1,6 +1,6 @@
 {
   "name": "@tansy/email",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Send Tansy's email through an email API instead of SMTP, with a delivery log. Add a provider package, such as @tansy/email-resend.",
   "keywords": [
     "tansy",
@@ -31,7 +31,7 @@
   "peerDependencies": {
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

@@ -52,7 +52,7 @@ const archive = (filter: string): Record<string, ThemeQuery> => ({
  */
 export const magazine = ({ tagline, showDates = true, accountLinks = true, search = true, colorScheme = "auto" }: Partial<MagazineOptions> = {}) => defineTheme<MagazineOptions>({
   name: "magazine",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-magazine/render",
   requires: { plugins: ["blog"] },

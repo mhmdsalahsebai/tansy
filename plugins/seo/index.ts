@@ -27,9 +27,9 @@ export function seo({ siteUrl, collections }: Options) {
 
   return definePlugin({
     name: "seo",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     options: { schema: options, value: { siteUrl, collections } },
     messages,
     fields: [

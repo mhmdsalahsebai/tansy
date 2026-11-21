@@ -70,7 +70,7 @@ const archive = (filter?: string): Record<string, ThemeQuery> => ({
  */
 export const halo = ({ tagline, showDates = true, relativeDates = true, accountLinks = true, search = true, colorScheme = "auto" }: Partial<HaloOptions> = {}) => defineTheme<HaloOptions>({
   name: "halo",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-halo/render",
   requires: { plugins: ["blog"] },

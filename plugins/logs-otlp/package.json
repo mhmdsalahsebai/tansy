@@ -1,6 +1,6 @@
 {
   "name": "@tansy/logs-otlp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sends the audit log and request log over OpenTelemetry (OTLP/HTTP), to Grafana, Honeycomb, Datadog, Axiom or any collector.",
   "keywords": [
     "tansy",
@@ -26,6 +26,6 @@
     "README.md"
   ],
   "peerDependencies": {
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   }
 }

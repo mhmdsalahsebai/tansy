@@ -1,6 +1,6 @@
 {
   "name": "@tansy/multi-tenant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Many tenants on one tansy: organizations with their own members, roles, domains, content, files and limits.",
   "keywords": [
     "tansy",
@@ -30,7 +30,7 @@
   "peerDependencies": {
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "better-auth": "^1.7.18",

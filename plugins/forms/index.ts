@@ -118,9 +118,9 @@ export function forms(options: FormsOptions = {}) {
   return definePlugin({
     name: "forms",
     messages,
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/forms/admin", render: "@tansy/forms/render" },
     options: { schema: optionsSchema, value },
     settings: {

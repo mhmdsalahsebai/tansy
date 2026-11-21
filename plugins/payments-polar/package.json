@@ -1,6 +1,6 @@
 {
   "name": "@tansy/payments-polar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Polar for @tansy/payments, through better-auth's Polar plugin.",
   "keywords": [
     "tansy",
@@ -24,8 +24,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/payments": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/payments": "^0.1.1",
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "@polar-sh/better-auth": "^2.1.4",

@@ -1,6 +1,6 @@
 {
   "name": "@tansy/forms",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Contact forms and other forms for tansy: built from field blocks, kept as submissions, emailed to you, and guarded against spam.",
   "keywords": [
     "tansy",
@@ -32,7 +32,7 @@
   "peerDependencies": {
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

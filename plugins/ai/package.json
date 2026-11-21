@@ -1,6 +1,6 @@
 {
   "name": "@tansy/ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An AI assistant for tansy on the Vercel AI SDK: chat that can create and edit content, filling forms, and writing fields, with any model provider. Add a provider package, such as @tansy/ai-openai.",
   "keywords": [
     "tansy",
@@ -34,7 +34,7 @@
   "peerDependencies": {
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.176",

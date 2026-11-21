@@ -73,9 +73,9 @@ export function captcha(options: CaptchaOptions) {
 
   return definePlugin({
     name: "captcha",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     options: { schema: optionsSchema, value },
     messages: mergeMessagesByLanguage(messages, ...providers.map((provider) => provider.messages)),
     settings: { fields: [...sharedSettings(value, providers), ...providerSettings(providers)] },

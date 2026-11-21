@@ -13,7 +13,7 @@ const options = z.object({ tagline: z.string().max(200).optional(), showDates: z
 /** The look of a blog: a header with a menu, a home page listing posts, its own post page, and plain pages. Archives come from the blog plugin, which this theme requires, and the post page is built from its parts. */
 export const blog = ({ tagline, showDates = true }: { tagline?: string; showDates?: boolean } = {}) => defineTheme<BlogOptions>({
   name: "blog",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-blog/render",
   requires: { plugins: ["blog"] },

@@ -41,7 +41,7 @@ const NAV: Record<string, ThemeQuery> = {
  */
 export const academy = ({ tagline, colorScheme = "auto" }: Partial<AcademyOptions> = {}) => defineTheme<AcademyOptions>({
   name: "academy",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-academy/render",
   requires: { plugins: ["lms"] },

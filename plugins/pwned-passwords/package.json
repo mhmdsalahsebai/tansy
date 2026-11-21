@@ -1,6 +1,6 @@
 {
   "name": "@tansy/pwned-passwords",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Refuses passwords found in known breaches, checked against Have I Been Pwned by hash range.",
   "keywords": [
     "tansy",
@@ -26,7 +26,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "better-auth": "^1.7.18"

@@ -214,9 +214,9 @@ export function blog(options: BlogOptions) {
 
   return definePlugin({
     name: "blog",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/blog/admin", client: "@tansy/blog/client", render: "@tansy/blog/render" },
     csp: { frame: ["https://www.youtube-nocookie.com", "https://player.vimeo.com"] },
     options: { schema: optionsSchema, value },

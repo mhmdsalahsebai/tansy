@@ -1,6 +1,6 @@
 {
   "name": "@tansy/ai-opencode",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenCode for @tansy/ai: Claude, GPT, Gemini and open models with one OpenCode key.",
   "keywords": [
     "tansy",
@@ -24,8 +24,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/ai": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/ai": "^0.1.1",
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.105",

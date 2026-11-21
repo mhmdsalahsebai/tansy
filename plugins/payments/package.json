@@ -1,6 +1,6 @@
 {
   "name": "@tansy/payments",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sell anything on tansy: subscriptions and one-time purchases, through better-auth's payment plugins. Add a provider package, such as @tansy/payments-stripe.",
   "keywords": [
     "tansy",
@@ -34,7 +34,7 @@
     "better-auth": "^1.7.25",
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

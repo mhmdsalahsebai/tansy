@@ -31,9 +31,9 @@ export const workspacesExample = (spec: string) => {
   if (!first) throw new Error("The workspaces example needs at least one workspace, such as TANSY_EXAMPLE_WORKSPACES=alpha:ann@example.test;beta");
   return definePlugin({
     name: "workspaces",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     migrations: [{
       id: "001-role",
       up: async ({ roles }) => {

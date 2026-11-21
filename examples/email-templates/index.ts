@@ -8,7 +8,7 @@ import { definePlugin } from "tansy/plugin";
  */
 export const emailTemplates = (slug = "email-templates") => definePlugin({
   name: "email-templates",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   auth: {
     emailContent: async ({ kind, appName }, { system }) => {

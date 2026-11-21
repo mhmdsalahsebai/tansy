@@ -22,9 +22,9 @@ export function seoPlugin({ siteUrl, collections, linkTarget = "seo-targets" }: 
 
   return definePlugin({
     name: "seo",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/example-seo-plugin/admin", client: "@tansy/example-seo-plugin/client", render: "@tansy/example-seo-plugin/render" },
     options: { schema: z.object({ siteUrl: z.string(), collections: z.array(z.string().min(1)).min(1) }), value: { siteUrl, collections } },
     permissions: { "ext.seo": ["read"] },

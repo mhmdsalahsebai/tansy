@@ -354,9 +354,9 @@ export function newsletter(options: NewsletterOptions) {
 
   return definePlugin({
     name: "newsletter",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/newsletter/admin", client: "@tansy/newsletter/client", render: "@tansy/newsletter/render" },
     options: { schema: optionsSchema, value },
     messages,

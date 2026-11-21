@@ -151,9 +151,9 @@ export function payments(options: PaymentsOptions) {
   return definePlugin({
     name: "payments",
     messages: mergeMessagesByLanguage(messages, ...providers.map((provider) => provider.messages?.(siteUrl))),
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { render: "@tansy/payments/render" },
     options: { schema: optionsSchema, value },
     settings: { fields },

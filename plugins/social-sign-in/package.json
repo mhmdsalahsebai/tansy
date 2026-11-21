@@ -1,6 +1,6 @@
 {
   "name": "@tansy/social-sign-in",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sign in to tansy with Google, GitHub and other OAuth providers, each configured on the dashboard.",
   "keywords": [
     "tansy",
@@ -26,6 +26,6 @@
     "README.md"
   ],
   "peerDependencies": {
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   }
 }

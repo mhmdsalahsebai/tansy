@@ -1,6 +1,6 @@
 {
   "name": "@tansy/payments-stripe",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Stripe for @tansy/payments, through better-auth's Stripe plugin.",
   "keywords": [
     "tansy",
@@ -24,8 +24,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/payments": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/payments": "^0.1.1",
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "@better-auth/stripe": "^1.7.25",

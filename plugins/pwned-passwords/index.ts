@@ -10,7 +10,7 @@ import { messages } from "./messages";
  */
 export const pwnedPasswords = () => definePlugin({
   name: "pwned-passwords",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   messages,
   auth: {

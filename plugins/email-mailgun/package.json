@@ -1,6 +1,6 @@
 {
   "name": "@tansy/email-mailgun",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Mailgun for @tansy/email.",
   "keywords": [
     "tansy",
@@ -24,7 +24,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/email": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/email": "^0.1.1",
+    "tansy": "^0.1.1"
   }
 }

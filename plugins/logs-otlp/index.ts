@@ -84,9 +84,9 @@ export function logsOtlp(options: OtlpOptions = {}, fetcher: typeof fetch = fetc
 
   return definePlugin({
     name: NAME,
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     auth: { onAudit },
   });
 }

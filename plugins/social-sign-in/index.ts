@@ -7,7 +7,7 @@ import { definePlugin } from "tansy/plugin";
  */
 export const socialSignIn = () => definePlugin({
   name: "social-sign-in",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   auth: {
     oauthProviders: [

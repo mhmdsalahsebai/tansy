@@ -15,7 +15,7 @@ const recent = new Map<string, number>();
 /** Example of `onSignIn`: emails someone the first time they sign in from a new network. A first-ever sign-in has nothing to compare with, so it stays quiet. */
 export const signInAlerts = () => definePlugin({
   name: "sign-in-alerts",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   auth: {
     onSignIn: ({ user, ipAddress, userAgent, previous, settings, sendEmail }) => {

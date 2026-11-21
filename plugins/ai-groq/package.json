@@ -1,6 +1,6 @@
 {
   "name": "@tansy/ai-groq",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Groq for @tansy/ai.",
   "keywords": [
     "tansy",
@@ -24,8 +24,8 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/ai": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/ai": "^0.1.1",
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.84"

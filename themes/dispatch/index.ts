@@ -38,7 +38,7 @@ const archive = (filter: string): Record<string, ThemeQuery> => ({ newsletter: N
  */
 export const dispatch = ({ tagline, showDates = true, askName = false, colorScheme = "auto" }: Partial<DispatchOptions> = {}) => defineTheme<DispatchOptions>({
   name: "dispatch",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
   render: "@tansy/theme-dispatch/render",
   requires: { plugins: ["newsletter", "blog"] },

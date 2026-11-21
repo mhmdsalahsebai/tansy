@@ -1,6 +1,6 @@
 {
   "name": "@tansy/analytics-google",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Google Analytics for @tansy/analytics: the tracker on every page, and its numbers on the dashboard.",
   "keywords": [
     "tansy",
@@ -24,7 +24,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/analytics": "^0.1.0",
-    "tansy": "^0.1.0"
+    "@tansy/analytics": "^0.1.1",
+    "tansy": "^0.1.1"
   }
 }

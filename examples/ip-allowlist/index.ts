@@ -23,7 +23,7 @@ export function ipAllowlist(entries: string[], { allowUnknown = false } = {}) {
   const list = parse(entries);
   return definePlugin({
     name: "ip-allowlist",
-    version: "0.1.0",
+    version: "0.1.1",
     apiVersion: 1,
     auth: {
       guardRequest: ({ principal, ip }) => {

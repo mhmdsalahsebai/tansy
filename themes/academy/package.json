@@ -1,6 +1,6 @@
 {
   "name": "@tansy/theme-academy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A school's site for the LMS plugin: the course catalogue, course pages, and plans that open courses, from the Payments plugin.",
   "keywords": [
     "tansy-theme"
@@ -27,10 +27,10 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@tansy/lms": "^0.1.0",
+    "@tansy/lms": "^0.1.1",
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

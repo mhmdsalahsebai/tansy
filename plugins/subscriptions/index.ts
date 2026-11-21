@@ -53,10 +53,10 @@ async function endExpiredGrants(context: ExtensionContext) {
 export function subscriptions() {
   return definePlugin({
     name: "subscriptions",
-    version: "0.1.0",
+    version: "0.1.1",
     messages,
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/subscriptions/admin" },
     permissions: { "ext.subscriptions": ["manage"] },
     jobs: [{ name: "subscriptions-end-grants", cron: "*/15 * * * *", handler: endExpiredGrants }],

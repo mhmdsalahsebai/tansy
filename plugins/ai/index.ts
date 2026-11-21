@@ -251,10 +251,10 @@ export function ai(options: AiOptions) {
 
   return definePlugin({
     name: "ai",
-    version: "0.1.0",
+    version: "0.1.1",
     messages: mergeMessagesByLanguage(messages, ...providers.map((provider) => provider.messages), modelWords(providers)),
     apiVersion: 1,
-    requires: { cms: "^0.1.0" },
+    requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/ai/admin", client: "@tansy/ai/client" },
     options: { schema: optionsSchema, value },
     settings: { fields },

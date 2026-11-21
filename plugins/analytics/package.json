@@ -1,6 +1,6 @@
 {
   "name": "@tansy/analytics",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Page views for tansy: counted by the CMS with no cookies and nothing personal kept, or sent to Plausible, Umami, Google Analytics, Fathom or Matomo through a provider package, with the numbers on the dashboard.",
   "keywords": [
     "tansy",
@@ -32,7 +32,7 @@
   "peerDependencies": {
     "next": "^16.4.6",
     "react": "^19.3.0",
-    "tansy": "^0.1.0"
+    "tansy": "^0.1.1"
   },
   "dependencies": {
     "zod": "^4.6.7"

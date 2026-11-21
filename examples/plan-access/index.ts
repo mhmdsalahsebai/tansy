@@ -33,9 +33,9 @@ async function plan(context: PluginMigrationContext, name: string, priceId: stri
  */
 export const planAccessExample = () => definePlugin({
   name: "plan-access-example",
-  version: "0.1.0",
+  version: "0.1.1",
   apiVersion: 1,
-  requires: { cms: "^0.1.0" },
+  requires: { cms: "^0.1.1" },
   migrations: [{
     id: "001-demo",
     up: async (context) => {
