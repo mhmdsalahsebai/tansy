@@ -1,15 +1,17 @@
 name: Demo reset
-# Puts the live demo at https://tansy-demo.vercel.app back to its baseline every hour, so visitors
-# signed in with the shared account can change anything and the next ones still find it whole.
+# Puts the live demos back to their baselines every hour, so visitors signed in with the shared
+# account can change anything and the next ones still find it whole: the general demo at
+# https://tansy-demo.vercel.app (demo/) and the shop demo (demo-shop/).
 #
-# The baseline is a second database, demo_baseline, on the demo's own Postgres server. A reset copies
+# Each demo's baseline is a second database, demo_baseline, on that demo's own Postgres server. A reset copies
 # it over the live database with tansy backup and tansy restore; "baseline", run by hand, copies the
 # live database into it instead. Run that after changing the demo's content or roles on purpose.
 #
 # Uploaded files are left alone: the demo's role can't change or delete files, so the baseline's
 # are always still there.
 #
-# One repository secret: DEMO_DATABASE_URL, the demo's Postgres address from Vercel.
+# One repository secret per demo, its Postgres address from Vercel: DEMO_DATABASE_URL for the general
+# demo, DEMO_SHOP_DATABASE_URL for the shop. A demo whose secret isn't set is skipped.
 on:
   schedule:
     - cron: "0 * * * *"
@@ -20,11 +22,11 @@ on:
         type: choice
         options: [reset, baseline]
         default: reset
-
-# Never a baseline and a reset at once.
-concurrency:
-  group: demo-reset
-  cancel-in-progress: false
+      demo:
+        description: which demo
+        type: choice
+        options: [all, main, shop]
+        default: all
 
 permissions:
   contents: read
@@ -33,22 +35,51 @@ jobs:
   demo:
     # Only the real repository holds the secret; forks would fail every hour.
     if: github.repository == 'mhmdsalahsebai/tansy'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - demo: main
+            secret: DEMO_DATABASE_URL
+          - demo: shop
+            secret: DEMO_SHOP_DATABASE_URL
+    # Never a baseline and a reset of the same demo at once.
+    concurrency:
+      group: demo-reset-${{ matrix.demo }}
+      cancel-in-progress: false
+    name: ${{ matrix.demo }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       TASK: ${{ github.event_name == 'schedule' && 'reset' || inputs.task }}
-      DEMO_DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+      DEMO_DATABASE_URL: ${{ secrets[matrix.secret] }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v7
+      # Every later step runs only for the demo chosen, and only when its secret is set, so a demo
+      # that isn't deployed yet doesn't fail every hour.
+      - name: Is this demo set up
+        env:
+          CHOSEN: ${{ inputs.demo }}
+        run: |
+          if [ -n "$CHOSEN" ] && [ "$CHOSEN" != all ] && [ "$CHOSEN" != "${{ matrix.demo }}" ]; then
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          elif [ -z "$DEMO_DATABASE_URL" ]; then
+            echo "::notice::${{ matrix.secret }} isn't set, so the ${{ matrix.demo }} demo is skipped."
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          fi
+      - if: env.SKIP != 'true'
+        uses: actions/checkout@v4
+      - if: env.SKIP != 'true'
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - if: env.SKIP != 'true'
+        run: npm ci
 
       # The archive only passes between two steps of this job, so its key and the secrets the CLI
       # checks are made up here, the same for both. The app's own secrets never leave Vercel.
       - name: Addresses and throwaway keys
+        if: env.SKIP != 'true'
         run: |
           # pg_dump needs a direct connection, not Neon's pooler.
           live="$(sed -E 's/-pooler\././' <<< "$DEMO_DATABASE_URL")"
@@ -64,6 +95,7 @@ jobs:
 
       # pg_dump, pg_restore and psql must match the server's major version.
       - name: Postgres client tools
+        if: env.SKIP != 'true'
         run: |
           major="$(psql "$LIVE_URL" -Atc 'SHOW server_version_num' | cut -c1-2)"
           echo "Postgres server $major"
@@ -72,7 +104,7 @@ jobs:
           echo "TANSY_PG_BIN=/usr/lib/postgresql/$major/bin" >> "$GITHUB_ENV"
 
       - name: Save the baseline
-        if: env.TASK == 'baseline'
+        if: env.SKIP != 'true' && env.TASK == 'baseline'
         run: |
           exists="$(psql "$LIVE_URL" -Atc "SELECT 1 FROM pg_database WHERE datname = 'demo_baseline'")"
           [ "$exists" = 1 ] || psql "$LIVE_URL" -c 'CREATE DATABASE demo_baseline'
@@ -80,7 +112,7 @@ jobs:
           DATABASE_URL="$BASELINE_URL" npm run tansy -w tansy-starter -- restore "$RUNNER_TEMP/demo.tar.gz.enc" --no-files --yes --force --no-safety-copy
 
       - name: Restore the baseline
-        if: env.TASK == 'reset'
+        if: env.SKIP != 'true' && env.TASK == 'reset'
         run: |
           # An empty or missing baseline would wipe the demo, so it has to hold collections first.
           collections="$(psql "$BASELINE_URL" -Atc 'SELECT count(*) FROM "Collection"')"

@@ -1,0 +1,32 @@
+{
+  "name": "demo-shop",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "tansy": "tansy"
+  },
+  "dependencies": {
+    "@tansy/payments": "^0.1.0",
+    "@tansy/payments-commet": "^0.1.0",
+    "@tansy/payments-creem": "^0.1.0",
+    "@tansy/payments-dodo": "^0.1.0",
+    "@tansy/payments-polar": "^0.1.0",
+    "@tansy/payments-stripe": "^0.1.0",
+    "@tansy/shop": "^0.1.0",
+    "@tansy/storage-vercel-blob": "^0.1.0",
+    "@tansy/theme-storefront": "^0.1.0",
+    "next": "^16.4.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tansy": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^6.0.3"
+  }
+}

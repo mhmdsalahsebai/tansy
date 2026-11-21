@@ -23,6 +23,20 @@
         "3100"
       ],
       "port": 3100
+    },
+    {
+      "name": "demo-shop",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "demo-shop",
+        "run",
+        "dev",
+        "--",
+        "-p",
+        "3200"
+      ],
+      "port": 3200
     }
   ]
 }

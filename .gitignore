@@ -76,3 +76,4 @@ cms-before-restore-*.tar.gz*
 # internal design notes and roadmaps. The contributor rules are tracked, in docs/contributing/
 /internal/
 .demo-admin*
+.demo-shop-admin*
