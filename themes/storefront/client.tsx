@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { addToCart, type VariantOption } from "@tansy/shop/react";
 import { apiPath, contentLocale, sitePath, siteWords, type SiteWords } from "tansy/react";
 import { Bag, Check, ChevronLeft, ChevronRight, Close, Minus, Plus, Search, Send } from "./icons";
-import { cx, money, text } from "./lib";
+import { cardAnchor, cx, money, text } from "./lib";
 
 /**
  * The theme's parts that need the browser. Each takes `pickWords(words, "storefront")` from a
@@ -39,42 +40,158 @@ const pathOf = (href: string) => {
 };
 
 /**
- * Picks the picture that flies when a page is left for a product. Pictures that lead to a product
- * carry `data-sf-vt` (the name) and `data-sf-vt-href`. When the same product shows twice, such as
- * in the spotlight and the grid, the one pressed (or else the one most in view) takes the name and
- * the others give it up, since a page may use a name once. The new page names its picture itself.
+ * Before a page is left for a product, picks the picture that flies. Pictures that lead to a
+ * product carry `data-sf-vt` (the name) and `data-sf-vt-href`. When the same product shows twice,
+ * such as in the spotlight and the grid, the one pressed (or else the one most in view) takes the
+ * name and the others give it up, since a page may use a name once. The new page names its own.
+ */
+function nameFlyingPicture(to: string, pressed: Element | null) {
+  const path = pathOf(to);
+  const pictures = [...document.querySelectorAll<HTMLElement>("[data-sf-vt-href]")].filter((picture) => pathOf(picture.dataset.sfVtHref ?? "") === path);
+  if (!pictures.length) return;
+  const near = (picture: HTMLElement) => pressed && picture.closest("li, article, [data-sf-vt-scope]")?.contains(pressed);
+  const inView = (picture: HTMLElement) => {
+    const box = picture.getBoundingClientRect();
+    return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0)) * Math.max(0, Math.min(box.right, window.innerWidth) - Math.max(box.left, 0));
+  };
+  const chosen = pictures.find(near) ?? pictures.reduce((best, picture) => (inView(picture) > inView(best) ? picture : best));
+  const name = chosen.dataset.sfVt ?? "";
+  for (const other of document.querySelectorAll<HTMLElement>("[data-sf-vt]")) {
+    if (other !== chosen && other.style.viewTransitionName === name) other.style.viewTransitionName = "none";
+  }
+  chosen.style.viewTransitionName = name;
+}
+
+/** Set once a link here has been followed without loading a new document. */
+let softNavigated = false;
+
+/** Ends the view transition of a move between pages, once the new page is in. Set while one runs. */
+let pageIn: (() => void) | null = null;
+
+/**
+ * The link a click follows inside the app, or null when the browser should load it itself: a
+ * new tab, a download, another site, the API (files), another language, or a jump on this page.
+ */
+function appLink(event: globalThis.MouseEvent): HTMLAnchorElement | null {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
+  const link = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+  if (!link || !link.closest(".sf-shell")) return null;
+  if ((link.target && link.target !== "_self") || link.hasAttribute("download") || link.hasAttribute("hreflang") || link.relList.contains("external")) return null;
+  if (link.origin !== location.origin || link.pathname.startsWith(apiPath("/"))) return null;
+  if (link.pathname === location.pathname && link.search === location.search && link.hash) return null;
+  return link;
+}
+
+/**
+ * The Next router, or null where a template is rendered outside one (as tests render them), whose
+ * links then load pages as plain links do. `useRouter` throws there, but always reads its context,
+ * so catching keeps the hooks in the same order.
+ */
+function useAppRouter() {
+  try {
+    return useRouter();
+  } catch {
+    return null;
+  }
+}
+
+/** How long the old page may stay frozen waiting for the new one before it's let go without an animation. */
+const PAGE_WAIT_MS = 3000;
+
+/**
+ * Moves to `href` through the Next router inside a view transition: the browser takes the old page,
+ * the router swaps in the new one without loading a document, and `PageTransition` ends the update
+ * once it's in, so the browser animates from one to the other. styles.css says how.
+ */
+function moveTo(router: ReturnType<typeof useRouter>, href: string) {
+  if (typeof document.startViewTransition !== "function" || reducedMotion() || document.visibilityState !== "visible") return router.push(href);
+  pageIn?.();
+  let pushed = false;
+  const push = () => {
+    if (pushed) return;
+    pushed = true;
+    router.push(href);
+  };
+  const update = () => new Promise<void>((resolve) => {
+    const timer = setTimeout(() => { pageIn = null; resolve(); }, PAGE_WAIT_MS);
+    pageIn = () => { clearTimeout(timer); pageIn = null; resolve(); };
+    push();
+  });
+  let transition: ViewTransition;
+  try {
+    transition = document.startViewTransition({ update, types: ["sf-page"] });
+  } catch {
+    transition = document.startViewTransition(update);
+  }
+  // The browser takes the old page on its next frame. Where none comes, the move goes without the animation.
+  setTimeout(() => {
+    if (pushed) return;
+    transition.skipTransition();
+    push();
+  }, 1000);
+}
+
+/**
+ * Follows the theme's links inside the app, through the Next router, so moving between pages swaps
+ * the page without loading a new document, each move inside a view transition (`moveTo`): the
+ * header holds still, the picture flies and the chip and tab dot slide. Pages loaded in full
+ * (another language, a shared link) still get the cross-document transition the layout switches
+ * on, named here on `pageswap`.
+ * Rendered by the layout on every page, it also leaves the note the back arrow reads.
  */
 export function ViewTransitionNames() {
+  const router = useAppRouter();
+  useCameFromNote();
   useEffect(() => {
     let pressed: Element | null = null;
+    const prefetched = new Set<string>();
     const press = (event: PointerEvent) => { pressed = event.target instanceof Element ? event.target : null; };
+    if (!router) return;
+    const hover = (event: globalThis.MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link || link.origin !== location.origin || link.pathname.startsWith(apiPath("/")) || prefetched.has(link.href)) return;
+      prefetched.add(link.href);
+      router.prefetch(link.href);
+    };
+    const click = (event: globalThis.MouseEvent) => {
+      const link = appLink(event);
+      if (!link) return;
+      event.preventDefault();
+      if (!reducedMotion()) nameFlyingPicture(link.href, pressed ?? (event.target as Element));
+      softNavigated = true;
+      const href = link.pathname + link.search + link.hash;
+      // The page already showing: the router refreshes it in place, with nothing to animate.
+      if (link.pathname === location.pathname && link.search === location.search) router.push(href);
+      else moveTo(router, href);
+    };
     const swap = (event: Event) => {
       const { viewTransition, activation } = event as PageSwap;
       const to = activation?.entry?.url;
-      if (!viewTransition || !to) return;
-      const path = pathOf(to);
-      const pictures = [...document.querySelectorAll<HTMLElement>("[data-sf-vt-href]")].filter((picture) => pathOf(picture.dataset.sfVtHref ?? "") === path);
-      if (!pictures.length) return;
-      const near = (picture: HTMLElement) => pressed && picture.closest("li, article, [data-sf-vt-scope]")?.contains(pressed);
-      const inView = (picture: HTMLElement) => {
-        const box = picture.getBoundingClientRect();
-        return Math.max(0, Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0)) * Math.max(0, Math.min(box.right, window.innerWidth) - Math.max(box.left, 0));
-      };
-      const chosen = pictures.find(near) ?? pictures.reduce((best, picture) => (inView(picture) > inView(best) ? picture : best));
-      const name = chosen.dataset.sfVt ?? "";
-      for (const other of document.querySelectorAll<HTMLElement>("[data-sf-vt]")) {
-        if (other !== chosen && other.style.viewTransitionName === name) other.style.viewTransitionName = "none";
-      }
-      chosen.style.viewTransitionName = name;
+      if (viewTransition && to) nameFlyingPicture(to, pressed);
     };
     window.addEventListener("pointerdown", press, true);
+    document.addEventListener("mouseover", hover);
+    document.addEventListener("click", click);
     window.addEventListener("pageswap", swap);
     return () => {
       window.removeEventListener("pointerdown", press, true);
+      document.removeEventListener("mouseover", hover);
+      document.removeEventListener("click", click);
       window.removeEventListener("pageswap", swap);
     };
-  }, []);
+  }, [router]);
   return null;
+}
+
+/**
+ * Wraps the page beneath the header and tells a running move between pages (`moveTo`) that the new
+ * page is in, as soon as the router has put it in the document, so the browser animates to it.
+ */
+export function PageTransition({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const search = useSearchParams()?.toString();
+  useLayoutEffect(() => { pageIn?.(); }, [pathname, search]);
+  return children;
 }
 
 const thumb = (fileId: string, size: "100x100" | "300x300" = "100x100") => apiPath(`/files/${encodeURIComponent(fileId)}?thumb=${size}`);
@@ -492,6 +609,63 @@ export function BuyBox({ product, price, compareAt, stock, variants = [], curren
 /* ------------------------------------------------------------------- share */
 
 /** The browser's share sheet where there is one, and copying the address where there isn't. */
+const CAME_FROM = "sf-came-from";
+
+/** The page a link on this site was followed from, and where it led. */
+interface CameFrom { from: string; to: string }
+
+const withoutHash = (href: string) => href.split("#")[0];
+
+/** Where the visitor followed a link here from, when this page is where it led. */
+function cameFrom(): string | null {
+  try {
+    const kind = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type;
+    const note = JSON.parse(sessionStorage.getItem(CAME_FROM) ?? "null") as CameFrom | null;
+    if ((kind !== "navigate" && !softNavigated) || !note || withoutHash(note.to) !== withoutHash(location.href)) return null;
+    const from = new URL(note.from);
+    return from.origin === location.origin && withoutHash(from.href) !== withoutHash(location.href) ? withoutHash(from.href) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Leaves the note `cameFrom` reads whenever a link to another page here is followed. Rendered by the layout, on every page. */
+function useCameFromNote() {
+  useEffect(() => {
+    const note = (event: globalThis.MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link || link.origin !== location.origin || link.target === "_blank" || link.hasAttribute("download")) return;
+      try {
+        sessionStorage.setItem(CAME_FROM, JSON.stringify({ from: location.href, to: link.href } satisfies CameFrom));
+      } catch {
+        // Storage can be off. The back arrow then follows its own link.
+      }
+    };
+    document.addEventListener("click", note, true);
+    return () => document.removeEventListener("click", note, true);
+  }, []);
+}
+
+/**
+ * A back arrow that returns to the page the visitor came from, as an app's does. It goes there as
+ * a new move forward rather than back through history, so it gets the same transition as any link,
+ * and adds `#` and the card of `card`, the product being left: the browser scrolls that card into
+ * view as the page shows, so the list comes back where the visitor was and the product's
+ * picture flies back into its own card. The address is worked out once the page has loaded, before
+ * this page's own links leave a note of their own. Opened from a shared link or a new tab, it is
+ * `href`.
+ */
+export function BackLink({ href, card, className, children }: { href: string; card?: number | string; className?: string; children: ReactNode }) {
+  const [target, setTarget] = useState(href);
+  const pathname = usePathname();
+  useEffect(() => {
+    const from = cameFrom();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sessionStorage only exists in the browser
+    setTarget(from ? (card === undefined ? from : `${from}#${cardAnchor(card)}`) : href);
+  }, [card, href, pathname]);
+  return <a href={target} className={className}>{children}</a>;
+}
+
 export function ShareButton({ title, words, className }: { title: string; words?: SiteWords; className?: string }) {
   const { t } = siteWords(words);
   const [copied, setCopied] = useState(false);

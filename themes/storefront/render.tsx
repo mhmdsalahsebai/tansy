@@ -5,10 +5,10 @@ import { Cart as ShopCart, CartLink, OrderReturn, type VariantOption } from "@ta
 import { OrderList } from "@tansy/shop/render";
 import { Menu, Pager, pickWords, RichText, StreamField } from "tansy/react";
 import { defineThemeComponents, type LayoutProps, type SiteList, type SiteRecord, type TemplateProps } from "tansy/theme";
-import { BuyBox, ProductGallery, ProductSearch, ShareButton, ViewTransitionNames } from "./client";
+import { BackLink, BuyBox, PageTransition, ProductGallery, ProductSearch, ShareButton, ViewTransitionNames } from "./client";
 import { ArrowUpRight, Bag, Bars, BookOpen, ChevronLeft, Download, Globe, Lock, Search, Store, User } from "./icons";
 import type { StorefrontOptions } from "./index";
-import { cx, fileIds, ids, money, num, text } from "./lib";
+import { cardAnchor, cx, fileIds, ids, money, num, text } from "./lib";
 import { messages } from "./messages";
 import "./theme.css";
 
@@ -176,7 +176,7 @@ function Layout(props: LayoutProps<StorefrontOptions>) {
         </div>
       </header>
 
-      <div id="sf-content" className="sf:flex-1">{children}</div>
+      <div id="sf-content" className="sf:flex-1"><PageTransition>{children}</PageTransition></div>
       {/* Small screens: the menu, cart and orders move to the bar at the bottom. */}
       <TabBar props={props} menu={hasMenu ? menu : null} current={TAB_OF[page]} />
 
@@ -228,7 +228,7 @@ function ProductCard({ product, categories, props, eager = false }: { product: S
   const subtitle = text(category?.name) || text(product.summary);
   const currency = currencyOf(props.data);
   return (
-    <article className="sf-press sf:group sf:relative sf:flex sf:flex-col sf:gap-4" lang={typeof product.locale === "string" ? product.locale : undefined}>
+    <article id={cardAnchor(product.id)} className="sf-press sf-card sf:group sf:relative sf:flex sf:flex-col sf:gap-4" lang={typeof product.locale === "string" ? product.locale : undefined}>
       <div className="sf:relative sf:isolate sf:grid sf:aspect-[4/5] sf:place-items-center sf:overflow-hidden sf:rounded-[3rem] sf:bg-surface sf:transition-shadow sf:duration-300 sf:group-hover:shadow-card">
         <span aria-hidden="true" className="sf:absolute sf:inset-x-[12%] sf:top-[14%] sf:-z-10 sf:aspect-square sf:rounded-full sf:bg-page/60 sf:blur-xl" />
         {image
@@ -374,9 +374,9 @@ function Category(props: Props) {
   return (
     <main>
       <header className={cx(container, "sf:flex sf:flex-col sf:items-start sf:gap-4 sf:pt-10 sf:pb-10 sf:lg:pt-14")}>
-        <a href={shopHref(props)} className="sf:inline-flex sf:items-center sf:gap-1 sf:text-sm sf:font-medium sf:text-muted sf:no-underline sf:hover:text-ink">
+        <BackLink href={shopHref(props)} className="sf:inline-flex sf:items-center sf:gap-1 sf:text-sm sf:font-medium sf:text-muted sf:no-underline sf:hover:text-ink">
           <ChevronLeft className="sf:size-4 sf:rtl:-scale-x-100" />{t("storefront.back")}
-        </a>
+        </BackLink>
         <h1 className="sf:text-5xl sf:font-semibold sf:tracking-tight sf:text-ink sf:sm:text-6xl">{text(record.name)}</h1>
         {text(record.description) && <p className="sf:max-w-2xl sf:text-lg sf:text-muted">{text(record.description)}</p>}
       </header>
@@ -408,7 +408,7 @@ function Product(props: Props) {
     <main className={cx(container, "sf:pt-6 sf:lg:pt-10")}>
       <div className="sf:mb-6 sf:flex sf:items-center sf:justify-between sf:gap-4">
         <nav aria-label={t("storefront.back")} className="sf:flex sf:min-w-0 sf:items-center sf:gap-3">
-          <a href={shopHref(props)} className={iconButton}><ChevronLeft className="sf:size-5 sf:rtl:-scale-x-100" /><span className="sf:sr-only">{t("storefront.back")}</span></a>
+          <BackLink href={shopHref(props)} card={record.id} className={iconButton}><ChevronLeft className="sf:size-5 sf:rtl:-scale-x-100" /><span className="sf:sr-only">{t("storefront.back")}</span></BackLink>
           {category && hrefOf(category, props) && <a href={hrefOf(category, props)} className="sf:hidden sf:truncate sf:text-sm sf:font-medium sf:text-muted sf:no-underline sf:hover:text-ink sf:sm:inline">{text(category.name)}</a>}
         </nav>
         <ShareButton title={text(record.title)} words={forClient(words)} className={iconButton} />
@@ -599,7 +599,7 @@ function CartPage(props: Props) {
       <PageHeading
         title={text(record?.title) || t("shop.yourCart")}
         record={record}
-        back={<a href={shopHref(props)} className="sf:inline-flex sf:items-center sf:gap-1 sf:text-sm sf:font-medium sf:text-muted sf:no-underline sf:hover:text-ink"><ChevronLeft className="sf:size-4 sf:rtl:-scale-x-100" />{t("storefront.back")}</a>}
+        back={<BackLink href={shopHref(props)} className="sf:inline-flex sf:items-center sf:gap-1 sf:text-sm sf:font-medium sf:text-muted sf:no-underline sf:hover:text-ink"><ChevronLeft className="sf:size-4 sf:rtl:-scale-x-100" />{t("storefront.back")}</BackLink>}
       />
       <div className="sf-cart"><ShopCart words={words ? pickWords(words, "shop") : undefined} /></div>
     </main>

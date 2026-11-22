@@ -1657,6 +1657,9 @@ body:has(.site-root[data-theme="storefront"]) {
   scrollbar-width: none;
   overscroll-behavior-x: contain;
 }
+.sf-card {
+  scroll-margin-block: 30dvh;
+}
 .sf-chips::-webkit-scrollbar, .sf-track::-webkit-scrollbar {
   display: none;
 }

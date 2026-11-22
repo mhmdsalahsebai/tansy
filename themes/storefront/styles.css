@@ -170,6 +170,8 @@ body:has(.site-root[data-theme="storefront"]) { margin: 0; }
 .sf-shell :where(.sf-press, .sf-tab) { transition-property: transform, color; transition-duration: 0.15s; }
 .sf-shell :where(.sf-press, .sf-tab):active { transform: scale(0.97); }
 .sf-chips, .sf-track { scrollbar-width: none; overscroll-behavior-x: contain; }
+/* A back arrow returns to a list at a product's card: it lands a third of the way down, not under the header. */
+.sf-card { scroll-margin-block: 30dvh; }
 .sf-chips::-webkit-scrollbar, .sf-track::-webkit-scrollbar { display: none; }
 .sf-chips { scroll-snap-type: x proximity; }
 .sf-chips > ul > li, .sf-chips > li { scroll-snap-align: start; scroll-margin-inline: var(--site-space-gutter); }

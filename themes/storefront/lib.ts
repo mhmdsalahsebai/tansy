@@ -16,3 +16,6 @@ export function money(formatNumber: TemplateProps["formatNumber"], amount: numbe
     return `${amount.toFixed(2)} ${currency.toUpperCase()}`;
   }
 }
+
+/** The id of a product's card in a list, which a back arrow returns to. */
+export const cardAnchor = (id: number | string) => `sf-item-${id}`;

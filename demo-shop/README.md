@@ -14,10 +14,13 @@ What a visitor can try:
   `/orders`.
 - The Readers' Club at `/library`: a membership whose members read some books' digital editions for
   free. Only members can open those files. Printed books are still bought.
+- English and Arabic: every book, shelf and page has an Arabic translation at `/ar`, right to left,
+  with a language switcher in the header. Prices, stock and files are shared between the two.
 - Shipping by zone: free in the US over $50, in Europe over $80, a flat rate everywhere else.
 - In the dashboard: the Shop overview (orders, revenue, what to ship, low stock), orders in every
   state with Mark shipped and Mark delivered, products and their variants, Payments settings, the
-  Readers' Club plan and its access, Library files, and Subscriptions, which gives free memberships.
+  Readers' Club plan and its access, Library files, Languages and each record's translations, and
+  Subscriptions, which gives free memberships.
 
 ## Running it yourself
 

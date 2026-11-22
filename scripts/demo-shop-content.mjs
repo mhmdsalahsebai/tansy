@@ -5,7 +5,9 @@
  * (a PDF, nothing to post) and both (the printed copy with its PDF). A Readers' Club plan opens the
  * digital editions of some of them in the library at /library, through the Subscriptions plugin.
  * Also categories, a sale, a sold-out book, low stock, shipping zones, the menu, the shop's and the
- * library's words, and orders in every state so the Shop overview has something to show.
+ * library's words, and orders in every state so the Shop overview has something to show. The store
+ * is in English and Arabic: the shop's, library's and membership's collections are localized, and
+ * every book, shelf, page and the menu has an Arabic translation at /ar.
  *
  * Every book, author and line in it is made up for the demo.
  *
@@ -21,7 +23,7 @@
  * "baseline" for the shop demo, or the next reset puts back what this changed.
  *
  * Safe to run again: categories and books are matched by slug, zones, access and plans by name, and
- * only what is missing is added. Orders are added only while none has been paid. Covers and PDFs are
+ * only what is missing is added. Arabic translations are written again each run. Orders are added only while none has been paid. Covers and PDFs are
  * made here, so nothing is downloaded.
  */
 import { readFileSync } from "node:fs";
@@ -141,6 +143,16 @@ const CATEGORIES = [
   ["children", "Children's", "Picture books and first chapters, for reading aloud."],
 ];
 
+/** Each shelf in Arabic, by slug: its name and description. */
+const CATEGORIES_AR = {
+  fiction: ["روايات", "روايات تضيع فيها، من ملاحم العائلات إلى البلدات الصغيرة الغريبة."],
+  mystery: ["غموض", "غرف موصدة وقضايا باردة ومحققون لا ينامون."],
+  "science-fiction": ["خيال علمي", "محطات بعيدة ومستقبل قريب وآلات لها آراؤها."],
+  cookery: ["طبخ", "كتب لسطح المطبخ، ولا بأس ببعض البقع."],
+  essays: ["مقالات وشعر", "نصوص قصيرة للحافلة والحمّام والدقائق العشر قبل النوم."],
+  children: ["أطفال", "كتب مصوّرة وفصول أولى للقراءة بصوت عالٍ."],
+};
+
 const CLUB = "Readers' Club library";
 
 /**
@@ -167,6 +179,70 @@ const BOOKS = [
   { slug: "rivers-remember", title: "Rivers Remember", author: "Sami Oduya", summary: "Poems about the rivers of one long walk, in paperback with its PDF.", price: 15, stock: 20, categories: ["essays"], format: "both", color: "#2f6690", cover: ["Rivers", "Remember"], opening: ["The river does not forget the rain,", "it only carries it somewhere else."] },
   { slug: "atlas-of-invented-cities", title: "Atlas of Invented Cities", author: "Ines Varga", summary: "Thirty cities that never were, drawn and described. A large hardcover with its PDF, on sale.", price: 36, compareAtPrice: 45, stock: 9, categories: ["fiction"], format: "both", color: "#9c4f2e", cover: ["Atlas of", "Invented", "Cities"], opening: ["Merrow is built on the backs of sleeping whales.", "Its people speak softly, and move house often."] },
 ];
+
+/** Each book in Arabic, by slug: its title, author and summary. */
+const BOOKS_AR = {
+  "the-lantern-keeper": {
+    "title": "حارس الفانوس",
+    "author": "مارا إليسون",
+    "summary": "منارة وأخ مفقود وأربعون شتاءً من الرسائل التي لم يرسلها أحد. بغلاف ورقي وغلاف قماشي مقوّى."
+  },
+  "salt-and-saffron": {
+    "title": "ملح وزعفران",
+    "author": "إدريس حداد",
+    "summary": "تسعون وصفة من مطبخ عائلة على الساحل، بغلاف مقوّى ينفتح مسطّحًا. بسعر مخفّض هذا الشهر."
+  },
+  "small-hours": {
+    "title": "الساعات الصغيرة",
+    "author": "جون أوكافور",
+    "summary": "قصائد كُتبت بين منتصف الليل والفجر. نفدت الطبعة الأولى، وهكذا يبدو الكتاب النافد."
+  },
+  "the-fox-who-counted-stars": {
+    "title": "الثعلب الذي عدّ النجوم",
+    "author": "بيب لارسن",
+    "summary": "كتاب مصوّر عن ثعلب لا ينام حتى يعدّ كل النجوم. بقيت نسخ قليلة."
+  },
+  "signal-at-kepler-station": {
+    "title": "إشارة في محطة كبلر",
+    "author": "ر. ت. فانس",
+    "summary": "ستة أشخاص ومحطة واحدة ورسالة تصل قبل يوم من إرسالها. نسخة رقمية تنزّلها فور الدفع، ومجانية لأعضاء نادي القرّاء."
+  },
+  "seven-doors-in-lisbon": {
+    "title": "سبعة أبواب في لشبونة",
+    "author": "آنا كورفو",
+    "summary": "محقق وخط ترام وسبعة أبواب تُفتح على الغرفة نفسها. نسخة رقمية، وضمن نادي القرّاء."
+  },
+  "notes-on-slow-reading": {
+    "title": "ملاحظات عن القراءة البطيئة",
+    "author": "تيو ماركيتي",
+    "summary": "اثنتا عشرة مقالة قصيرة عن قراءة أقل وأفضل. نسخة رقمية، وضمن نادي القرّاء."
+  },
+  "the-clockwork-orchard": {
+    "title": "البستان الآلي",
+    "author": "لينا هارت",
+    "summary": "أشجار من نحاس وبستاني يملؤها كل صباح، والعام الذي توقفت فيه. نسخة رقمية تُشترى وحدها."
+  },
+  "the-glass-archive": {
+    "title": "الأرشيف الزجاجي",
+    "author": "نور بكري",
+    "summary": "أمينة مكتبة تجد كتابًا يسجّل ما يحدث في المكتبة قبل حدوثه بساعة. يُشحن بغلاف ورقي مع نسخته الرقمية، ويقرأ أعضاء نادي القرّاء النسخة الرقمية مجانًا."
+  },
+  "winter-in-valdane": {
+    "title": "شتاء في فالدين",
+    "author": "إليزه برانت",
+    "summary": "قرية حاصرها الثلج والعائلة التي تدير نزلها الوحيد. بغلاف ورقي أو مقوّى، ومع كلٍّ نسخته الرقمية الموجودة أيضًا في نادي القرّاء."
+  },
+  "rivers-remember": {
+    "title": "الأنهار تتذكّر",
+    "author": "سامي أودويا",
+    "summary": "قصائد عن أنهار مشيٍ طويل واحد، بغلاف ورقي مع نسختها الرقمية."
+  },
+  "atlas-of-invented-cities": {
+    "title": "أطلس المدن المتخيّلة",
+    "author": "إينيس فارغا",
+    "summary": "ثلاثون مدينة لم توجد قط، مرسومة وموصوفة. غلاف مقوّى كبير مع نسخته الرقمية، بسعر مخفّض."
+  }
+};
 
 const ZONES = [
   { name: "United States", countries: ["US"], rate: 5, freeOver: 50 },
@@ -292,6 +368,61 @@ const items = [link("shop", "Shop", "/shop"), link("fiction", "Fiction", "/shop/
 if (menu) await update("site-menu", menu.id, { items, status: "published" });
 else await create("site-menu", { items, status: "published" });
 console.log("Menu: set.");
+
+/* -------------------------------------------------------------- Arabic */
+
+// Arabic beside English: the language, then the collections visitors read marked localized (the
+// fields that differ per language; prices, stock and files stay shared), then a translation of
+// each record. Localizing is a schema change, so it happens once; translations are written each run.
+const { items: languages } = await call("GET", "/api/settings/locales");
+if (!languages.some((language) => language.code === "ar")) {
+  await call("POST", "/api/settings/locales", { code: "ar", label: "العربية", fallback: "en", direction: "rtl", public: true });
+  console.log("Language: Arabic added.");
+}
+
+const LOCALIZED = {
+  "shop-products": ["title", "summary", "description"],
+  "shop-categories": ["name", "description"],
+  "shop-store": ["title", "intro"],
+  "shop-cart": ["title", "intro"],
+  "shop-account": ["title", "intro"],
+  library: ["title", "intro"],
+  "site-menu": ["items"],
+  "payments-plans": ["title", "description"],
+  "payments-access": ["name", "description"],
+};
+const collections = await call("GET", "/api/collections");
+for (const [slug, names] of Object.entries(LOCALIZED)) {
+  const collection = (collections.items ?? collections).find((one) => one.slug === slug);
+  if (!collection) throw new Error(`There's no collection "${slug}".`);
+  const fields = collection.fields.map((field) => ({ id: field.id, name: field.name, type: field.type, config: { ...(field.config ?? {}), ...(names.includes(field.name) ? { localized: true } : {}) } }));
+  if (collection.fields.some((field) => names.includes(field.name) && field.config?.localized !== true)) await call("PUT", `/api/collections/${collection.id}/fields`, { fields });
+  if (!collection.localization?.enabled) await call("PUT", `/api/collections/${collection.id}/localization`, { enabled: true, fallback: "chain" });
+  console.log(`Localized: ${slug} (${names.join(", ")})`);
+}
+
+const inArabic = (slug, id, data) => call("PATCH", `/api/collections/${slug}/records/${id}?locale=ar`, { ...data, status: "published" });
+const one = async (slug) => (await list(slug))[0];
+
+await inArabic("shop-store", (await one("shop-store")).id, {
+  title: "كتب تانسي",
+  intro: richText("كتب مطبوعة ونسخ رقمية وكلاهما معًا، ونادي قرّاء يفتح بعضها مجانًا. متجر تجريبي: ادفع ببطاقة Stripe التجريبية 4242 4242 4242 4242 وأي تاريخ مستقبلي وأي رمز."),
+});
+await inArabic("shop-cart", (await one("shop-cart")).id, { title: "سلّتك", intro: richText("هذا عرض تجريبي: لا يُخصم شيء ولا يُرسل شيء. استخدم البطاقة التجريبية 4242 4242 4242 4242.") });
+await inArabic("shop-account", (await one("shop-account")).id, { title: "طلباتك", intro: richText("الطلبات التي قدّمتها وتتبّعها ونسخك الرقمية بعد الدفع.") });
+await inArabic("library", (await one("library")).id, {
+  title: "المكتبة",
+  intro: richText("انضم إلى نادي القرّاء واقرأ النسخة الرقمية من كل كتاب ضمن النادي مجانًا ما دمت عضوًا. الكتب المطبوعة تُشترى من المتجر، والنسخ الرقمية خارج النادي تُشترى وحدها."),
+});
+await inArabic("payments-access", club.id, { name: "مكتبة نادي القرّاء", description: "النسخ الرقمية من الكتب المعلَّمة بنادي القرّاء، للقراءة والتنزيل." });
+const [clubPlan] = await list("payments-plans", `&filter=${encodeURIComponent('name = "club"')}`);
+await inArabic("payments-plans", clubPlan.id, { title: "نادي القرّاء", description: "اقرأ النسخة الرقمية من كل كتاب في نادي القرّاء مجانًا ما دمت عضوًا. ألغِ متى شئت." });
+for (const [slug, [name, description]] of Object.entries(CATEGORIES_AR)) await inArabic("shop-categories", categoryIds.get(slug), { name, description });
+for (const [slug, { title, author, summary }] of Object.entries(BOOKS_AR)) await inArabic("shop-products", productIds.get(slug), { title, summary: `${author}. ${summary}` });
+// Each language has its own menu, whose links are typed addresses, so the Arabic one names the Arabic pages.
+const menuAr = [link("shop", "المتجر", "/ar/shop"), link("fiction", "روايات", "/ar/shop/category/fiction"), link("mystery", "غموض", "/ar/shop/category/mystery"), link("science-fiction", "خيال علمي", "/ar/shop/category/science-fiction"), link("library", "المكتبة", "/ar/library"), link("orders", "الطلبات", "/ar/orders")];
+await inArabic("site-menu", (await one("site-menu")).id, { items: menuAr });
+console.log("Arabic: every page, shelf, book and the menu translated.");
 
 // Orders in every state, placed through the shop's own checkout route as the admin, then moved on
 // as staff would. Only while none has been paid, so a second run adds no more.
