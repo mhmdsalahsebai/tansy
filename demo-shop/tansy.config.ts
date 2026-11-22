@@ -1,7 +1,7 @@
 // The shop demo: a bookstore on the published tansy packages from npm, with the storefront theme, the
 // shop plugin, Payments and Subscriptions. Books are physical, digital or both, and a Readers' Club
 // membership opens the digital editions of some of them in the library. Not part of the npm
-// workspace. The general demo is in ../demo.
+// workspace. It runs at https://tansy-demo-shop.netlify.app.
 //
 // Checkout runs in the payment provider's test mode: set STRIPE_SECRET_KEY to a test key (sk_test_…)
 // and STRIPE_WEBHOOK_SECRET, and visitors pay with the card 4242 4242 4242 4242.

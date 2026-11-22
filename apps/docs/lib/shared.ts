@@ -10,11 +10,11 @@ export const gitConfig = {
   branch: 'main',
 };
 
-/** The live demo, and the shared account anyone may sign in with. It resets every hour. */
+/** The live shop demo's dashboard, and the shared account anyone may sign in with. It resets every hour. */
 export const demo = {
-  url: 'https://tansy-demo.vercel.app/dashboard',
+  url: 'https://tansy-demo-shop.netlify.app/dashboard',
   email: 'demo@example.com',
-  password: 'explore-tansy-demo',
+  password: 'explore-tansy-shop',
 };
 
 const getImageUrl = createGetUrl(docsImageRoute);

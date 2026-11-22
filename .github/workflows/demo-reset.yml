@@ -1,7 +1,7 @@
 name: Demo reset
-# Puts the live demos back to their baselines every hour, so visitors signed in with the shared
-# account can change anything and the next ones still find it whole: the general demo at
-# https://tansy-demo.vercel.app (demo/) and the shop demo (demo-shop/).
+# Puts the live demo back to its baseline every hour, so visitors signed in with the shared account
+# can change anything and the next ones still find it whole: the shop demo (demo-shop/) at
+# https://tansy-demo-shop.netlify.app. The matrix takes one entry per demo, should another return.
 #
 # Each demo's baseline is a second database, demo_baseline, on that demo's own Postgres server. A reset copies
 # it over the live database with tansy backup and tansy restore; "baseline", run by hand, copies the
@@ -10,8 +10,8 @@ name: Demo reset
 # Uploaded files are left alone: the demo's role can't change or delete files, so the baseline's
 # are always still there.
 #
-# One repository secret per demo, its Postgres address from Vercel: DEMO_DATABASE_URL for the general
-# demo, DEMO_SHOP_DATABASE_URL for the shop. A demo whose secret isn't set is skipped.
+# One repository secret per demo, its direct (unpooled) Postgres address: DEMO_SHOP_DATABASE_URL for
+# the shop, on Neon. A demo whose secret isn't set is skipped.
 on:
   schedule:
     - cron: "0 * * * *"
@@ -25,7 +25,7 @@ on:
       demo:
         description: which demo
         type: choice
-        options: [all, main, shop]
+        options: [all, shop]
         default: all
 
 permissions:
@@ -39,8 +39,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - demo: main
-            secret: DEMO_DATABASE_URL
           - demo: shop
             secret: DEMO_SHOP_DATABASE_URL
     # Never a baseline and a reset of the same demo at once.
@@ -77,7 +75,7 @@ jobs:
         run: npm ci
 
       # The archive only passes between two steps of this job, so its key and the secrets the CLI
-      # checks are made up here, the same for both. The app's own secrets never leave Vercel.
+      # checks are made up here, the same for both. The app's own secrets never leave the host.
       - name: Addresses and throwaway keys
         if: env.SKIP != 'true'
         run: |
