@@ -288,6 +288,7 @@ export const en = {
     alreadyRegistered: "Already registered?",
     createAccount: "Create account",
     genericFailure: "Those details did not work. Check them and try again.",
+    demoFilledIn: "This is a demo. Its shared login is filled in, so just press Sign in.",
     tooManyAttempts: "Too many attempts. Try again later or reset your password.",
     linkSent: "If that address can sign in, a link is on its way.",
     codeSent: "If that address can sign in, a code is on its way.",

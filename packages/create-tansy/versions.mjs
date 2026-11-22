@@ -68,5 +68,5 @@ export const PACKAGES = {
   "@tansy/theme-halo": "0.1.1",
   "@tansy/theme-magazine": "0.1.1",
   "@tansy/theme-storefront": "0.1.1",
-  "tansy": "0.1.2",
+  "tansy": "0.1.3",
 };

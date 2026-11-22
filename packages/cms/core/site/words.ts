@@ -36,6 +36,8 @@ export const TANSY_SITE_MESSAGES: Record<string, Messages> = {
       preview: "Preview. Visitors don't see these changes.",
       exitPreview: "Exit preview",
       missingBlock: "The “{type}” block isn't available in this theme.",
+      demo: "This is a demo. Look around the dashboard too: the sign-in is filled in for you.",
+      demoDashboard: "Open the dashboard",
     },
   },
   ar: {
@@ -47,6 +49,8 @@ export const TANSY_SITE_MESSAGES: Record<string, Messages> = {
       preview: "معاينة. لا يرى الزوار هذه التغييرات.",
       exitPreview: "إنهاء المعاينة",
       missingBlock: "الكتلة «{type}» غير متاحة في هذا القالب.",
+      demo: "هذا عرض تجريبي. تجوّل في لوحة التحكم أيضًا: بيانات الدخول معبّأة لك.",
+      demoDashboard: "افتح لوحة التحكم",
     },
   },
 };

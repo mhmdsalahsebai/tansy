@@ -3,8 +3,10 @@ import { cookies, headers } from "next/headers";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { cache, type ReactNode } from "react";
 import { AdminBar } from "../components/site/AdminBar";
+import { DemoBanner } from "../components/site/DemoBanner";
 import { ThemedPage } from "../components/site/ThemedPage";
 import type { Renderers } from "../components/stream/StreamField";
+import { demoLogin } from "../core/auth/demo";
 import type { CmsConfig } from "../core/auth/extensions";
 import { resolveLanding } from "../core/authz/page";
 import { negotiateLocale } from "../core/i18n/codes";
@@ -20,7 +22,7 @@ import { stripBasePath, withBasePath } from "../core/urls/base-path";
 import type { ThemeComponents } from "../core/theme/define";
 import { installedThemes, themeNamed } from "../core/theme/installed";
 import { chosenThemeHere } from "../core/site/identity";
-import { apiPath } from "../lib/paths";
+import { adminPath, apiPath } from "../lib/paths";
 
 type PageProps = { params: Promise<{ path?: string[] }>; searchParams?: Promise<Record<string, string | string[] | undefined>> };
 
@@ -118,9 +120,12 @@ export function createSitePage(config: CmsConfig, { components, renderers }: Sit
     }
     const record = page.props.record as { id?: unknown } | null;
     const bar = await siteAdminBar({ collection: page.props.collection, recordId: typeof record?.id === "number" ? record.id : null });
+    // Someone signed in to the dashboard has the bar instead, so only visitors see the demo's banner.
+    const demo = !bar && demoLogin() !== null;
     return (
       <>
         {bar && <AdminBar bar={bar} />}
+        {demo && <DemoBanner text={page.props.t("cms.demo")} link={page.props.t("cms.demoDashboard")} href={adminPath()} direction={page.props.language?.direction} />}
         <ThemedPage theme={theme} page={page} renderers={renderers} exitPreviewHref={apiPath(`/preview/exit${scope?.basePath ? `?to=${encodeURIComponent(scope.basePath)}` : ""}`)} />
       </>
     );

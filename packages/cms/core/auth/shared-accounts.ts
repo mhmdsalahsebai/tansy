@@ -1,14 +1,18 @@
 import "server-only";
+import { demoLogin } from "./demo";
 
 /**
  * Accounts whose sign-in details are handed out, such as a public demo's. Anyone may sign in
  * as one and do what its role allows, but nobody signed in as it can change the account
  * itself, or one visitor could lock out the rest. A superadmin still manages it from Users.
+ * The demo login (TANSY_DEMO_EMAIL) is always one, since its password is on the sign-in form.
  *
  *   TANSY_SHARED_ACCOUNTS=demo@example.com,reviewer@example.com
  */
 export function sharedAccounts(): Set<string> {
-  return new Set((process.env.TANSY_SHARED_ACCOUNTS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean));
+  const listed = (process.env.TANSY_SHARED_ACCOUNTS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
+  const demo = demoLogin();
+  return new Set(demo ? [...listed, demo.email] : listed);
 }
 
 export const isSharedAccount = (email: string | null | undefined) => !!email && sharedAccounts().has(email.toLowerCase());

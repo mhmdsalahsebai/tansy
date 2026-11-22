@@ -20,8 +20,9 @@ export default function SignInForm({ next, reauth, oauthError }: { next?: string
   const { t } = useT();
   const config = useAuthConfig();
   const destination = safeNext(next);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // A public demo hands out its login, so the form starts filled in and trying the dashboard is one press.
+  const [email, setEmail] = useState(config.demo?.email ?? "");
+  const [password, setPassword] = useState(config.demo?.password ?? "");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -97,6 +98,7 @@ export default function SignInForm({ next, reauth, oauthError }: { next?: string
       title={t("auth.signInTo", { app: config.appName })}
       footer={config.signUp ? <>{t("auth.noAccount")} <Link className="cms-link" href={authPath("signup")}>{t("auth.createOne")}</Link></> : undefined}
     >
+      {config.demo && primary === "password" && <Alert kind="info">{t("auth.demoFilledIn")}</Alert>}
       {reauth && <Alert kind="info">{t("auth.reauth")}</Alert>}
       {oauthError && <Alert>{t("auth.oauthError")}</Alert>}
       {notice && <Alert kind="success">{notice}</Alert>}

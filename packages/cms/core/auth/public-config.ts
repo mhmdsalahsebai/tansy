@@ -1,6 +1,7 @@
 import "server-only";
 import { authCaptcha } from "../captcha";
 import { getCmsConfig } from "../config";
+import { demoLogin } from "./demo";
 import { authWidgets, oauthProviders } from "./extension-hooks";
 import { getRuntime } from "./instance";
 import type { AuthSettings } from "./settings";
@@ -23,6 +24,8 @@ export async function publicAuthConfig(settings: AuthSettings) {
     widgets: authWidgets(settings),
     // Public by design: the site key and script only. The secret never leaves the server.
     captcha: await authCaptcha(),
+    // Public by design on a demo, whose login is handed to every visitor. Null everywhere else.
+    demo: demoLogin(),
   };
 }
 

@@ -99,6 +99,24 @@ the read permissions: `dashboard:access`, `collection:read`, `record:list`, `rec
 `audit:read`, which shows other people's addresses and IPs, and anything with `user:`. **Require MFA
 for dashboard users** would shut a shared account out, because nobody can set up its second factor.
 
+### A public demo
+
+To make the whole instance a demo, give it the login as well:
+
+```bash
+TANSY_DEMO_EMAIL=demo@example.com
+TANSY_DEMO_PASSWORD=explore-the-demo
+```
+
+With both set, visitors who aren't signed in see a banner above every page of the site saying this
+is a demo, with a button to the dashboard, and the sign-in form starts filled in with this login, so
+trying the dashboard takes one press. The banner is in the page's language and works with any
+theme. The address is treated as a shared account whether or not it's in `TANSY_SHARED_ACCOUNTS`.
+
+The password is on the sign-in page for anyone to read, so use it only for an account whose role
+holds what you mean to hand out, as above, and never for a real one. Create the account yourself
+under **Users**: setting these variables doesn't.
+
 ## Docker
 
 The image needs no configuration: `docker run -v tansy-data:/data` keeps the SQLite database,

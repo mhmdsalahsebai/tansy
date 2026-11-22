@@ -1,6 +1,6 @@
 {
   "name": "tansy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Self-hosted, runtime-schema CMS for Next.js.",
   "keywords": ["tansy", "cms", "headless-cms", "nextjs", "self-hosted", "prisma", "react"],

@@ -15,6 +15,8 @@ export interface AuthConfig {
   widgets: EnabledWidget[];
   /** Null when no CAPTCHA is set up. */
   captcha: AuthCaptcha | null;
+  /** A public demo's login, which the sign-in form starts filled in with. Null unless this is a demo. */
+  demo?: { email: string; password: string } | null;
 }
 
 const Context = createContext<AuthConfig | null>(null);

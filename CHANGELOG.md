@@ -17,6 +17,16 @@ least one minor release deprecating it first.
 Security fixes are called out as such, with what to do about them, and can land in a minor or patch
 release when leaving something in place would keep sites exposed.
 
+## 0.1.3 — 2026-11-22
+
+### Demo mode
+
+- `TANSY_DEMO_EMAIL` and `TANSY_DEMO_PASSWORD` make an instance a public demo. Visitors who aren't
+  signed in see a banner above every site page, in the page's language and with any theme, saying
+  this is a demo, with a button to the dashboard. The sign-in form starts filled in with the demo's
+  login and says so, so trying the dashboard takes one press. The demo address is always treated as
+  a shared account. See "A public demo" in the production guide.
+
 ## 0.1.2 — 2026-11-22
 
 ### Storage
