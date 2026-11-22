@@ -137,3 +137,15 @@
   font-weight: 600;
   text-decoration: none;
 }
+
+/* Where the blog plugin's parts sit on the theme's post page: the parts bring no outer spacing of their own. */
+:where(.blog-main) .bl-meta { margin-block-end: 1rem; }
+:where(.blog-main) .bl-kicker { margin-block-end: 0.5rem; }
+:where(.blog-main) .bl-list,
+:where(.blog-main) .bl-tags { margin-block-start: 2rem; }
+:where(.blog-main) > .bl-more,
+:where(.blog-main) > .bl-comments {
+  margin-block-start: var(--site-space-section);
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--site-color-border);
+}

@@ -1,26 +1,38 @@
 /**
- * Prints one release's section of CHANGELOG.md, for a GitHub release's body:
+ * Prints one release's section of its package's changelog, for a GitHub release's body:
  *
- *   node scripts/release-notes.mjs v0.1.0 > notes.md
+ *   node scripts/release-notes.mjs @tansy/blog@0.1.2 > notes.md
+ *
+ * Each plugin and theme keeps its own CHANGELOG.md in its folder, since each moves on its own
+ * version. `tansy` and create-tansy use the one at the root, which also holds the releases from
+ * before that, when every package moved together (`v0.1.1` still finds those).
  *
  * The changelog is the one place a release is described, so the release page quotes it rather
  * than restating it. A version with no entry is a mistake worth stopping for.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { ROOT } from "./workspace-packages.mjs";
+import { publishedPackages, ROOT } from "./workspace-packages.mjs";
 
-const version = (process.argv[2] ?? "").replace(/^v/, "");
-if (!/^\d+\.\d+\.\d+/.test(version)) {
-  console.error("Usage: node scripts/release-notes.mjs <version>");
+const release = process.argv[2] ?? "";
+const match = /^(?:(@?[^@]+)@|v)(\d+\.\d+\.\d+\S*)$/.exec(release);
+if (!match) {
+  console.error("Usage: node scripts/release-notes.mjs <package>@<version>");
+  process.exit(1);
+}
+const [, name, version] = match;
+const pkg = name ? publishedPackages().find(({ manifest }) => manifest.name === name) : undefined;
+if (name && !pkg) {
+  console.error(`${name} isn't a package this repository publishes.`);
   process.exit(1);
 }
 
-const changelog = readFileSync(path.join(ROOT, "CHANGELOG.md"), "utf8");
+const file = !pkg || pkg.kind === "cms" || pkg.kind === "tool" ? "CHANGELOG.md" : `${pkg.folder}/CHANGELOG.md`;
+const changelog = existsSync(path.join(ROOT, file)) ? readFileSync(path.join(ROOT, file), "utf8") : "";
 const heading = new RegExp(`^## ${version.replace(/\./g, "\\.")}\\b.*$`, "m");
 const start = changelog.search(heading);
 if (start === -1) {
-  console.error(`CHANGELOG.md has no "## ${version}" entry. Add one before tagging.`);
+  console.error(`${file} has no "## ${version}" entry. Add one before tagging.`);
   process.exit(1);
 }
 const rest = changelog.slice(start);

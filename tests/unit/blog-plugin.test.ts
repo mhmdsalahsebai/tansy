@@ -1,10 +1,13 @@
+import { readFileSync } from "node:fs";
+import { createElement, type ReactElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { BeforeHookContext, CollectionShape, RecordValues } from "@/core/extend/define";
 import { assertPluginManifest } from "@/core/extend/manifest";
 import { schemaDocument } from "@/core/schema/portable";
 import { pluginRenderers } from "@/components/stream/StreamField";
 import { blog } from "../../plugins/blog/index";
-import blogRenderers from "../../plugins/blog/render";
+import blogRenderers, { MorePosts, PostComments } from "../../plugins/blog/render";
 import { blogRoles, blogSchema, COLLECTIONS, CONTRACT } from "../../plugins/blog/schema";
 import { atom, embedUrl, escapeXml, excerptOf, readingMinutes, rss, slugify } from "../../plugins/blog/text";
 
@@ -231,5 +234,68 @@ describe("blog hooks", () => {
     await expect(beforeUpdate(context)).rejects.toThrow(/can't move/);
     const approving = hookContext("blog-comments", { state: "approved" }, { record: { id: 1, post: 5, parent: null } });
     await expect(beforeUpdate(approving)).resolves.toBeUndefined();
+  });
+});
+
+describe("blog render parts", () => {
+  const post = { id: 7, title: "Seven", tags: [1], allowComments: true } as never;
+  const data = {
+    related: { items: [{ id: 8, title: "Eight", recordPath: "/blog/eight" }], page: 1, perPage: 3, totalItems: 1, totalPages: 1 },
+    comments: { items: [{ id: 1, name: "Ann", body: "Hi", parent: null, createdAt: "2026-01-01T00:00:00.000Z" }, { id: 2, name: "Bo", body: "Hey", parent: 1, createdAt: "2026-01-02T00:00:00.000Z" }], page: 1, perPage: 200, totalItems: 2, totalPages: 1 },
+  } as never;
+  const html = (node: ReactElement) => renderToStaticMarkup(node);
+  const labelledBy = (markup: string, cls: string) => {
+    const section = markup.match(new RegExp(`<section class="${cls}" aria-labelledby="([^"]+)"`));
+    expect(section).not.toBeNull();
+    return section![1];
+  };
+
+  it("render the plugin's defaults: h2 titles labelling their sections, an h3 over the form, and the class hooks", () => {
+    const comments = html(createElement(PostComments, { post, data }));
+    const id = labelledBy(comments, "bl-comments");
+    expect(comments).toContain(`<h2 id="${id}" class="bl-comments-title">Comments</h2>`);
+    expect(comments).toContain('<h3 class="bl-form-title">Leave a comment</h3>');
+    expect(comments).toContain('<ol class="bl-thread bl-replies">');
+    const more = html(createElement(MorePosts, { post, data }));
+    expect(more).toContain(`<h2 id="${labelledBy(more, "bl-more")}" class="bl-more-title">More posts</h2>`);
+    expect(more).toContain('<h2 class="bl-item-title">');
+    const empty = html(createElement(PostComments, { post, data: {} as never }));
+    expect(empty).toContain('class="bl-muted bl-comments-empty"');
+  });
+
+  it("take a heading's text, or hide it while the section keeps an accessible name", () => {
+    expect(html(createElement(PostComments, { post, data, heading: "Discussion", formHeading: "Join in" }))).toMatch(/class="bl-comments-title">Discussion<\/h2>[\s\S]*class="bl-form-title">Join in<\/h3>/);
+    const hidden = html(createElement(PostComments, { post, data, heading: false, formHeading: false }));
+    expect(hidden).toContain('<section class="bl-comments" aria-label="Comments">');
+    expect(hidden).not.toMatch(/<h[2-6]/);
+    const more = html(createElement(MorePosts, { post, data, heading: false }));
+    expect(more).toContain('<section class="bl-more" aria-label="More posts">');
+    expect(more).not.toContain("bl-more-title");
+  });
+
+  it("let the theme set the heading levels, the form and post titles one below", () => {
+    const comments = html(createElement(PostComments, { post, data, headingLevel: 3 }));
+    expect(comments).toMatch(/<h3 id="[^"]+" class="bl-comments-title">/);
+    expect(comments).toContain('<h4 class="bl-form-title">');
+    expect(html(createElement(PostComments, { post, data, headingLevel: 6 }))).toContain('<h6 class="bl-form-title">');
+    const more = html(createElement(MorePosts, { post, data, headingLevel: 4 }));
+    expect(more).toMatch(/<h4 id="[^"]+" class="bl-more-title">/);
+    expect(more).toContain('<h5 class="bl-item-title">');
+  });
+
+  it("leave outer spacing to the template: parts' own rules have none, the plugin's page adds it", () => {
+    const css = readFileSync("plugins/blog/blog.css", "utf8");
+    const rule = (selector: string) => css.match(new RegExp(`^${selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} \\{([^}]*)\\}`, "m"))?.[1] ?? "";
+    for (const part of [".bl-meta", ".bl-kicker", ".bl-list", ".bl-tags"]) expect(rule(part)).toMatch(/margin: 0;/);
+    expect(css).not.toMatch(/^\.bl-(more|comments)\b/m);
+    expect(rule(":where(.bl-main) > .bl-more, :where(.bl-main) > .bl-comments")).toMatch(/margin-top: var\(--site-space-section, 3rem\); padding-top: 1\.5rem; border-top: 1px solid/);
+  });
+
+  it("give two parts on one page different ids", () => {
+    const page = html(createElement("main", null, createElement(PostComments, { post, data }), createElement(PostComments, { post, data }), createElement(MorePosts, { post, data }), createElement(MorePosts, { post, data })));
+    const ids = [...page.matchAll(/aria-labelledby="([^"]+)"/g)].map((match) => match[1]);
+    expect(ids).toHaveLength(4);
+    expect(new Set(ids).size).toBe(4);
+    for (const id of ids) expect(page.split(`id="${id}"`)).toHaveLength(2);
   });
 });

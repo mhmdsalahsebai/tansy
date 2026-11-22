@@ -45,7 +45,8 @@ describe("plugin manifest", () => {
   it("accepts a complete plugin", () => expect(() => assertPluginManifest(plugin({ requires: { cms: "^1.0.0" } }), "1.3.0")).not.toThrow());
 
   // The runtime reads the version in the code and records it per install, while npm serves the one in
-  // package.json. A release sets both with scripts/set-version.mjs; this fails if they ever part.
+  // package.json. scripts/set-version.mjs sets both when it moves a package; this fails if they ever part.
+  // Packages move on their own versions, so a plugin's CMS range has to include the CMS in this checkout.
   it("keeps each package's declared version and CMS range in step with its manifest", () => {
     const folders = ["plugins", "themes", "examples"].flatMap((group) => readdirSync(group).map((name) => `${group}/${name}`));
     for (const folder of folders) {

@@ -108,6 +108,8 @@ function Post({ record, data, stream }: TemplateProps) {
 export default defineThemeComponents({ templates: { "blog-posts": Post, /* ... */ } });
 ```
 
+The parts bring no outer margin or border, so place them with your own layout. Their headings follow your outline: `headingLevel` sets their level, and `heading={false}` hides one when your own section already has a title, as the [blog plugin](../plugins/blog.md#8-site-pages) describes.
+
 Add the plugin to `requires.plugins` in the manifest, so a site without it fails at startup with a clear message. `themes/blog` does exactly this, and [`themes/magazine`](../themes/magazine.md) goes further: it redesigns every blog page, and replaces the plugin's `posts` list on archives with one that also reads covers, by giving its own query the same name.
 
 ## 7. Publish it

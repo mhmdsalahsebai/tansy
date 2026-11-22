@@ -29,4 +29,4 @@ Read `docs/contributing/design-system.md` before building or changing a dashboar
 - `npm run db:migrate -- <name>`: changes the Prisma schema. Needs `POSTGRES_SCRATCH_URL`, because each change gets a migration for both databases.
 - `npm run package`: builds the tarball npm receives for every published package, into `.release/`. Plugins and themes are compiled, so their `exports` point at `.js` and `.d.ts` in what ships, never at source.
 - `npm run package:metadata`: writes each published package's `files`, README and peer ranges. Run it after adding a plugin or theme, or `tests/unit/package-metadata.test.ts` fails.
-- A release: `node scripts/set-version.mjs <version>` moves all 62 packages at once, then a `v<version>` tag runs `.github/workflows/release.yml`.
+- A release: packages move on their own versions. `node scripts/set-version.mjs <package> <version>` moves one, its `CHANGELOG.md` (the root one for `tansy` and create-tansy) needs a `## <version>` entry, and a `<package>@<version>` tag on the commit runs `.github/workflows/release.yml`, which publishes each package tagged there.

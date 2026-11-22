@@ -6,8 +6,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { metadataFor, outOfDate } from "../../scripts/package-metadata.mjs";
-import { ROOT, extensionPackages, publishedPackages } from "../../scripts/workspace-packages.mjs";
+import { metadataFor, outOfDate, scaffoldVersionsStale } from "../../scripts/package-metadata.mjs";
+import { ROOT, extensionPackages, peerRangeFor, publishedPackages, satisfies, workspaceVersions } from "../../scripts/workspace-packages.mjs";
 
 const extensions = extensionPackages();
 const published = publishedPackages();
@@ -62,3 +62,47 @@ describe("published packages", () => {
     }
   });
 });
+
+// Every package moves on its own version, so ranges are what hold them together.
+describe("independent versions", () => {
+  it("read ranges as npm does, before 1.0 too", () => {
+    expect(satisfies("0.1.2", "^0.1.1")).toBe(true);
+    expect(satisfies("0.2.0", "^0.1.1")).toBe(false);
+    expect(satisfies("0.1.0", "^0.1.1")).toBe(false);
+    expect(satisfies("0.0.4", "^0.0.3")).toBe(false);
+    expect(satisfies("1.4.0", "^1.2.0")).toBe(true);
+    expect(satisfies("2.0.0", "^1.2.0")).toBe(false);
+    expect(satisfies("1.2.9", "~1.2.0")).toBe(true);
+    expect(satisfies("1.3.0", "~1.2.0")).toBe(false);
+    expect(satisfies("1.2.0", "1.2.0")).toBe(true);
+    expect(satisfies("1.2.0", ">=1.0.0")).toBe(false);
+  });
+
+  it("keep a peer range while it still includes the peer, and move it once it doesn't", () => {
+    const blog = workspaceVersions()["@tansy/blog"];
+    const [major, minor] = blog.split(".").map(Number);
+    expect(peerRangeFor("@tansy/blog", { current: `^${blog}` })).toBe(`^${blog}`);
+    expect(peerRangeFor("@tansy/blog", { current: `^${major}.${minor + 1}.0` })).toBe(`^${blog}`);
+  });
+
+  it("take each package's tansy range from the CMS range its code requires", () => {
+    for (const pkg of extensions) {
+      const range = /requires:\s*\{[^}]*cms:\s*"([^"]+)"/.exec(existsSync(path.join(ROOT, pkg.folder, "index.ts")) ? readFileSync(path.join(ROOT, pkg.folder, "index.ts"), "utf8") : "")?.[1];
+      if (range) expect(pkg.manifest.peerDependencies?.tansy, `${pkg.manifest.name} requires cms ${range}`).toBe(range);
+    }
+  });
+
+  it("give every peer on a workspace package a range that includes its current version", () => {
+    const versions = workspaceVersions();
+    for (const pkg of published) {
+      for (const [name, range] of Object.entries(pkg.manifest.peerDependencies ?? {})) {
+        if (versions[name]) expect(satisfies(versions[name], range), `${pkg.manifest.name} wants ${name}@${range}, and it is at ${versions[name]}`).toBe(true);
+      }
+    }
+  });
+
+  it("keep create-tansy's table of versions current", () => {
+    expect(scaffoldVersionsStale(), "run node scripts/package-metadata.mjs").toBe(false);
+  });
+});
+

@@ -3,6 +3,8 @@
 import { useId, useState, type FormEvent } from "react";
 import { apiPath, type SiteWords } from "tansy/react";
 import { blogWords } from "./site-messages";
+import { Heading } from "./heading";
+import type { HeadingLevel } from "./text";
 
 export interface PublicComment { id: number; name: string; body: string; parent: number | null; createdAt: string; pending?: boolean }
 
@@ -64,10 +66,21 @@ function Entry({ comment, children, words }: { comment: PublicComment; children?
   );
 }
 
+/** How a theme titles the comments: see `PostComments` in render.tsx. */
+export interface CommentsHeadings {
+  /** The section's heading. A string replaces "Comments"; `false` shows none, and the section keeps "Comments" as its `aria-label`. */
+  heading?: string | false;
+  /** The heading over the form. A string replaces "Leave a comment"; `false` shows none. */
+  formHeading?: string | false;
+  /** The section heading's level, 2 to 6, default 2. The form heading is one level below. */
+  headingLevel?: HeadingLevel;
+}
+
 /** Approved comments from the page, plus the reader's own new ones. Replies go one level deep. */
-export function Comments({ postId, initial, words: given }: { postId: number; initial: PublicComment[]; words?: SiteWords }) {
+export function Comments({ postId, initial, words: given, heading, formHeading, headingLevel = 2 }: { postId: number; initial: PublicComment[]; words?: SiteWords } & CommentsHeadings) {
   const words = blogWords(given);
   const { t } = words;
+  const titleId = useId();
   const [comments, setComments] = useState(initial);
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const add = (comment: PublicComment) => {
@@ -75,17 +88,19 @@ export function Comments({ postId, initial, words: given }: { postId: number; in
     setReplyingTo(null);
   };
   const topLevel = comments.filter((comment) => !comment.parent);
+  const title = heading ?? t("blog.comments");
+  const formTitle = formHeading ?? t("blog.leaveComment");
 
   return (
-    <section className="bl-comments" aria-labelledby="bl-comments-title">
-      <h2 id="bl-comments-title">{t("blog.comments")}</h2>
-      {topLevel.length === 0 && <p className="bl-muted">{t("blog.noComments")}</p>}
+    <section className="bl-comments" {...(title === false ? { "aria-label": t("blog.comments") } : { "aria-labelledby": titleId })}>
+      {title !== false && <Heading level={headingLevel} id={titleId} className="bl-comments-title">{title}</Heading>}
+      {topLevel.length === 0 && <p className="bl-muted bl-comments-empty">{t("blog.noComments")}</p>}
       <ol className="bl-thread">
         {topLevel.map((comment) => {
           const replies = comments.filter((reply) => reply.parent === comment.id);
           return (
             <Entry key={comment.id} comment={comment} words={words}>
-              {replies.length > 0 && <ol className="bl-thread">{replies.map((reply) => <Entry key={reply.id} comment={reply} words={words} />)}</ol>}
+              {replies.length > 0 && <ol className="bl-thread bl-replies">{replies.map((reply) => <Entry key={reply.id} comment={reply} words={words} />)}</ol>}
               {!comment.pending && (replyingTo === comment.id
                 ? <CommentForm postId={postId} parent={comment.id} onPosted={add} onCancel={() => setReplyingTo(null)} words={words} />
                 : <button type="button" className="bl-link" onClick={() => setReplyingTo(comment.id)}>{t("blog.reply")}</button>)}
@@ -93,7 +108,7 @@ export function Comments({ postId, initial, words: given }: { postId: number; in
           );
         })}
       </ol>
-      <h3>{t("blog.leaveComment")}</h3>
+      {formTitle !== false && <Heading level={headingLevel + 1} className="bl-form-title">{formTitle}</Heading>}
       <CommentForm postId={postId} parent={null} onPosted={add} words={words} />
     </section>
   );

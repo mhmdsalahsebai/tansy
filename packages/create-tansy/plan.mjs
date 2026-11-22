@@ -127,9 +127,11 @@ export function problems({ host, database, storage }) {
   return found;
 }
 
-/** Where the dependencies get their versions: the same release as create-tansy itself. */
-export function dependenciesFor(plan, version) {
-  const range = `^${version}`;
+/**
+ * The packages a plan installs, each at the caret range of its own version in `versions`, the
+ * table in versions.mjs. Packages move on their own versions, so none borrows create-tansy's.
+ */
+export function dependenciesFor(plan, versions) {
   const names = ["tansy"];
   if (plan.template === "headless") names.push("@tansy/theme-blank");
   else {
@@ -140,7 +142,10 @@ export function dependenciesFor(plan, version) {
     }
     if (plan.storage === "vercel-blob") names.push("@tansy/storage-vercel-blob");
   }
-  return Object.fromEntries(names.map((name) => [name, range]));
+  return Object.fromEntries(names.map((name) => {
+    if (!versions[name]) throw new Error(`create-tansy has no version for ${name}. Run node scripts/package-metadata.mjs.`);
+    return [name, `^${versions[name]}`];
+  }));
 }
 
 const STORAGE_FALLBACK = `localStorage({ dir: env.UPLOADS_DIR ?? "data/uploads", allowInProduction: env.ALLOW_LOCAL_STORAGE_IN_PRODUCTION === "true" })`;

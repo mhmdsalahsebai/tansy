@@ -163,9 +163,26 @@ A theme can design its own post page and keep everything the plugin does on it. 
 |---|---|
 | `PostMeta` | Byline, date and reading time |
 | `PostCategories`, `PostTags` | Links to the archives |
-| `MorePosts` | Related posts, or the latest, with an optional `heading` |
-| `PostComments` | Approved comments and the form, unless the post has comments off |
-| `PostList` | Any list of posts, given as `posts` |
+| `MorePosts` | Related posts, or the latest. Takes `heading` and `headingLevel` |
+| `PostComments` | Approved comments and the form, unless the post has comments off. Takes `heading`, `formHeading` and `headingLevel` |
+| `PostList` | Any list of posts, given as `posts`. `headingLevel` sets the level of each post's title |
+
+The parts carry no outer margin or border: the template places them. The plugin's own page does that inside `.bl-main`, so a part a theme embeds brings only its inner spacing, and the theme sets the space and any rule around it.
+
+The headings are the theme's to set too, so the parts fit whatever section the theme wraps them in:
+
+- `heading` replaces the default text ("More posts", "Comments"). `false` shows no heading, and the part's `<section>` keeps the default text as its `aria-label`, so it still has an accessible name.
+- `formHeading` does the same for "Leave a comment" over the comment form. `false` shows none.
+- `headingLevel`, 2 to 6 and 2 by default, is the main heading's level. The form heading is one level below, and so are the post titles in `MorePosts`. Without `headingLevel`, those titles stay `h2`.
+
+```tsx
+<section className="my-discussion" aria-labelledby="discussion">
+  <h2 id="discussion">Discussion</h2>
+  <PostComments post={record} data={data} heading={false} formHeading="Join in" headingLevel={3} />
+</section>
+```
+
+Each element a theme might style has a `bl-` class, and the plugin's rules weigh a single class, so one class of the theme's overrides any of them: `bl-comments-title`, `bl-form-title`, `bl-comments-empty`, `bl-thread`, `bl-replies` (the replies under a comment), `bl-comment`, `bl-form`, `bl-more-title`, `bl-item`, `bl-item-title`, `bl-meta`, `bl-tags`. Heading ids come from React's `useId`, so two parts on one page never share one.
 
 The blog theme's post page is built this way.
 
@@ -181,7 +198,7 @@ The blog theme's post page is built this way.
 ## 10. Tests
 
 - `tests/unit/site.test.ts`: the blog theme's own post page, made of the plugin's parts and given the plugin's lists, and its paged home page.
-- `tests/unit/blog-plugin.test.ts`: slugs, reading time, excerpts, embeds, feed escaping, options, schema against the contract, the adopted theme blocks, and every hook against an in-memory context.
+- `tests/unit/blog-plugin.test.ts`: slugs, reading time, excerpts, embeds, feed escaping, options, schema against the contract, the adopted theme blocks, every hook against an in-memory context, and the exported parts: their default markup, `heading={false}` leaving an accessible name, heading levels, and distinct ids for two parts on one page.
 - `tests/integration/blog.test.ts`, against a running server with the plugin on:
   - The install creates everything, and Extensions reports the fields as expected.
   - Slugs, excerpts and reading time are filled.

@@ -1,8 +1,10 @@
+import { useId } from "react";
 import { apiPath, defineRenderers, pickWords, Pager, sitePath, RichText, StreamField, type BlockProps, type SiteWords } from "tansy/react";
 import type { SiteList, SiteRecord, TemplateProps } from "tansy/theme";
-import { Comments, type PublicComment } from "./comments";
+import { Comments, type CommentsHeadings, type PublicComment } from "./comments";
 import { blogWords, siteMessages } from "./site-messages";
-import { embedUrl } from "./text";
+import { Heading } from "./heading";
+import { embedUrl, type HeadingLevel } from "./text";
 import "./blog.css";
 
 const text = (value: unknown) => (typeof value === "string" ? value : "");
@@ -26,6 +28,11 @@ function Linked({ record, label, words }: { record: SiteRecord | undefined; labe
  * plugin's own, so each part finds what it needs there.
  *
  *   import { PostMeta, MorePosts, PostComments } from "@tansy/blog/render";
+ *
+ * Parts carry no outer margin or border; the template places them. The plugin's own pages do
+ * that inside `.bl-main`, so a theme that embeds a part gets only its inner spacing and styles
+ * it with the part's `bl-` classes, each a single class it can override with one of its own.
+ * Parts that title themselves take `heading` and `headingLevel`, so the theme sets the outline.
  */
 type PartProps = { post: SiteRecord; data: TemplateProps["data"]; words?: SiteWords };
 
@@ -44,14 +51,17 @@ export function PostMeta({ post, words }: PartProps) {
   );
 }
 
-/** Posts as a list of titles, meta and excerpts, with featured posts marked. */
-export function PostList({ posts, data, empty, words }: { posts: SiteRecord[]; data: TemplateProps["data"]; empty: string; words?: SiteWords }) {
+/**
+ * Posts as a list of titles, meta and excerpts, with featured posts marked.
+ * `headingLevel` (2 to 6, default 2) is the level of each post's title.
+ */
+export function PostList({ posts, data, empty, words, headingLevel = 2 }: { posts: SiteRecord[]; data: TemplateProps["data"]; empty: string; words?: SiteWords; headingLevel?: HeadingLevel }) {
   if (!posts.length) return <p className="bl-muted">{empty}</p>;
   return (
     <ul className="bl-list">
       {posts.map((post) => (
         <li key={post.id} className={post.featured === true ? "bl-item bl-featured" : "bl-item"}>
-          <h2 className="bl-item-title"><Linked record={post} label={post.title} words={words} /></h2>
+          <Heading level={headingLevel} className="bl-item-title"><Linked record={post} label={post.title} words={words} /></Heading>
           <PostMeta post={post} data={data} words={words} />
           {text(post.excerpt) && <p>{text(post.excerpt)}</p>}
         </li>
@@ -74,23 +84,43 @@ export function PostTags({ post, data, words }: PartProps) {
   return <ul className="bl-tags" aria-label={blogWords(words).t("blog.tags")}>{ids(post.tags).map((id) => <li key={id}><Linked record={tags.get(id)} label={tags.get(id)?.name} words={words} /></li>)}</ul>;
 }
 
-/** Up to three posts sharing a tag with this one, or the latest when none do. */
-export function MorePosts({ post, data, words, heading = blogWords(words).t("blog.morePosts") }: PartProps & { heading?: string }) {
+/** How a part that titles itself is titled. */
+type Headed = {
+  /** A string replaces the default heading; `false` shows none, and the section keeps the default as its `aria-label`. */
+  heading?: string | false;
+  /** The heading's level, 2 to 6, default 2. */
+  headingLevel?: HeadingLevel;
+};
+
+/**
+ * Up to three posts sharing a tag with this one, or the latest when none do, under "More posts"
+ * or `heading`. Given a `headingLevel`, the post titles are one level below it; without one they
+ * are h2, as they have always been.
+ */
+export function MorePosts({ post, data, words, heading, headingLevel }: PartProps & Headed) {
+  const titleId = useId();
   const related = items(data.related);
   const more = (related.length ? related : items(data.recent)).filter((other) => other.id !== post.id).slice(0, 3);
   if (!more.length) return null;
+  const fallback = blogWords(words).t("blog.morePosts");
+  const title = heading ?? fallback;
   return (
-    <section className="bl-more" aria-labelledby="bl-more-title">
-      <h2 id="bl-more-title">{heading}</h2>
-      <PostList posts={more} data={data} empty="" words={words} />
+    <section className="bl-more" {...(title === false ? { "aria-label": fallback } : { "aria-labelledby": titleId })}>
+      {title !== false && <Heading level={headingLevel} id={titleId} className="bl-more-title">{title}</Heading>}
+      <PostList posts={more} data={data} empty="" words={words} headingLevel={headingLevel ? (Math.min(6, headingLevel + 1) as HeadingLevel) : 2} />
     </section>
   );
 }
 
-/** Approved comments and the form, unless the post has comments turned off. Shows replies one level deep. */
-export function PostComments({ post, data, words }: PartProps) {
+/**
+ * Approved comments and the form, unless the post has comments turned off. Shows replies one level deep.
+ * `heading` replaces "Comments" or, as `false`, hides it while the section keeps "Comments" as its
+ * `aria-label`; `formHeading` does the same for "Leave a comment"; `headingLevel` (2 to 6, default 2)
+ * sets the section heading's level, with the form heading one below.
+ */
+export function PostComments({ post, data, words, heading, formHeading, headingLevel }: PartProps & CommentsHeadings) {
   if (post.allowComments === false) return null;
-  return <Comments postId={post.id} initial={items(data.comments) as unknown as PublicComment[]} words={words ? pickWords(words, "blog") : undefined} />;
+  return <Comments postId={post.id} initial={items(data.comments) as unknown as PublicComment[]} words={words ? pickWords(words, "blog") : undefined} heading={heading} formHeading={formHeading} headingLevel={headingLevel} />;
 }
 
 function Home({ record, data, stream, path, words, t }: TemplateProps) {

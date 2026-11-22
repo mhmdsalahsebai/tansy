@@ -26,15 +26,14 @@
  * --packages <folder> installs from tarballs instead of npm, to test a build before release.
  */
 import { execFileSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import {
   composeFile, DATABASES, dependenciesFor, cmsConfig, dockerDatabaseUrl, envAdditions, folderProblem, HOSTS, NATIVE, newPostgresPassword,
   packageManager, parsePlugin, POSTGRES_URL, problems, PROVIDERS, runScript, STORAGES, TEMPLATES, THEMES, VERCEL_JSON,
 } from "./plan.mjs";
-
-const own = JSON.parse(readFileSync(path.join(import.meta.dirname, "package.json"), "utf8"));
+import { PACKAGES } from "./versions.mjs";
 
 // Must match Tansy's peer dependencies. A unit test holds them together.
 export const VERSIONS = { next: "^16.4.6", react: "^19.3.0", "react-dom": "^19.3.0" };
@@ -88,7 +87,7 @@ function manifest(name, plan, pm) {
     version: "0.1.0",
     private: true,
     scripts: { dev: "next dev", build: "next build", start: "next start", ...(plan.template === "headless" ? {} : { tansy: "tansy" }) },
-    dependencies: { next: VERSIONS.next, react: VERSIONS.react, "react-dom": VERSIONS["react-dom"], ...dependenciesFor(plan, own.version) },
+    dependencies: { next: VERSIONS.next, react: VERSIONS.react, "react-dom": VERSIONS["react-dom"], ...dependenciesFor(plan, PACKAGES) },
     devDependencies: DEV_VERSIONS,
     // Both skip install scripts unless told which may run, and the CMS has native modules to build.
     ...(pm === "pnpm" ? { pnpm: { onlyBuiltDependencies: NATIVE } } : {}),
