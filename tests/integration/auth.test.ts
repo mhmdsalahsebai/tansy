@@ -10,6 +10,17 @@ import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 import { APP_DIR, CLI, IS_HOST_INSTALL } from "./app-under-test";
 import { blankStarterEnv } from "./server-env";
 
+/** The version of a package as the app under test has it installed, from the nearest node_modules up from it. */
+function installedVersion(name: string): string {
+  for (let dir = APP_DIR; ; dir = path.dirname(dir)) {
+    try {
+      return JSON.parse(readFileSync(path.join(dir, "node_modules", name, "package.json"), "utf8")).version;
+    } catch {
+      if (path.dirname(dir) === dir) throw new Error(`${name} is not installed above ${APP_DIR}`);
+    }
+  }
+}
+
 const base = inject("baseUrl");
 const PASSWORD = "correct-horse-battery-staple-9431";
 const origin = { origin: base };
@@ -2521,7 +2532,7 @@ describe("extensibility", () => {
       });
     });
     it("records the version it was installed at", () => {
-      expect(db.query(`SELECT version FROM "PluginState" WHERE name = 'seo'`).rows[0].version).toBe("0.1.0");
+      expect(db.query(`SELECT version FROM "PluginState" WHERE name = 'seo'`).rows[0].version).toBe(installedVersion("@tansy/seo"));
     });
     it("adds an admin page and widget behind its permission", async () => {
       const page = await call("/dashboard/ext/seo", { as: root });
