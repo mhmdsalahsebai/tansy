@@ -214,7 +214,7 @@ export function blog(options: BlogOptions) {
 
   return definePlugin({
     name: "blog",
-    version: "0.1.1",
+    version: "0.1.2",
     apiVersion: 1,
     requires: { cms: "^0.1.1" },
     admin: { server: "@tansy/blog/admin", client: "@tansy/blog/client", render: "@tansy/blog/render" },

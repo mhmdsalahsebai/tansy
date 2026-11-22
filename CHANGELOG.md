@@ -1,7 +1,9 @@
 # Changelog
 
-What changed in each release of `tansy` and the `@tansy/*` plugins and themes, which are
-released together from this repository.
+What changed in each release of `tansy` and create-tansy. Up to 0.1.1, every `@tansy/*` plugin and
+theme was released with them on the same version, and their changes are below too. After that each
+moves on its own version and keeps its own `CHANGELOG.md` in its folder, such as
+[plugins/blog/CHANGELOG.md](plugins/blog/CHANGELOG.md).
 
 **Tansy is beta software. Before 1.0, any release can change anything**, including renaming or
 removing a package, a command, a configuration key, an environment variable or a database column,

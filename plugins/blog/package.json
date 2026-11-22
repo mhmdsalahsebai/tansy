@@ -1,6 +1,6 @@
 {
   "name": "@tansy/blog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turns tansy into a blog: posts, categories, tags, authors, comments and feeds.",
   "keywords": [
     "tansy",

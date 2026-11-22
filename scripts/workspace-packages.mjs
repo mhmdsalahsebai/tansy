@@ -61,10 +61,52 @@ export function sharedPeerRanges() {
   };
 }
 
-/** What a peer range should be: a workspace package's current minor, or the range the CMS uses. */
-export function peerRangeFor(name) {
+/** Plugins, themes and the CMS each move on their own version, so ranges are checked rather than assumed. */
+export function compareVersions(a, b) {
+  const [x, y] = [a, b].map((value) => value.split(/[.-]/).slice(0, 3).map(Number));
+  return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+}
+
+/**
+ * Whether `version` is in `range`, for the ranges this repository writes: `^x.y.z`, `~x.y.z` or an
+ * exact `x.y.z`. Caret follows npm before 1.0 too, where `^0.1.2` stops short of 0.2.0.
+ */
+export function satisfies(version, range) {
+  const match = /^([\^~]?)(\d+)\.(\d+)\.(\d+)$/.exec(range);
+  if (!match || !/^\d+\.\d+\.\d+$/.test(version)) return false;
+  const [, op, ...floor] = match;
+  const [major, minor, patch] = version.split(".").map(Number);
+  const [m, n] = floor.map(Number);
+  if (compareVersions(version, floor.join(".")) < 0) return false;
+  if (op === "") return version === floor.join(".");
+  if (op === "~") return major === m && minor === n;
+  if (m > 0) return major === m;
+  if (n > 0) return major === 0 && minor === n;
+  return major === 0 && minor === 0 && patch === Number(floor[2]);
+}
+
+/** The CMS range a plugin or theme declares in its index.ts, which the runtime enforces. */
+export function requiredCms(folder) {
+  const entry = path.join(ROOT, folder, "index.ts");
+  if (!existsSync(entry)) return null;
+  return /requires:\s*\{[^}]*cms:\s*"([^"]+)"/.exec(readFileSync(entry, "utf8"))?.[1] ?? null;
+}
+
+/**
+ * What a package's peer range on `name` should be.
+ *
+ * On `tansy`, the CMS range its index.ts requires, so npm and the runtime agree. On another workspace
+ * package, the range it has while that still includes the package's current version, and the
+ * current version's caret range once it doesn't: a range moves when the package it names leaves it,
+ * not every time that package releases. Otherwise the range the CMS uses for the same dependency.
+ */
+export function peerRangeFor(name, { folder, current } = {}) {
+  if (name === "tansy" && folder) {
+    const required = requiredCms(folder);
+    if (required) return required;
+  }
   const versions = workspaceVersions();
-  if (versions[name]) return `^${versions[name]}`;
+  if (versions[name]) return current && satisfies(versions[name], current) ? current : `^${versions[name]}`;
   const shared = sharedPeerRanges();
   if (shared[name]) return shared[name];
   return null;

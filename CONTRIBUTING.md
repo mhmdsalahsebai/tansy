@@ -70,8 +70,12 @@ second one follow [docs/contributing/deprecation.md](docs/contributing/deprecati
 - **A route or a page:** run `npm run routes:generate -w tansy` afterwards.
 - **A published package:** `node scripts/package-metadata.mjs` writes its `files`, its README and its
   peer ranges, and `tests/unit/package-metadata.test.ts` fails until they are right.
-- **A release:** `node scripts/set-version.mjs <version>` moves every package at once, then the
-  `release` workflow builds and publishes the tarballs from a `v<version>` tag.
+- **A release:** every package moves on its own version. `node scripts/set-version.mjs <package> <version>`
+  moves one (its package.json, its index.ts and anything whose peer range it leaves), then describe
+  it under `## <version>` in its `CHANGELOG.md` (the root one for `tansy` and create-tansy), commit,
+  and push a `<package>@<version>` tag. The `release` workflow builds and publishes each package
+  tagged on that commit. A plugin's `requires: { cms }` is its own: widen it only once it is checked
+  against the new CMS, and the tansy peer range follows it.
 
 ## Pull requests
 

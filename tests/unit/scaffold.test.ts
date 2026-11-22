@@ -6,7 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { doctor } from "../../packages/cms/scripts/doctor.mjs";
 import { PLUGIN_API_VERSION as scaffoldPlugin, THEME_API_VERSION as scaffoldTheme, newField, newPlugin, newTheme } from "../../packages/cms/scripts/scaffold.mjs";
 import { VERSIONS } from "../../packages/create-tansy/index.mjs";
-import { cmsConfig, packageManager, parsePlugin, pluginsFor, problems } from "../../packages/create-tansy/plan.mjs";
+import { cmsConfig, dependenciesFor, packageManager, parsePlugin, pluginsFor, problems } from "../../packages/create-tansy/plan.mjs";
+import { PACKAGES } from "../../packages/create-tansy/versions.mjs";
 import { PLUGIN_API_VERSION } from "../../packages/cms/core/extend/define";
 import { THEME_API_VERSION } from "../../packages/cms/core/theme/define";
 import { clearDirectoryCache, loadDirectory } from "../../packages/cms/core/extend/directory";
@@ -97,6 +98,14 @@ describe("create-tansy", () => {
   it("uses the framework versions tansy asks for", () => {
     const { peerDependencies } = JSON.parse(readFileSync("packages/cms/package.json", "utf8"));
     expect(VERSIONS).toEqual(peerDependencies);
+  });
+
+  it("installs each package at its own version, not create-tansy's", () => {
+    const cwd = folder();
+    create(cwd, "site", "--template", "blog");
+    const { dependencies } = JSON.parse(read(cwd, "site/package.json"));
+    for (const name of ["tansy", "@tansy/theme-blog", "@tansy/blog"] as const) expect(dependencies[name], name).toBe(`^${PACKAGES[name]}`);
+    expect(() => dependenciesFor({ template: "headless" }, {})).toThrow(/no version for tansy/);
   });
 
   it("gives the same-app templates a theme, and leaves the rest to tansy init", () => {

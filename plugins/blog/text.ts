@@ -97,3 +97,11 @@ export function atom({ title, siteUrl, feedUrl, items }: Feed): string {
   const entries = items.map((item) => `<entry><title>${escapeXml(item.title)}</title><link href="${escapeXml(item.url)}"/><id>${escapeXml(item.url)}</id><published>${escapeXml(item.publishedAt)}</published><updated>${escapeXml(item.updatedAt)}</updated>${item.summary ? `<summary>${escapeXml(item.summary)}</summary>` : ""}</entry>`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom"><title>${escapeXml(title)}</title><link href="${escapeXml(siteUrl)}"/><link rel="self" href="${escapeXml(feedUrl)}"/><id>${escapeXml(feedUrl)}</id><updated>${escapeXml(updated)}</updated>${entries.join("")}</feed>\n`;
 }
+
+/** The levels a theme can give a part's heading. The page's own h1 is the theme's. */
+export type HeadingLevel = 2 | 3 | 4 | 5 | 6;
+
+/** The tag for a heading at `level`, kept between h2 and h6. */
+export function headingTag(level: number = 2): `h${HeadingLevel}` {
+  return `h${Math.min(6, Math.max(2, Math.round(Number.isFinite(level) ? level : 2))) as HeadingLevel}`;
+}

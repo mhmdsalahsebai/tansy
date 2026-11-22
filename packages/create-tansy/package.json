@@ -16,7 +16,7 @@
   "bin": {
     "create-tansy": "index.mjs"
   },
-  "files": ["index.mjs", "ask.mjs", "plan.mjs", "README.md", "LICENSE"],
+  "files": ["index.mjs", "ask.mjs", "plan.mjs", "versions.mjs", "README.md", "LICENSE"],
   "engines": {
     "node": ">=22.18"
   },

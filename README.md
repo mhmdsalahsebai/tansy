@@ -206,10 +206,11 @@ a change has to keep: the [security model](https://github.com/mhmdsalahsebai/tan
 
 ## Releases
 
-Every package in this repository moves on one version. `node scripts/set-version.mjs <version>` sets
-it everywhere, `npm run package` builds a tarball per package, and pushing a `v<version>` tag runs
-the release workflow, which checks, builds, publishes to npm with provenance and opens a GitHub
-release from [CHANGELOG.md](https://github.com/mhmdsalahsebai/tansy/blob/main/CHANGELOG.md). What a release may change before 1.0, and what it may not
+Every package in this repository moves on its own version, so a release publishes only what changed.
+`node scripts/set-version.mjs <package> <version>` moves one package, and pushing a
+`<package>@<version>` tag, such as `@tansy/blog@0.1.2`, runs the release workflow, which checks,
+builds, publishes that package to npm with provenance and opens a GitHub release from its changelog:
+a plugin's or theme's `CHANGELOG.md` in its folder, or [CHANGELOG.md](https://github.com/mhmdsalahsebai/tansy/blob/main/CHANGELOG.md) for `tansy` and create-tansy. What a release may change before 1.0, and what it may not
 after, is [the deprecation policy](https://github.com/mhmdsalahsebai/tansy/blob/main/docs/contributing/deprecation.md), written for users as the
 [upgrading guide](https://tansycms.vercel.app/docs/guides/upgrading).
 

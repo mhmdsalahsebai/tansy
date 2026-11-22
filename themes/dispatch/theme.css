@@ -428,7 +428,7 @@ body:has(.site-root[data-theme="dispatch"]) { margin: 0; }
   padding: 3rem var(--site-space-gutter) var(--site-space-section);
 }
 
-.dp-more .bl-more { margin-block-start: 3rem; }
+.dp-more .bl-more { margin-block-start: 3rem; padding-block-start: 1.5rem; border-block-start: 1px solid var(--site-color-border); }
 .dp-more .bl-more h2 { margin-block-end: 0.75rem; font-size: 1.25rem; }
 .dp-more .bl-list { margin: 0; padding: 0; list-style: none; }
 .dp-more .bl-item { padding: 1rem 0; border-block-end: 1px solid var(--site-color-border); }
@@ -438,7 +438,7 @@ body:has(.site-root[data-theme="dispatch"]) { margin: 0; }
 .dp-more .bl-meta,
 .dp-more .bl-item p { margin: 0.35rem 0 0; color: var(--site-color-muted); font-size: 0.9rem; }
 
-.dp-comments .bl-comments { margin-block-start: 3rem; }
+.dp-comments .bl-comments { margin-block-start: 3rem; padding-block-start: 1.5rem; border-block-start: 1px solid var(--site-color-border); }
 .dp-comments .bl-form input,
 .dp-comments .bl-form textarea {
   border: 1px solid var(--site-color-border);

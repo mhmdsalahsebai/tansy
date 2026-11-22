@@ -840,7 +840,7 @@ a.mg-card-pill:hover { background: #fff; color: #101828 !important; }
   padding: 0 var(--site-space-gutter) var(--site-space-section);
   margin-inline: auto;
 }
-.mg-comments .bl-comments { margin-block-start: var(--site-space-section); }
+.mg-comments .bl-comments { margin-block-start: var(--site-space-section); padding-block-start: 1.5rem; border-block-start: 1px solid var(--site-color-border); }
 .mg-comments .bl-form input,
 .mg-comments .bl-form textarea {
   padding: 0.65rem 0.8rem;

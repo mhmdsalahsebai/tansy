@@ -1,11 +1,12 @@
 ---
 title: "Upgrading and versions"
-description: "What a version number promises, what an upgrade asks of you, and what will never happen to your content. tansy and every @tansy/ plugin and theme are released together from one repository, so they share a version…"
+description: "What a version number promises, what an upgrade asks of you, and what will never happen to your content. tansy and every @tansy/ plugin and theme come from one repository, but each moves on its own version, so a fix…"
 ---
 
 What a version number promises, what an upgrade asks of you, and what will never happen to your
-content. `tansy` and every `@tansy/*` plugin and theme are released together from one
-repository, so they share a version number and an upgrade is one step for all of them.
+content. `tansy` and every `@tansy/*` plugin and theme come from one repository, but each moves on
+its own version, so a fix to one plugin is a release of that plugin alone. Each plugin and theme
+declares the range of `tansy` it works with, and npm and the CMS both hold you to it.
 
 ## Beta: none of this holds yet
 
@@ -18,8 +19,9 @@ be relying on.
 Until then:
 
 - Pin exact versions, for `tansy` and for every `@tansy/*` package. Do not use `^` or `latest`.
-- Read the [changelog](https://github.com/mhmdsalahsebai/tansy/blob/main/CHANGELOG.md) before every
-  upgrade. Breaking changes are listed there and nowhere else.
+- Read the changelog before every upgrade: [`tansy`'s](https://github.com/mhmdsalahsebai/tansy/blob/main/CHANGELOG.md),
+  and each plugin's or theme's own `CHANGELOG.md` in its folder. Breaking changes are listed there and
+  nowhere else.
 - Take a [backup](/docs/guides/backups) before every upgrade, not only across a major version.
 - Expect to touch your own code. Plugins and themes you have written against the extension API are
   the most likely thing to break.
@@ -46,8 +48,9 @@ npx tansy backup
 Across a **major** version, treat that backup as required rather than advisable. Database migrations
 run forward only; there is no down-migration, and the way back is the archive.
 
-Upgrade plugins and themes in the same step as core. They are versioned with it, and each one
-declares the core range it accepts.
+Upgrade plugins and themes in the same step as core. Each has its own version and declares the core
+range it accepts, so after a core upgrade npm may ask for a newer release of a plugin whose range
+doesn't include the new core yet.
 
 ### What stops an upgrade, and why that is good
 
