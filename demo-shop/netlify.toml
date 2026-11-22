@@ -7,3 +7,9 @@
 
 [build.environment]
   NODE_VERSION = "24"
+
+# Netlify adds the Next.js runtime itself only to sites it set up as Next.js, and this one has a
+# base directory, so it is named here: without it the build is uploaded as plain files and every
+# page is a 404.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

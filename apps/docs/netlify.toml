@@ -8,3 +8,7 @@
 
 [build.environment]
   NODE_VERSION = "24"
+
+# Named for the same reason as in demo-shop/netlify.toml, rather than relying on the site's setting.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
