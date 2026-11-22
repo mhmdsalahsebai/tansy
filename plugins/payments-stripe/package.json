@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@better-auth/stripe": "^1.7.25",
-    "stripe": "^23.1.0"
+    "stripe": "^23.2.0"
   }
 }

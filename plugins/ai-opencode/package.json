@@ -28,9 +28,9 @@
     "tansy": "^0.1.1"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.105",
-    "@ai-sdk/google": "^4.0.121",
-    "@ai-sdk/openai": "^4.0.118",
-    "@ai-sdk/openai-compatible": "^3.0.92"
+    "@ai-sdk/anthropic": "^4.0.106",
+    "@ai-sdk/google": "^4.0.122",
+    "@ai-sdk/openai": "^4.0.121",
+    "@ai-sdk/openai-compatible": "^3.0.93"
   }
 }

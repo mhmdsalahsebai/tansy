@@ -28,6 +28,6 @@
     "tansy": "^0.1.1"
   },
   "dependencies": {
-    "@ai-sdk/groq": "^4.0.84"
+    "@ai-sdk/groq": "^4.0.85"
   }
 }
