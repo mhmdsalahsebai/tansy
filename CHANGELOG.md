@@ -1,9 +1,10 @@
 # Changelog
 
-What changed in each release of `tansy` and create-tansy. Up to 0.1.1, every `@tansy/*` plugin and
-theme was released with them on the same version, and their changes are below too. After that each
+What changed in each release of `tansy` and create-tansy. Up to 0.1.0, every `@tansy/*` plugin and
+theme was released with them on the same version, and their changes are below too. From 0.1.1 each
 moves on its own version and keeps its own `CHANGELOG.md` in its folder, such as
-[plugins/blog/CHANGELOG.md](plugins/blog/CHANGELOG.md).
+[plugins/blog/CHANGELOG.md](plugins/blog/CHANGELOG.md) or
+[themes/storefront/CHANGELOG.md](themes/storefront/CHANGELOG.md).
 
 **Tansy is beta software. Before 1.0, any release can change anything**, including renaming or
 removing a package, a command, a configuration key, an environment variable or a database column,
@@ -18,28 +19,24 @@ release when leaving something in place would keep sites exposed.
 
 ## 0.1.1 — 2026-11-22
 
-### Storefront theme
+From this release every package moves on its own version. The storefront and halo themes' changes
+released beside it are in their own changelogs.
 
-- Moving between pages animates in browsers with cross-document view transitions: a product's
-  picture flies from its card to its page and back, tapping it zooms it to fill the screen, and the
-  current category chip and the tab bar's dot slide to their new place. Nothing moves for visitors
-  who ask for less motion.
-- On phones, a tab bar with a menu that rises as a sheet, pictures that swipe, and **Buy now** and
-  **Add to cart** pinned to the bottom of a product page.
-- A **Format** field on products (physical, digital, or both) shown as a badge.
-- Memberships for digital editions: a **Membership** field on products, a **Library page** at
-  `/library` with the plans on offer, and **Library files** that only members of a plan including
-  them can see or download. A new `library` option links to it from the header and tab bar.
-- The theme now names `@tansy/payments` as a peer dependency, for its Subscribe button.
+### Files
 
-### Halo theme
-
-- Sections past the editor's picks are filled, the Recommended panel stays filled with featured
-  stories first, and wide covers are served at 1600 pixels.
+- A fourth thumbnail size, `1600x0`, keeps an image's shape within 1600 pixels wide, for covers
+  shown across a wide screen. `fileUrl(id, "1600x0")` takes it in a theme's `TemplateProps` and the
+  site reader.
+- Purging a scope now deletes every thumbnail size of its files, read from the same list the
+  thumbnails are made from.
 
 ### Dependencies
 
 - Minor and patch updates across the workspace.
+
+### create-tansy
+
+- No changes of its own; released beside `tansy` 0.1.1.
 
 ## 0.1.0 — 2026-11-20
 
