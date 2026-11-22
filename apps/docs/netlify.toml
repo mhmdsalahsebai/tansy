@@ -1,8 +1,10 @@
-# The documentation site on Netlify. The build's prebuild step writes its reference pages from
-# the repository's docs/ folder, so it builds from a full checkout.
+# The documentation site on Netlify. The site's package path is apps/docs but its base is the
+# repository root, where the workspace installs, so the command and the publish folder are written
+# from there. The build's prebuild step writes its reference pages from the repository's docs/
+# folder, so it builds from a full checkout.
 [build]
-  command = "npm run build"
-  publish = ".next"
+  command = "npm run build -w tansy-docs"
+  publish = "apps/docs/.next"
 
 [build.environment]
   NODE_VERSION = "24"
