@@ -57,6 +57,7 @@ export const PACKAGES = {
   "@tansy/social-sign-in": "0.1.1",
   "@tansy/storage-bunny": "0.1.1",
   "@tansy/storage-cloudinary": "0.1.1",
+  "@tansy/storage-imgbb": "0.1.0",
   "@tansy/storage-uploadthing": "0.1.1",
   "@tansy/storage-vercel-blob": "0.1.1",
   "@tansy/subscriptions": "0.1.1",
@@ -67,5 +68,5 @@ export const PACKAGES = {
   "@tansy/theme-halo": "0.1.1",
   "@tansy/theme-magazine": "0.1.1",
   "@tansy/theme-storefront": "0.1.1",
-  "tansy": "0.1.1",
+  "tansy": "0.1.2",
 };

@@ -57,7 +57,7 @@ S3_SECRET_ACCESS_KEY=…
 ```
 
 Any S3-compatible service works with those four — AWS, Cloudflare R2, Backblaze B2, MinIO — and
-Cloudinary, Bunny, Vercel Blob and Uploadthing have plugins of their own. See
+Cloudinary, Bunny, Vercel Blob, Uploadthing and imgbb have plugins of their own. See
 [storage](storage.md).
 
 If you really do run one server with a backed-up volume, `ALLOW_LOCAL_STORAGE_IN_PRODUCTION=true`

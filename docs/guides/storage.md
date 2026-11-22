@@ -8,8 +8,9 @@ Uploads go to a `StorageAdapter`, set under `storage` in `tansy.config.ts`. Core
 | `@tansy/storage-bunny` | Bunny Storage | Made by Bunny Optimizer, with `cdn` set | The CMS, or Bunny's CDN for thumbnails |
 | `@tansy/storage-vercel-blob` | Vercel Blob, private store | Made and stored by the CMS | The CMS |
 | `@tansy/storage-uploadthing` | Uploadthing | Made and stored by the CMS | The CMS |
+| `@tansy/storage-imgbb` | imgbb, images only, with a fallback for other files | Made and stored by the CMS | The CMS |
 
-Every adapter keeps files private at the provider. Whichever one you pick, a file is read only after the CMS's access checks (the security model, "Files").
+Every adapter but imgbb keeps files private at the provider. Whichever one you pick, a file is read only after the CMS's access checks (the security model, "Files").
 
 ## Set it up
 
@@ -76,6 +77,20 @@ uploadthingStorage({ token: process.env.UPLOADTHING_TOKEN! })
 
 Files are uploaded with a private ACL, so either make the app private or allow overriding the ACL per file in its settings. Each file's custom id is the CMS's key for it, and reads go through a signed URL that the CMS fetches and never sends on.
 
+### imgbb
+
+```ts
+imgbbStorage({ apiKey: process.env.IMGBB_API_KEY!, fallback: vercelBlobStorage({ token: process.env.BLOB_READ_WRITE_TOKEN! }) })
+```
+
+imgbb hosts images for free, which suits a public site's pictures, such as a shop's product photos. Take an API key from [api.imgbb.com](https://api.imgbb.com). Know what it can't do before choosing it:
+
+- **Its images are public.** Anyone holding an image's address can open it. The CMS never hands the address out: it reads each image itself and serves it after its access checks, as with any other adapter. But nothing on imgbb can be made private, so don't keep pictures there that must stay private.
+- **It keeps images only**, PNG, JPEG, GIF and WebP up to 32 MB, and only when it stores them unchanged. Everything else goes to `fallback`, any other adapter, and without one it's refused. A shop's digital editions, for example, go to the fallback.
+- **It can't delete.** imgbb has no API for it, so a deleted file's image stays on imgbb, out of the CMS's reach, until removed by hand from the account.
+
+imgbb picks each image's address, so the adapter keeps it in a storage index (below), in the database. A backup of the database holds the index; the images themselves stay on imgbb.
+
 ## Thumbnails
 
 The dashboard and `/api/files/:id?thumb=` use four sizes: `100x100` and `300x300`, cropped, and `800x0` and `1600x0`, which keep the image's shape. `1600x0` is for images shown wide on high-density screens, as the second entry of a `srcset`. By default core makes each with `sharp` on first request and stores it beside the original.
@@ -97,5 +112,7 @@ Implement `StorageAdapter` from `tansy/storage`:
 | `list` | no | Every key under a prefix. Backups need it |
 | `signedUrl` | no | Send browsers to the provider for originals. Only for providers that serve the given type and disposition, and whose URLs expire |
 | `thumbnailUrl`, `thumbnailUrlsExpire` | no | Hand thumbnails to the provider, as above |
+
+For a provider that picks its own address for each upload and can't be asked for it again, `storageIndex(name)` from `tansy/storage` keeps a small JSON value per key in the database, with `get`, `set`, `delete` and `list(prefix)`. Pass the adapter's own `name`, so two adapters never share an index. Check what you read back as you would a provider's answer.
 
 `tansy/storage` also exports helpers the plugins use: `callProvider` makes a request that refuses redirects and fails with a `StorageProviderError` carrying only the status, since a provider's answer can quote keys or signatures. `rangeOf` cuts a full answer down to the requested range, for providers that ignore `Range`. `bodyBlob` reads an upload into memory for APIs that need a multipart form.

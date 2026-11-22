@@ -17,6 +17,14 @@ least one minor release deprecating it first.
 Security fixes are called out as such, with what to do about them, and can land in a minor or patch
 release when leaving something in place would keep sites exposed.
 
+## 0.1.2 — 2026-11-22
+
+### Storage
+
+- `storageIndex(name)` from `tansy/storage` keeps a small JSON value per key in the database, for a
+  storage adapter whose provider picks its own address for each upload and can't be asked for it
+  again. `@tansy/storage-imgbb`, released beside it, keeps its images' addresses there.
+
 ## 0.1.1 — 2026-11-22
 
 From this release every package moves on its own version. The storefront and halo themes' changes

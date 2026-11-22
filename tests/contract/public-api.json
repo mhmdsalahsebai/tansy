@@ -1242,6 +1242,17 @@
         "maxUploadBytes?": "number | undefined",
         "previous?": "import(\"./storage\").StorageAdapter[] | undefined"
       },
+      "storageIndex": "<Value = unknown>(adapterName: string) => import(\"./storage\").StorageIndex<Value>",
+      "StorageIndex": {
+        "delete": "(key: string) => Promise<void>",
+        "get": "(key: string) => Promise<Value | null>",
+        "list": "(prefix: string) => Promise<Array<import(\"./storage\").StorageIndexEntry<Value>>>",
+        "set": "(key: string, value: Value) => Promise<void>"
+      },
+      "StorageIndexEntry": {
+        "key": "string",
+        "value": "Value"
+      },
       "StorageProviderError": "typeof import(\"./storage\").StorageProviderError",
       "StoredObject": {
         "key": "string",

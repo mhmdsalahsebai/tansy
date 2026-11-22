@@ -6,6 +6,8 @@ import { callProvider, rangeOf, StorageProviderError } from "@/core/storage/remo
 import type { StorageAdapter } from "@/core/storage/types";
 import { bunnyResize, bunnyStorage, signBunnyUrl } from "../../plugins/storage-bunny/index";
 import { cloudinaryStorage, cloudinaryTransformation } from "../../plugins/storage-cloudinary/index";
+import { imgbbStorage, type ImgbbEntry } from "../../plugins/storage-imgbb/index";
+import type { StorageIndex } from "@/core/storage/index-store";
 import { uploadthingStorage, type UploadthingClient } from "../../plugins/storage-uploadthing/index";
 import { vercelBlobStorage } from "../../plugins/storage-vercel-blob/index";
 
@@ -259,6 +261,98 @@ describe("Uploadthing", () => {
   it("lists finished uploads under the prefix, page by page", async () => {
     const { fake } = client([{ customId: "site/backups/a", size: 1 }, { customId: "site/backups/b", size: 2 }, { customId: "site/backups/c", size: 3, status: "Uploading" }]);
     expect(await uploadthingStorage({ token: "t", prefix: "site" }, fake).list!("backups/")).toEqual([{ key: "backups/a", size: 1 }, { key: "backups/b", size: 2 }]);
+  });
+});
+
+describe("imgbb", () => {
+  function memoryIndex(entries: Record<string, unknown> = {}) {
+    const map = new Map(Object.entries(entries));
+    const index: StorageIndex<ImgbbEntry> = {
+      get: async (key) => (map.get(key) as ImgbbEntry | undefined) ?? null,
+      set: async (key, value) => void map.set(key, value),
+      delete: async (key) => void map.delete(key),
+      list: async (prefix) => [...map].filter(([key]) => key.startsWith(prefix)).map(([key, value]) => ({ key, value: value as ImgbbEntry })),
+    };
+    return { map, index };
+  }
+  function memoryAdapter() {
+    const objects = new Map<string, string>();
+    const adapter: StorageAdapter = {
+      name: "spare",
+      put: async (key, body) => void objects.set(key, await text(body)),
+      get: async (key) => (objects.has(key) ? stream(objects.get(key)!) : null),
+      delete: async (key) => void objects.delete(key),
+    };
+    return { objects, adapter };
+  }
+  const uploaded = (size: number, url = "https://i.ibb.co/Ab12/one.png") => Response.json({ data: { url, size, image: { url } }, success: true, status: 200 });
+
+  it("uploads an image with the key in the query, and keeps the address imgbb gave it", async () => {
+    const { map, index } = memoryIndex();
+    const { sent, fetcher } = provider(() => uploaded(3));
+    await imgbbStorage({ apiKey: "k" }, index, fetcher).put("files/ab/one", stream("abc"), { size: 3, contentType: "image/png" });
+    expect(sent[0].method).toBe("POST");
+    expect(`${sent[0].url.origin}${sent[0].url.pathname}`).toBe("https://api.imgbb.com/1/upload");
+    expect(sent[0].url.searchParams.get("key")).toBe("k");
+    expect(await ((sent[0].body as FormData).get("image") as File).text()).toBe("abc");
+    expect(map.get("files/ab/one")).toEqual({ url: "https://i.ibb.co/Ab12/one.png", size: 3 });
+  });
+
+  it("reads from the kept address, honouring a range, and returns null for an unknown key", async () => {
+    const { index } = memoryIndex({ "files/ab/one": { url: "https://i.ibb.co/Ab12/one.png", size: 6 } });
+    const { sent, fetcher } = provider(() => new Response("abcdef"));
+    const adapter = imgbbStorage({ apiKey: "k" }, index, fetcher);
+    expect(await text(await adapter.get("files/ab/one", { start: 2, end: 3 }))).toBe("cd");
+    expect(sent[0].url.href).toBe("https://i.ibb.co/Ab12/one.png");
+    expect(sent[0].headers.get("range")).toBe("bytes=2-3");
+    expect(await adapter.get("files/ab/none")).toBeNull();
+  });
+
+  it("never reads from an address off imgbb's image host", async () => {
+    const { index } = memoryIndex({ "files/ab/one": { url: "https://internal.example/secret", size: 1 } });
+    const { sent, fetcher } = provider();
+    expect(await imgbbStorage({ apiKey: "k" }, index, fetcher).get("files/ab/one")).toBeNull();
+    expect(sent).toHaveLength(0);
+  });
+
+  it("refuses an answer that names another host", async () => {
+    const { map, index } = memoryIndex();
+    const { fetcher } = provider(() => uploaded(3, "https://evil.example/x.png"));
+    await expect(imgbbStorage({ apiKey: "k" }, index, fetcher).put("files/ab/one", stream("abc"), { size: 3, contentType: "image/png" })).rejects.toThrow("imgbb couldn't be reached to upload.");
+    expect(map.size).toBe(0);
+  });
+
+  it("sends what imgbb won't take, or would change, to the fallback, and refuses it without one", async () => {
+    const { map, index } = memoryIndex();
+    const spare = memoryAdapter();
+    const { sent, fetcher } = provider(() => uploaded(2));
+    const adapter = imgbbStorage({ apiKey: "k", fallback: spare.adapter }, index, fetcher);
+    await adapter.put("files/ab/book", stream("%PDF"), { size: 4, contentType: "application/pdf" });
+    expect(sent).toHaveLength(0);
+    // imgbb reports a size other than what was sent: it recompressed the image.
+    await adapter.put("files/ab/photo", stream("abc"), { size: 3, contentType: "image/jpeg" });
+    expect(spare.objects).toEqual(new Map([["files/ab/book", "%PDF"], ["files/ab/photo", "abc"]]));
+    expect(map.get("files/ab/book")).toEqual({ size: 4 });
+    expect(await text(await adapter.get("files/ab/book"))).toBe("%PDF");
+    await adapter.delete("files/ab/book");
+    expect(spare.objects.has("files/ab/book")).toBe(false);
+    expect(map.has("files/ab/book")).toBe(false);
+
+    await expect(imgbbStorage({ apiKey: "k" }, memoryIndex().index, fetcher).put("files/ab/book", stream("%PDF"), { size: 4, contentType: "application/pdf" })).rejects.toThrow("Set a fallback adapter");
+  });
+
+  it("forgets a deleted image, which imgbb can't delete, and lists what it keeps", async () => {
+    const { map, index } = memoryIndex({ "backups/a": { url: "https://i.ibb.co/a/a.png", size: 1 }, "backups/b": { size: 2 }, "files/c": { size: 3 } });
+    const { sent, fetcher } = provider();
+    const adapter = imgbbStorage({ apiKey: "k" }, index, fetcher);
+    expect(await adapter.list!("backups/")).toEqual([{ key: "backups/a", size: 1 }, { key: "backups/b", size: 2 }]);
+    await adapter.delete("backups/a");
+    expect(map.has("backups/a")).toBe(false);
+    expect(sent).toHaveLength(0);
+  });
+
+  it("needs an API key", () => {
+    expect(() => imgbbStorage({ apiKey: "" }, memoryIndex().index).assertUsable!()).toThrow("IMGBB_API_KEY");
   });
 });
 
