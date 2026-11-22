@@ -1,0 +1,9 @@
+# The shop demo on Netlify, with Postgres on Neon and files on Cloudflare R2 (S3_* variables).
+# Migrations run before the build, on Neon's direct address: its pooled one can't hold the lock
+# Prisma's migrate takes.
+[build]
+  command = 'DATABASE_URL="${DATABASE_URL_UNPOOLED:-$DATABASE_URL}" npx tansy migrate && npm run build'
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"

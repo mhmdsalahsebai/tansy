@@ -77,3 +77,6 @@ cms-before-restore-*.tar.gz*
 /internal/
 .demo-admin*
 .demo-shop-admin*
+
+# Local Netlify folder
+.netlify
