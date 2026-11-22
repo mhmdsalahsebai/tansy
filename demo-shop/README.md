@@ -46,7 +46,8 @@ and calls the background endpoint every five minutes from a scheduled function.
    direct one), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `TANSY_SITE_URL`, `TANSY_ENCRYPTION_KEY`,
    `TANSY_BACKUP_KEY`, `CRON_SECRET`, `TANSY_BACKGROUND_SECONDS=8`, storage (`IMGBB_API_KEY` for the
    pictures, free on imgbb, with `BLOB_READ_WRITE_TOKEN` or `S3_*` for the digital editions),
-   `TANSY_SHARED_ACCOUNTS=demo@example.com`, and Stripe **test** keys: `STRIPE_SECRET_KEY=sk_test_…`
+   `TANSY_DEMO_EMAIL=demo@example.com` and `TANSY_DEMO_PASSWORD=explore-tansy-shop` (demo mode: a
+   banner on the site and a sign-in form filled in with that login), and Stripe **test** keys: `STRIPE_SECRET_KEY=sk_test_…`
    and `STRIPE_WEBHOOK_SECRET` for a webhook to `/api/auth/stripe/webhook`. Never live keys. For the
    Readers' Club, a test recurring price of $9 a month (and $90 a year) in Stripe, whose ids go in
    `STRIPE_CLUB_PRICE` and `STRIPE_CLUB_ANNUAL_PRICE` when running the script below.
