@@ -1,4 +1,5 @@
-# The shop demo on Netlify, with Postgres on Neon and files on Cloudflare R2 (S3_* variables).
+# The shop demo on Netlify, with Postgres on Neon, pictures on imgbb (IMGBB_API_KEY) and the digital
+# editions on Vercel Blob (BLOB_READ_WRITE_TOKEN).
 # Migrations run before the build, on Neon's direct address: its pooled one can't hold the lock
 # Prisma's migrate takes.
 [build]

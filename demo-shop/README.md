@@ -41,8 +41,8 @@ node scripts/demo-shop-content.mjs .demo-shop-admin-local
 Like `../demo`: its own Vercel project and Postgres database, deployed from this folder.
 
 1. Environment on Vercel: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`,
-   `TANSY_ENCRYPTION_KEY`, `TANSY_BACKUP_KEY`, `CRON_SECRET`, storage (`S3_*` or
-   `BLOB_READ_WRITE_TOKEN`), `TANSY_SHARED_ACCOUNTS=demo@example.com`, and Stripe **test** keys:
+   `TANSY_ENCRYPTION_KEY`, `TANSY_BACKUP_KEY`, `CRON_SECRET`, storage (`IMGBB_API_KEY` for
+   the pictures, free on imgbb, with `BLOB_READ_WRITE_TOKEN` or `S3_*` for the digital editions), `TANSY_SHARED_ACCOUNTS=demo@example.com`, and Stripe **test** keys:
    `STRIPE_SECRET_KEY=sk_test_…` and `STRIPE_WEBHOOK_SECRET` for a webhook to
    `/api/auth/stripe/webhook`. Never live keys. For the Readers' Club, a test recurring price of
    $9 a month (and $90 a year) in Stripe, whose ids go in `STRIPE_CLUB_PRICE` and
