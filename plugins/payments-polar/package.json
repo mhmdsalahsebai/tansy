@@ -28,7 +28,7 @@
     "tansy": "^0.1.1"
   },
   "dependencies": {
-    "@polar-sh/better-auth": "^2.1.4",
-    "@polar-sh/sdk": "~1.0.2"
+    "@polar-sh/better-auth": "^2.1.5",
+    "@polar-sh/sdk": "~1.3.3"
   }
 }
