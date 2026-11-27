@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@commet/better-auth": "^8.1.0",
-    "@commet/node": "^9.10.0"
+    "@commet/node": "^9.11.0"
   }
 }
